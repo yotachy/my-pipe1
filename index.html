@@ -1,25 +1,546 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>공포 & 탐욕 지수</title>
+  <meta name="description" content="미국 주식시장과 암호화폐의 공포 & 탐욕 지수를 실시간으로 확인하세요." />
+  <meta name="theme-color" content="#0f0f11" />
+
+  <!-- PWA: 모바일 홈화면 추가 지원 -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="공포탐욕" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-page:    #0f0f11;
+      --bg-card:    #18181c;
+      --bg-chip:    #222228;
+      --border:     rgba(255,255,255,0.07);
+      --txt-1:      #f0f0f2;
+      --txt-2:      #888892;
+      --txt-3:      #555560;
+      --accent-red: #E24B4A;
+      --accent-ora: #EF9F27;
+      --accent-gry: #888780;
+      --accent-grn: #639922;
+      --accent-teal:#1D9E75;
+      --radius-md:  10px;
+      --radius-lg:  16px;
+      --font-sans:  'Pretendard', -apple-system, sans-serif;
+      --font-mono:  'DM Mono', monospace;
+    }
+
+    html, body {
+      background: var(--bg-page);
+      color: var(--txt-1);
+      font-family: var(--font-sans);
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .shell {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 0 0 40px;
+    }
+
+    /* ── Top Bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 52px 20px 16px;
+    }
+
+    .topbar-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--txt-1);
+      letter-spacing: -0.5px;
+    }
+
+    .badge-live {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #3ecf8e;
+      background: rgba(62, 207, 142, 0.12);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .dot-live {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #3ecf8e;
+      animation: blink 1.4s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.2; }
+    }
+
+    /* ── Cards ── */
+    .cards {
+      padding: 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 0.5px solid var(--border);
+      padding: 18px 18px 20px;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3px;
+    }
+
+    .card-type {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--txt-3);
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+    }
+
+    .card-src {
+      font-size: 10px;
+      color: var(--txt-3);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--txt-2);
+      margin-bottom: 16px;
+    }
+
+    /* ── Gauge ── */
+    .gauge-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .gauge-svg {
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .gauge-ends {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 280px;
+      margin-top: -4px;
+      padding: 0 6px;
+    }
+
+    .gauge-end-txt {
+      font-size: 10px;
+      color: var(--txt-3);
+    }
+
+    /* ── Score Block ── */
+    .score-block {
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .score-num {
+      font-family: var(--font-mono);
+      font-size: 48px;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .score-lbl {
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 4px;
+      letter-spacing: 0.1px;
+    }
+
+    .score-change {
+      font-size: 11px;
+      color: var(--txt-3);
+      margin-top: 4px;
+      font-family: var(--font-mono);
+    }
+
+    /* ── Segment Bar ── */
+    .seg-bar {
+      display: flex;
+      gap: 3px;
+      margin-top: 14px;
+    }
+
+    .seg {
+      height: 3px;
+      border-radius: 2px;
+      flex: 1;
+      opacity: 0.2;
+      transition: opacity 0.3s;
+    }
+
+    .seg.on { opacity: 1; }
+
+    /* ── History Chips ── */
+    .hist-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .hist-chip {
+      flex: 1;
+      background: var(--bg-chip);
+      border-radius: var(--radius-md);
+      padding: 8px 6px;
+      text-align: center;
+    }
+
+    .hist-lbl {
+      font-size: 9px;
+      color: var(--txt-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hist-val {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    /* ── Skeleton ── */
+    .skeleton {
+      background: var(--bg-chip);
+      border-radius: 6px;
+      animation: shimmer 1.2s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 0.8; }
+    }
+
+    .skeleton-gauge {
+      width: 100%;
+      max-width: 280px;
+      height: 90px;
+      margin: 0 auto;
+    }
+
+    .skeleton-num {
+      width: 90px;
+      height: 44px;
+      margin: 10px auto 0;
+    }
+
+    .skeleton-lbl {
+      width: 120px;
+      height: 14px;
+      margin: 6px auto 0;
+    }
+
+    /* ── Error ── */
+    .error-box {
+      text-align: center;
+      padding: 24px 10px;
+    }
+
+    .error-txt {
+      font-size: 13px;
+      color: var(--accent-red);
+    }
+
+    .retry-btn {
+      margin-top: 8px;
+      display: inline-block;
+      font-size: 12px;
+      color: #6ba5f5;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      padding: 0;
+    }
+
+    /* ── Ad Banner ── */
+    .ad-banner {
+      margin: 12px 14px 0;
+      background: var(--bg-card);
+      border: 0.5px dashed rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      text-align: center;
+      font-size: 10px;
+      color: var(--txt-3);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 20px 14px 0;
+      font-size: 10px;
+      color: var(--txt-3);
+      line-height: 1.7;
+    }
+
+    .updated-txt {
+      font-family: var(--font-mono);
+    }
+  </style>
 </head>
 <body>
-  <h1>안녕하세요!</h1>
-  <p>앱 준비 중입니다.</p>
+<div class="shell">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <span class="topbar-title">공포 & 탐욕</span>
+    <span class="badge-live"><span class="dot-live"></span>실시간</span>
+  </div>
+
+  <!-- Cards -->
+  <div class="cards">
+
+    <!-- 주식 -->
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-type">미국 주식시장</span>
+        <span class="card-src">CNN</span>
+      </div>
+      <div class="card-title">공포 & 탐욕 지수</div>
+      <div id="stock-body">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="skeleton skeleton-gauge"></div>
+          <div class="skeleton skeleton-num"></div>
+          <div class="skeleton skeleton-lbl"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 암호화폐 -->
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-type">암호화폐</span>
+        <span class="card-src">Alternative.me</span>
+      </div>
+      <div class="card-title">공포 & 탐욕 지수</div>
+      <div id="crypto-body">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="skeleton skeleton-gauge"></div>
+          <div class="skeleton skeleton-num"></div>
+          <div class="skeleton skeleton-lbl"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Ad Banner -->
+  <div class="ad-banner">광고 영역 — 유료 결제 시 제거됩니다</div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="updated-txt" id="updated-txt">—</div>
+    <div style="margin-top:4px">60초마다 자동 갱신됩니다</div>
+  </div>
+
+</div>
+
+<script>
+  /* ── 구간 정의 ── */
+  const ZONES = [
+    { label: 'Extreme Fear', kr: '극도의 공포', color: '#E24B4A', from: 0,  to: 25  },
+    { label: 'Fear',         kr: '공포',        color: '#EF9F27', from: 25, to: 45  },
+    { label: 'Neutral',      kr: '중립',         color: '#888780', from: 45, to: 55  },
+    { label: 'Greed',        kr: '탐욕',         color: '#639922', from: 55, to: 75  },
+    { label: 'Extreme Greed',kr: '극도의 탐욕',  color: '#1D9E75', from: 75, to: 101 },
+  ];
+
+  function getZone(score) {
+    return ZONES.find(z => score >= z.from && score < z.to) || ZONES[ZONES.length - 1];
+  }
+
+  /* ── 게이지 SVG 생성 ── */
+  function buildGauge(score) {
+    const cx = 140, cy = 105, R = 90, sw = 10, gap = 0.018;
+    let paths = '';
+
+    ZONES.forEach(z => {
+      const a1 = Math.PI * (z.from / 100) + gap;
+      const a2 = Math.PI * (z.to  / 100) - gap;
+      const s  = { x: cx - R * Math.cos(a1), y: cy - R * Math.sin(a1) };
+      const e  = { x: cx - R * Math.cos(a2), y: cy - R * Math.sin(a2) };
+      paths += `<path d="M${s.x.toFixed(2)},${s.y.toFixed(2)} A${R},${R} 0 0 1 ${e.x.toFixed(2)},${e.y.toFixed(2)}"
+        fill="none" stroke="${z.color}" stroke-width="${sw}" stroke-linecap="round" opacity="0.2"/>`;
+
+      const cap = Math.min(score, z.to);
+      if (cap > z.from) {
+        const fa1 = Math.PI * (z.from / 100) + gap;
+        const fa2 = Math.PI * (cap   / 100) - (score <= z.to ? gap : 0);
+        if (fa2 > fa1) {
+          const fs = { x: cx - R * Math.cos(fa1), y: cy - R * Math.sin(fa1) };
+          const fe = { x: cx - R * Math.cos(fa2), y: cy - R * Math.sin(fa2) };
+          paths += `<path d="M${fs.x.toFixed(2)},${fs.y.toFixed(2)} A${R},${R} 0 0 1 ${fe.x.toFixed(2)},${fe.y.toFixed(2)}"
+            fill="none" stroke="${z.color}" stroke-width="${sw}" stroke-linecap="round"/>`;
+        }
+      }
+    });
+
+    const na = Math.PI * (score / 100);
+    const nLen = 72;
+    const nx   = cx - nLen * Math.cos(na);
+    const ny   = cy - nLen * Math.sin(na);
+    const zn   = getZone(score);
+
+    return `<svg class="gauge-svg" viewBox="0 0 280 112" xmlns="http://www.w3.org/2000/svg">
+      ${paths}
+      <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(2)}" y2="${ny.toFixed(2)}"
+        stroke="${zn.color}" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="${cx}" cy="${cy}" r="5.5" fill="${zn.color}"/>
+      <circle cx="${cx}" cy="${cy}" r="2.8" fill="#18181c"/>
+    </svg>`;
+  }
+
+  /* ── 세그먼트 바 ── */
+  function buildSegBar(score) {
+    const zn = getZone(score);
+    return '<div class="seg-bar">' +
+      ZONES.map(z => `<div class="seg${z === zn ? ' on' : ''}" style="background:${z.color}"></div>`).join('') +
+      '</div>';
+  }
+
+  /* ── 히스토리 칩 ── */
+  function buildHist(w1, m1, y1) {
+    const fmt = v => {
+      if (v == null) return '<span style="color:#555560">—</span>';
+      return `<span style="color:${getZone(v).color}">${v}</span>`;
+    };
+    return `<div class="hist-row">
+      <div class="hist-chip"><div class="hist-lbl">1주 전</div><div class="hist-val">${fmt(w1)}</div></div>
+      <div class="hist-chip"><div class="hist-lbl">1개월 전</div><div class="hist-val">${fmt(m1)}</div></div>
+      <div class="hist-chip"><div class="hist-lbl">1년 전</div><div class="hist-val">${fmt(y1)}</div></div>
+    </div>`;
+  }
+
+  /* ── 카드 렌더링 ── */
+  function renderCard(bodyId, score, prev, w1, m1, y1) {
+    const zn   = getZone(score);
+    const diff = score - prev;
+    const sign = diff >= 0 ? '+' : '';
+
+    document.getElementById(bodyId).innerHTML = `
+      <div class="gauge-wrap">
+        ${buildGauge(score)}
+        <div class="gauge-ends">
+          <span class="gauge-end-txt">공포</span>
+          <span class="gauge-end-txt">탐욕</span>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-num" style="color:${zn.color}">${score}</div>
+        <div class="score-lbl" style="color:${zn.color}">${zn.kr}</div>
+        <div class="score-change">전일 대비 ${sign}${diff} · 전일 ${prev}</div>
+      </div>
+      ${buildSegBar(score)}
+      ${buildHist(w1, m1, y1)}
+    `;
+  }
+
+  /* ── 에러 렌더링 ── */
+  function renderError(bodyId, retryFn) {
+    document.getElementById(bodyId).innerHTML = `
+      <div class="error-box">
+        <div class="error-txt">데이터를 불러올 수 없습니다</div>
+        <button class="retry-btn" onclick="(${retryFn.toString()})()">다시 시도 ↻</button>
+      </div>`;
+  }
+
+  /* ── API: 암호화폐 (alternative.me) ── */
+  async function loadCrypto() {
+    try {
+      const res  = await fetch('https://api.alternative.me/fng/?limit=35&format=json', { cache: 'no-store' });
+      if (!res.ok) throw new Error('http ' + res.status);
+      const json = await res.json();
+      const d    = json.data;
+
+      const today = parseInt(d[0].value);
+      const prev  = parseInt(d[1].value);
+      const w1    = parseInt(d[6]?.value);
+      const m1    = parseInt(d[29]?.value);
+
+      renderCard('crypto-body', today, prev, w1, m1, null);
+    } catch (e) {
+      renderError('crypto-body', loadCrypto);
+    }
+  }
+
+  /* ── API: 주식 (CNN Fear & Greed) ── */
+  async function loadStock() {
+    try {
+      const res  = await fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata', {
+        cache: 'no-store',
+        headers: { 'Accept': 'application/json' },
+      });
+      if (!res.ok) throw new Error('http ' + res.status);
+      const json = await res.json();
+      const fg   = json.fear_and_greed;
+
+      renderCard(
+        'stock-body',
+        Math.round(fg.score),
+        Math.round(fg.previous_close),
+        Math.round(fg.previous_1_week),
+        Math.round(fg.previous_1_month),
+        Math.round(fg.previous_1_year),
+      );
+    } catch (e) {
+      renderError('stock-body', loadStock);
+    }
+  }
+
+  /* ── 타임스탬프 갱신 ── */
+  function updateTimestamp() {
+    const now = new Date();
+    const t   = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    document.getElementById('updated-txt').textContent = '마지막 업데이트 ' + t;
+  }
+
+  /* ── 초기 로드 & 자동 갱신 ── */
+  async function refresh() {
+    await Promise.all([loadStock(), loadCrypto()]);
+    updateTimestamp();
+  }
+
+  refresh();
+  setInterval(refresh, 60_000);
+</script>
 </body>
 </html>
-```
-
-아래 **Commit changes** 버튼 클릭
-
----
-
-### 4. 폰에서 확인
-
-1~2분 후 폰 브라우저에서 아까 생성된 URL 열기
-1~2분 후 폰 브라우저에서 아까 생성된 URL 열기
-1~2분 후 폰 브라우저에서 아까 생성된 URL 열기
-```
-https://[내GitHub아이디].github.io/my-app/
