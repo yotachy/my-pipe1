@@ -12,21 +12,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
     :root {
-      --bg-page: #f0f0f4; --bg-card: #ffffff; --bg-chip: #f4f4f8; --bg-chip2: #eaeaef;
-      --border: rgba(0,0,0,0.08); --border-md: rgba(0,0,0,0.13);
-      --txt-1: #111111; --txt-2: #333333; --txt-3: #555555; --txt-4: #999999;
-      --up: #0a8a55; --down: #d93025; --flat: #666666;
-      --vix-ok: #0a8a55; --vix-warn: #c07800; --vix-danger: #d93025;
-      --r-sm: 10px; --r-md: 14px; --r-lg: 18px;
-      --sans: 'Pretendard', -apple-system, sans-serif; --mono: 'DM Mono', monospace;
-      --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 8px rgba(0,0,0,0.04);
-      --pad-x: 16px; --pad-top: 48px; --gap: 10px;
-      --mc-min: 90px; --mc-fs: 18px; --mc-lbl-fs: 11px; --mc-chg-fs: 12px;
-      --sec-fs: 14px; --tb-fs: 24px; --fg-num-fs: 48px; --fg-lbl-fs: 15px; --gsvg-max: 280px;
+      --bg-page:#f0f0f4; --bg-card:#ffffff; --bg-chip:#f4f4f8; --bg-chip2:#eaeaef;
+      --border:rgba(0,0,0,0.08); --border-md:rgba(0,0,0,0.13);
+      --txt-1:#111111; --txt-2:#333333; --txt-3:#555555; --txt-4:#999999;
+      --up:#0a8a55; --down:#d93025; --flat:#666666;
+      --vix-ok:#0a8a55; --vix-warn:#c07800; --vix-danger:#d93025;
+      --r-sm:10px; --r-md:14px; --r-lg:18px;
+      --sans:'Pretendard',-apple-system,sans-serif; --mono:'DM Mono',monospace;
+      --shadow:0 1px 3px rgba(0,0,0,0.07),0 1px 8px rgba(0,0,0,0.04);
+      --pad-x:16px; --pad-top:48px; --gap:10px;
+      --mc-min:110px; --mc-fs:18px; --mc-lbl-fs:11px;
+      --sec-fs:14px; --tb-fs:24px; --fg-num-fs:48px; --fg-lbl-fs:15px; --gsvg-max:280px;
     }
-    html, body { background:var(--bg-page); color:var(--txt-1); font-family:var(--sans); -webkit-font-smoothing:antialiased; min-height:100dvh; }
+    html,body { background:var(--bg-page); color:var(--txt-1); font-family:var(--sans); -webkit-font-smoothing:antialiased; min-height:100dvh; }
     .shell { max-width:430px; margin:0 auto; padding:0 0 60px; }
 
     /* ── 탑바 ── */
@@ -40,30 +40,34 @@
     .sec { padding:0 var(--pad-x) 18px; }
     .sec-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
     .sec-title { font-size:var(--sec-fs); font-weight:700; color:var(--txt-1); letter-spacing:-0.2px; }
-
-    /* ── 통일된 소스 뱃지 ── */
-    .src-badge {
-      font-size:10px; font-weight:600; color:var(--txt-3);
-      background:var(--bg-chip2); border:1px solid var(--border);
-      padding:3px 8px; border-radius:6px; letter-spacing:0.2px;
-    }
-
+    .src-badge { font-size:10px; font-weight:600; color:var(--txt-3); background:var(--bg-chip2); border:1px solid var(--border); padding:3px 8px; border-radius:6px; letter-spacing:0.2px; }
     .divider { height:1px; background:var(--border); margin:0 var(--pad-x) 18px; }
     .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--gap); }
     .grid2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--gap); }
 
-    /* ── 미니 카드 ── */
-    .mc { background:var(--bg-card); border-radius:var(--r-md); border:1px solid var(--border); box-shadow:var(--shadow); padding:13px 13px 15px; min-height:var(--mc-min); }
-    .mc-lbl { font-size:var(--mc-lbl-fs); font-weight:600; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+    /* ── 미니 카드 기본 ── */
+    .mc { background:var(--bg-card); border-radius:var(--r-md); border:1px solid var(--border); box-shadow:var(--shadow); padding:13px 13px 14px; min-height:var(--mc-min); }
+    .mc-lbl { font-size:var(--mc-lbl-fs); font-weight:600; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:7px; }
     .mc-val { font-family:var(--mono); font-size:var(--mc-fs); font-weight:500; color:var(--txt-1); letter-spacing:-0.3px; line-height:1.15; }
     .mc-sub { font-size:10px; color:var(--txt-4); margin-top:2px; }
-    .mc-chg { font-family:var(--mono); font-size:var(--mc-chg-fs); font-weight:500; margin-top:7px; }
-    .up { color:var(--up); } .down { color:var(--down); } .flat { color:var(--flat); }
-    .vix-low { color:var(--vix-ok); } .vix-mid { color:var(--vix-warn); } .vix-high { color:var(--vix-danger); }
 
-    /* ── 갱신 인디케이터 ── */
-    .refresh-dot { display:inline-block; width:5px; height:5px; border-radius:50%; background:var(--txt-4); margin-left:5px; vertical-align:middle; opacity:0; transition:opacity 0.2s; }
-    .refresh-dot.flash { opacity:1; }
+    /* ── 등락률 공통 (퍼센트 강조) ── */
+    .chg-row { display:flex; align-items:baseline; gap:5px; margin-top:7px; flex-wrap:wrap; }
+    .chg-pct { font-family:var(--mono); font-size:15px; font-weight:700; line-height:1; }   /* 퍼센트 — 강조 */
+    .chg-raw { font-family:var(--mono); font-size:10px; font-weight:400; opacity:0.65; }    /* 절대값 — 작게 */
+    .chg-note { font-size:9px; color:var(--txt-4); width:100%; margin-top:1px; }            /* 보조 안내 */
+    .up   { color:var(--up); }
+    .down { color:var(--down); }
+    .flat { color:var(--flat); }
+    .vix-low  { color:var(--vix-ok); }
+    .vix-mid  { color:var(--vix-warn); }
+    .vix-high { color:var(--vix-danger); }
+
+    /* ── 환율 히스토리 칩 ── */
+    .fx-hist { display:flex; gap:5px; margin-top:8px; }
+    .fx-hist-chip { flex:1; background:var(--bg-chip); border-radius:6px; border:1px solid var(--border); padding:5px 6px; text-align:center; }
+    .fx-hist-lbl { font-size:9px; color:var(--txt-4); font-weight:500; }
+    .fx-hist-val { font-family:var(--mono); font-size:12px; font-weight:700; margin-top:2px; }
 
     /* ── 스켈레톤 ── */
     .sk { background:var(--bg-chip2); border-radius:4px; animation:shimmer 1.3s ease-in-out infinite; }
@@ -79,55 +83,45 @@
     .fgc-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
     .fgc-type { font-size:11px; font-weight:700; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.8px; }
     .fgc-title { font-size:16px; font-weight:700; color:var(--txt-1); margin-bottom:16px; letter-spacing:-0.3px; }
-    .fg-note { font-size:10px; color:var(--txt-4); text-align:center; margin-top:8px; }
-
-    /* ── 게이지 ── */
     .gw { display:flex; flex-direction:column; align-items:center; }
     .gsvg { width:100%; max-width:var(--gsvg-max); }
     .gends { display:flex; justify-content:space-between; width:100%; max-width:var(--gsvg-max); margin-top:-4px; padding:0 6px; }
     .gend { font-size:11px; color:var(--txt-3); font-weight:500; }
-
-    /* ── 점수 ── */
     .sb { text-align:center; margin-top:8px; }
     .sb-num { font-family:var(--mono); font-size:var(--fg-num-fs); font-weight:500; line-height:1; letter-spacing:-1px; }
     .sb-lbl { font-size:var(--fg-lbl-fs); font-weight:700; margin-top:5px; letter-spacing:-0.2px; }
     .sb-chg { font-size:12px; color:var(--txt-3); margin-top:5px; font-family:var(--mono); }
-
-    /* ── 세그 바 ── */
     .segbar { display:flex; gap:4px; margin-top:16px; }
     .seg { height:4px; border-radius:2px; flex:1; opacity:0.2; }
     .seg.on { opacity:1; }
-
-    /* ── 히스토리 ── */
     .hrow { display:flex; gap:8px; margin-top:14px; }
     .hchip { flex:1; background:var(--bg-chip); border-radius:var(--r-sm); border:1px solid var(--border); padding:9px 6px; text-align:center; }
     .hlbl { font-size:10px; color:var(--txt-3); font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }
     .hval { font-family:var(--mono); font-size:15px; font-weight:500; margin-top:4px; }
-
-    /* ── F&G 오류 ── */
     .fg-err { text-align:center; padding:24px 10px; }
     .fg-err-txt { font-size:14px; color:var(--down); font-weight:500; }
     .fg-retry { display:inline-block; margin-top:10px; font-size:13px; color:#1a6fd4; background:none; border:none; cursor:pointer; font-family:var(--sans); font-weight:600; }
 
     /* ── 광고·푸터 ── */
     .ad { margin:0 var(--pad-x) 16px; background:var(--bg-chip); border:1px dashed var(--border-md); border-radius:var(--r-sm); padding:11px; text-align:center; font-size:11px; color:var(--txt-4); }
-    .footer-row { display:flex; justify-content:space-between; align-items:center; padding:4px var(--pad-x) 0; }
+    .footer-row { display:flex; justify-content:space-between; align-items:flex-start; padding:4px var(--pad-x) 0; }
     .footer-txt { font-size:11px; color:var(--txt-4); font-family:var(--mono); }
-    .footer-intervals { font-size:10px; color:var(--txt-4); text-align:right; line-height:1.7; }
+    .footer-intervals { font-size:10px; color:var(--txt-4); text-align:right; line-height:1.8; }
 
     /* ══ 태블릿 480px~ ══ */
     @media (min-width:480px) {
-      :root { --pad-x:22px; --pad-top:56px; --gap:12px; --mc-min:106px; --mc-fs:22px; --mc-lbl-fs:12px; --mc-chg-fs:13px; --sec-fs:15px; --tb-fs:28px; --fg-num-fs:56px; --fg-lbl-fs:17px; --gsvg-max:340px; }
+      :root { --pad-x:22px; --pad-top:56px; --gap:12px; --mc-min:120px; --mc-fs:22px; --mc-lbl-fs:12px; --sec-fs:15px; --tb-fs:28px; --fg-num-fs:56px; --fg-lbl-fs:17px; --gsvg-max:340px; }
       .shell { max-width:700px; padding:0 0 72px; }
-      .mc { padding:16px 16px 18px; }
+      .mc { padding:16px 16px 16px; }
       .fgc { padding:20px 24px 22px; }
       .hval { font-size:17px; } .hchip { padding:10px 8px; }
       .grid2 { grid-template-columns:repeat(4,minmax(0,1fr)); }
+      .chg-pct { font-size:16px; }
     }
 
     /* ══ 데스크탑 769px~ ══ */
     @media (min-width:769px) {
-      :root { --pad-x:0px; --pad-top:44px; --gap:12px; --mc-min:110px; --mc-fs:20px; --mc-lbl-fs:11px; --mc-chg-fs:12px; --sec-fs:14px; --tb-fs:28px; --fg-num-fs:52px; --fg-lbl-fs:16px; --gsvg-max:300px; }
+      :root { --pad-x:0px; --pad-top:44px; --gap:12px; --mc-min:118px; --mc-fs:20px; --mc-lbl-fs:11px; --sec-fs:14px; --tb-fs:28px; --fg-num-fs:52px; --fg-lbl-fs:16px; --gsvg-max:300px; }
       body { padding:0 36px; }
       .shell { max-width:1120px; padding:0 0 72px; }
       .topbar { padding:var(--pad-top) 0 30px; }
@@ -144,7 +138,7 @@
     /* ══ 와이드 1024px~ ══ */
     @media (min-width:1024px) {
       :root { --mc-fs:22px; --fg-num-fs:58px; --gsvg-max:320px; }
-      .mc { padding:16px 16px 18px; }
+      .mc { padding:16px 16px 16px; }
       .fgc { padding:22px 26px 24px; }
     }
   </style>
@@ -165,13 +159,13 @@
       <!-- 환율 -->
       <div class="sec">
         <div class="sec-header">
-          <span class="sec-title">환율 <span class="refresh-dot" id="fx-dot"></span></span>
-          <span class="src-badge">open.er-api.com</span>
+          <span class="sec-title">환율</span>
+          <span class="src-badge">frankfurter.app</span>
         </div>
         <div class="grid3">
-          <div class="mc" id="fx-usd"><div class="mc-lbl">USD/KRW</div><div class="sk" style="height:20px;width:72%;margin-top:4px"></div><div class="sk" style="height:12px;width:50%;margin-top:8px"></div></div>
-          <div class="mc" id="fx-eur"><div class="mc-lbl">EUR/KRW</div><div class="sk" style="height:20px;width:72%;margin-top:4px"></div><div class="sk" style="height:12px;width:50%;margin-top:8px"></div></div>
-          <div class="mc" id="fx-jpy"><div class="mc-lbl">JPY/KRW</div><div class="sk" style="height:20px;width:72%;margin-top:4px"></div><div class="sk" style="height:12px;width:50%;margin-top:8px"></div></div>
+          <div class="mc" id="fx-usd"><div class="mc-lbl">USD/KRW</div><div class="sk" style="height:20px;width:72%;margin-top:4px"></div><div class="sk" style="height:11px;width:60%;margin-top:7px"></div><div class="sk" style="height:28px;width:100%;margin-top:8px;border-radius:6px"></div></div>
+          <div class="mc" id="fx-eur"><div class="mc-lbl">EUR/KRW</div><div class="sk" style="height:20px;width:72%;margin-top:4px"></div><div class="sk" style="height:11px;width:60%;margin-top:7px"></div><div class="sk" style="height:28px;width:100%;margin-top:8px;border-radius:6px"></div></div>
+          <div class="mc" id="fx-jpy"><div class="mc-lbl">JPY/KRW</div><div class="sk" style="height:20px;width:72%;margin-top:4px"></div><div class="sk" style="height:11px;width:60%;margin-top:7px"></div><div class="sk" style="height:28px;width:100%;margin-top:8px;border-radius:6px"></div></div>
         </div>
       </div>
 
@@ -180,21 +174,21 @@
       <!-- 미국 주요 지수 -->
       <div class="sec">
         <div class="sec-header">
-          <span class="sec-title">미국 주요 지수 <span class="refresh-dot" id="idx-dot"></span></span>
+          <span class="sec-title">미국 주요 지수</span>
           <span class="src-badge">Yahoo Finance</span>
         </div>
         <div class="grid2">
-          <div class="mc" id="idx-sp500"><div class="mc-lbl">S&amp;P 500</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:12px;width:62%;margin-top:8px"></div></div>
-          <div class="mc" id="idx-nasdaq"><div class="mc-lbl">NASDAQ</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:12px;width:62%;margin-top:8px"></div></div>
-          <div class="mc" id="idx-dow"><div class="mc-lbl">DOW</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:12px;width:62%;margin-top:8px"></div></div>
-          <div class="mc" id="idx-vix"><div class="mc-lbl">VIX</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:12px;width:62%;margin-top:8px"></div></div>
+          <div class="mc" id="idx-sp500"><div class="mc-lbl">S&amp;P 500</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:14px;width:55%;margin-top:8px"></div></div>
+          <div class="mc" id="idx-nasdaq"><div class="mc-lbl">NASDAQ</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:14px;width:55%;margin-top:8px"></div></div>
+          <div class="mc" id="idx-dow"><div class="mc-lbl">DOW</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:14px;width:55%;margin-top:8px"></div></div>
+          <div class="mc" id="idx-vix"><div class="mc-lbl">VIX</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:14px;width:55%;margin-top:8px"></div></div>
         </div>
       </div>
 
       <div class="ad">광고 영역 — 유료 결제 시 제거됩니다</div>
       <div class="footer-row">
         <span class="footer-txt" id="updated-txt">—</span>
-        <span class="footer-intervals">환율 10분 · 지수 10초 · F&amp;G 일 1회</span>
+        <span class="footer-intervals">환율 10분 · 지수 5초 · F&amp;G 일 1회</span>
       </div>
 
     </div>
@@ -206,25 +200,16 @@
           <span class="sec-title">공포 &amp; 탐욕 지수</span>
         </div>
         <div class="fg-wrap">
-
           <div class="fgc">
-            <div class="fgc-meta">
-              <span class="fgc-type">미국 주식시장</span>
-              <span class="src-badge">CNN</span>
-            </div>
+            <div class="fgc-meta"><span class="fgc-type">미국 주식시장</span><span class="src-badge">CNN</span></div>
             <div class="fgc-title">공포 &amp; 탐욕 지수</div>
             <div id="stock-body"><div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0"><div class="sk" style="width:100%;max-width:280px;height:90px;border-radius:8px"></div><div class="sk" style="width:88px;height:44px;border-radius:6px"></div><div class="sk" style="width:120px;height:14px;border-radius:4px"></div></div></div>
           </div>
-
           <div class="fgc">
-            <div class="fgc-meta">
-              <span class="fgc-type">암호화폐</span>
-              <span class="src-badge">Alternative.me</span>
-            </div>
+            <div class="fgc-meta"><span class="fgc-type">암호화폐</span><span class="src-badge">Alternative.me</span></div>
             <div class="fgc-title">공포 &amp; 탐욕 지수</div>
             <div id="crypto-body"><div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0"><div class="sk" style="width:100%;max-width:280px;height:90px;border-radius:8px"></div><div class="sk" style="width:88px;height:44px;border-radius:6px"></div><div class="sk" style="width:120px;height:14px;border-radius:4px"></div></div></div>
           </div>
-
         </div>
       </div>
     </div>
@@ -233,34 +218,71 @@
 </div>
 
 <script>
-/* ════════════════════════════════
-   공포탐욕 존 정의
-════════════════════════════════ */
-var ZONES = [
-  {kr:'극도의 공포', color:'#d93025', from:0,  to:25},
-  {kr:'공포',        color:'#c07800', from:25, to:45},
-  {kr:'중립',         color:'#666666', from:45, to:55},
-  {kr:'탐욕',         color:'#2e7d32', from:55, to:75},
-  {kr:'극도의 탐욕',  color:'#0a6640', from:75, to:101},
+/* ════════════════ 유틸 ════════════════ */
+function comma(n,d){ d=d||0; return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function getLbl(id){ return document.getElementById(id).querySelector('.mc-lbl').outerHTML; }
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+function dateStr(daysAgo){
+  var d=new Date(); d.setDate(d.getDate()-daysAgo);
+  return d.toISOString().split('T')[0];
+}
+
+/* ════════════════ 등락률 HTML (퍼센트 강조) ════════════════ */
+function chgHtml(cur, prev, note, rawFmt){
+  if(prev==null||isNaN(prev)||prev===0) return '';
+  var diff=cur-prev, pct=(diff/Math.abs(prev))*100;
+  var cls=diff>0?'up':diff<0?'down':'flat', arrow=diff>0?'▲':diff<0?'▼':'─';
+  var rawStr = rawFmt ? rawFmt(Math.abs(diff)) : Math.abs(diff).toFixed(2);
+  var h='<div class="chg-row">';
+  h+='<span class="chg-pct '+cls+'">'+arrow+' '+Math.abs(pct).toFixed(2)+'%</span>';
+  h+='<span class="chg-raw '+cls+'">'+rawStr+'</span>';
+  h+='</div>';
+  if(note) h+='<div class="chg-note">'+note+'</div>';
+  return h;
+}
+
+function fxHistHtml(cur, m1, m6, rawFmt){
+  function chip(label, prev){
+    if(prev==null||isNaN(prev)||prev===0) return '<div class="fx-hist-chip"><div class="fx-hist-lbl">'+label+'</div><div class="fx-hist-val" style="color:var(--txt-4)">—</div></div>';
+    var diff=cur-prev, pct=(diff/Math.abs(prev))*100;
+    var cls=diff>0?'up':diff<0?'down':'flat', arrow=diff>0?'▲':diff<0?'▼':'─';
+    return '<div class="fx-hist-chip"><div class="fx-hist-lbl">'+label+'</div><div class="fx-hist-val '+cls+'">'+arrow+' '+Math.abs(pct).toFixed(2)+'%</div></div>';
+  }
+  return '<div class="fx-hist">'+chip('1개월 전',m1)+chip('6개월 전',m6)+'</div>';
+}
+
+/* 미니 카드 오류 */
+function renderMcErr(id,fn){
+  document.getElementById(id).innerHTML=getLbl(id)+'<div class="mc-err">오류 <button class="mc-retry" onclick="'+fn+'()">↻ 재시도</button></div>';
+}
+
+/* ════════════════ F&G 유틸 ════════════════ */
+var ZONES=[
+  {kr:'극도의 공포',color:'#d93025',from:0,to:25},
+  {kr:'공포',color:'#c07800',from:25,to:45},
+  {kr:'중립',color:'#666666',from:45,to:55},
+  {kr:'탐욕',color:'#2e7d32',from:55,to:75},
+  {kr:'극도의 탐욕',color:'#0a6640',from:75,to:101},
 ];
 function getZone(s){ return ZONES.find(function(z){return s>=z.from&&s<z.to;})||ZONES[4]; }
 
 function buildGauge(score){
   var cx=140,cy=105,R=88,sw=11,gap=0.018,p='';
   ZONES.forEach(function(z){
-    var a1=Math.PI*(z.from/100)+gap, a2=Math.PI*(z.to/100)-gap;
-    var sx=cx-R*Math.cos(a1), sy=cy-R*Math.sin(a1), ex=cx-R*Math.cos(a2), ey=cy-R*Math.sin(a2);
+    var a1=Math.PI*(z.from/100)+gap,a2=Math.PI*(z.to/100)-gap;
+    var sx=cx-R*Math.cos(a1),sy=cy-R*Math.sin(a1),ex=cx-R*Math.cos(a2),ey=cy-R*Math.sin(a2);
     p+='<path d="M'+sx.toFixed(2)+','+sy.toFixed(2)+' A'+R+','+R+' 0 0 1 '+ex.toFixed(2)+','+ey.toFixed(2)+'" fill="none" stroke="'+z.color+'" stroke-width="'+sw+'" stroke-linecap="round" opacity="0.15"/>';
     var cap=Math.min(score,z.to);
     if(cap>z.from){
-      var fa1=Math.PI*(z.from/100)+gap, fa2=Math.PI*(cap/100)-(score<=z.to?gap:0);
+      var fa1=Math.PI*(z.from/100)+gap,fa2=Math.PI*(cap/100)-(score<=z.to?gap:0);
       if(fa2>fa1){
         var fsx=cx-R*Math.cos(fa1),fsy=cy-R*Math.sin(fa1),fex=cx-R*Math.cos(fa2),fey=cy-R*Math.sin(fa2);
         p+='<path d="M'+fsx.toFixed(2)+','+fsy.toFixed(2)+' A'+R+','+R+' 0 0 1 '+fex.toFixed(2)+','+fey.toFixed(2)+'" fill="none" stroke="'+z.color+'" stroke-width="'+sw+'" stroke-linecap="round"/>';
       }
     }
   });
-  var na=Math.PI*(score/100), nx=(cx-70*Math.cos(na)).toFixed(2), ny=(cy-70*Math.sin(na)).toFixed(2), zn=getZone(score);
+  var na=Math.PI*(score/100),nx=(cx-70*Math.cos(na)).toFixed(2),ny=(cy-70*Math.sin(na)).toFixed(2),zn=getZone(score);
   return '<svg class="gsvg" viewBox="0 0 280 112" xmlns="http://www.w3.org/2000/svg">'+p+'<line x1="'+cx+'" y1="'+cy+'" x2="'+nx+'" y2="'+ny+'" stroke="'+zn.color+'" stroke-width="2.5" stroke-linecap="round"/><circle cx="'+cx+'" cy="'+cy+'" r="6" fill="'+zn.color+'"/><circle cx="'+cx+'" cy="'+cy+'" r="3" fill="#ffffff"/></svg>';
 }
 
@@ -271,7 +293,7 @@ function buildSegBar(score){
 }
 
 function buildHist(w1,m1,m6){
-  function fmt(v){ return v!=null&&!isNaN(v)?'<span style="color:'+getZone(v).color+'">'+v+'</span>':'<span style="color:#bbb">—</span>'; }
+  function fmt(v){ return (v!=null&&!isNaN(v))?'<span style="color:'+getZone(v).color+'">'+v+'</span>':'<span style="color:#bbb">—</span>'; }
   return '<div class="hrow">'+
     '<div class="hchip"><div class="hlbl">1주 전</div><div class="hval">'+fmt(w1)+'</div></div>'+
     '<div class="hchip"><div class="hlbl">1개월 전</div><div class="hval">'+fmt(m1)+'</div></div>'+
@@ -283,181 +305,192 @@ function renderFG(id,score,prev,w1,m1,m6){
   var zn=getZone(score),diff=score-prev;
   document.getElementById(id).innerHTML=
     '<div class="gw">'+buildGauge(score)+'<div class="gends"><span class="gend">공포</span><span class="gend">탐욕</span></div></div>'+
-    '<div class="sb"><div class="sb-num" style="color:'+zn.color+'">'+score+'</div><div class="sb-lbl" style="color:'+zn.color+'">'+zn.kr+'</div><div class="sb-chg">전일 대비 '+(diff>=0?'+':'')+diff+' &nbsp;·&nbsp; 전일 '+prev+'</div></div>'+
+    '<div class="sb"><div class="sb-num" style="color:'+zn.color+'">'+score+'</div><div class="sb-lbl" style="color:'+zn.color+'">'+zn.kr+'</div>'+
+    '<div class="sb-chg">전일 대비 '+(diff>=0?'+':'')+diff+' &nbsp;·&nbsp; 전일 '+prev+'</div></div>'+
     buildSegBar(score)+buildHist(w1,m1,m6);
 }
 
-function renderFGErr(id,retryName){
-  document.getElementById(id).innerHTML='<div class="fg-err"><div class="fg-err-txt">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="'+retryName+'()">다시 시도 ↻</button></div>';
+function renderFGErr(id,fn){
+  document.getElementById(id).innerHTML='<div class="fg-err"><div class="fg-err-txt">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="'+fn+'()">다시 시도 ↻</button></div>';
 }
 
-/* ════════════════════════════════
-   미니 카드
-════════════════════════════════ */
-function getLbl(id){ return document.getElementById(id).querySelector('.mc-lbl').outerHTML; }
-
-function renderMc(id,val,sub,chgTxt,dir){
-  var cls=dir===1?'up':dir===-1?'down':'flat', arrow=dir===1?'▲':dir===-1?'▼':'─';
-  var h=getLbl(id)+'<div class="mc-val">'+val+'</div>';
-  if(sub) h+='<div class="mc-sub">'+sub+'</div>';
-  if(chgTxt) h+='<div class="mc-chg '+cls+'">'+arrow+' '+chgTxt+'</div>';
-  document.getElementById(id).innerHTML=h;
-}
-
-function renderMcErr(id,retryName){
-  document.getElementById(id).innerHTML=getLbl(id)+'<div class="mc-err">오류 <button class="mc-retry" onclick="'+retryName+'()">↻ 재시도</button></div>';
-}
-
-function comma(n,d){ d=d||0; return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d}); }
-
-function flashDot(dotId){
-  var el=document.getElementById(dotId);
-  if(!el) return;
-  el.classList.add('flash');
-  setTimeout(function(){ el.classList.remove('flash'); }, 600);
-}
-
-/* ════════════════════════════════
-   localStorage 헬퍼
-════════════════════════════════ */
-function lsGet(key){ try{ return JSON.parse(localStorage.getItem(key)); }catch(e){ return null; } }
-function lsSet(key,val){ try{ localStorage.setItem(key,JSON.stringify(val)); }catch(e){} }
-
-/* ════════════════════════════════
-   API: 환율 (10분 갱신, 전일 비교)
-════════════════════════════════ */
-function loadFX(){
-  fetch('https://open.er-api.com/v6/latest/USD',{cache:'no-store'})
-    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
-    .then(function(j){
-      var r=j.rates;
-      var today=new Date().toDateString();
-      var prev=lsGet('fx_prev');
-
-      /* 전일 비교: 날짜가 바뀌면 오늘 값을 이전 값으로 승계 */
-      var stored=lsGet('fx_today');
-      if(stored && stored.date!==today){
-        lsSet('fx_prev',{date:stored.date,usd:stored.usd,eur:stored.eur,jpy:stored.jpy});
-        prev=lsGet('fx_prev');
-      }
-      lsSet('fx_today',{date:today,usd:r.KRW,eur:r.KRW/r.EUR,jpy:(r.KRW/r.JPY)*100});
-
-      function fxChg(cur,p,label){
-        if(!p||!p[label]) return null;
-        var diff=cur-p[label], pct=(diff/p[label])*100;
-        return {diff:diff,pct:pct,dir:diff>0?1:diff<0?-1:0};
-      }
-
-      var usd=r.KRW, eur=r.KRW/r.EUR, jpy=(r.KRW/r.JPY)*100;
-      var cu=fxChg(usd,prev,'usd'), ce=fxChg(eur,prev,'eur'), cj=fxChg(jpy,prev,'jpy');
-
-      renderMc('fx-usd', comma(usd,1), '1달러', cu?Math.abs(cu.diff).toFixed(1)+' ('+Math.abs(cu.pct).toFixed(2)+'%)':null, cu?cu.dir:0);
-      renderMc('fx-eur', comma(eur,1), '1유로', ce?Math.abs(ce.diff).toFixed(1)+' ('+Math.abs(ce.pct).toFixed(2)+'%)':null, ce?ce.dir:0);
-      renderMc('fx-jpy', comma(jpy,1), '100엔', cj?Math.abs(cj.diff).toFixed(1)+' ('+Math.abs(cj.pct).toFixed(2)+'%)':null, cj?cj.dir:0);
-      flashDot('fx-dot');
-    })
-    .catch(function(){
-      ['fx-usd','fx-eur','fx-jpy'].forEach(function(id){ renderMcErr(id,'loadFX'); });
+/* ════════════════ 경쟁 fetch (가장 빠른 응답 사용) ════════════════ */
+function raceFetch(urls){
+  return new Promise(function(resolve,reject){
+    var done=false, errs=0;
+    urls.forEach(function(url){
+      fetch(url,{cache:'no-store'})
+        .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+        .then(function(j){ if(!done){ done=true; resolve(j); } })
+        .catch(function(){ errs++; if(errs===urls.length&&!done) reject(); });
     });
+  });
 }
 
-/* ════════════════════════════════
-   API: 미국 지수 (Yahoo Finance v8, 10초 갱신)
-   v8/chart 방식으로 심볼별 요청 → allorigins 프록시
-════════════════════════════════ */
+/* ════════════════ API: 환율 (frankfurter.app, 10분) ════════════════ */
+function loadFX(){
+  var TODAY=new Date().toDateString();
+  var m1date=dateStr(30), m6date=dateStr(182);
+  var base='https://api.frankfurter.app/';
+  var curUrl=base+'latest?from=USD&to=KRW,EUR,JPY';
+  var m1Url=base+m1date+'?from=USD&to=KRW,EUR,JPY';
+  var m6Url=base+m6date+'?from=USD&to=KRW,EUR,JPY';
+
+  Promise.all([
+    fetch(curUrl,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}),
+    fetch(m1Url,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;}),
+    fetch(m6Url,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;})
+  ]).then(function(results){
+    var cur=results[0], h1=results[1], h6=results[2];
+    var r=cur.rates;
+
+    /* 현재 값 */
+    var usd=r.KRW, eur=r.KRW/r.EUR, jpy=(r.KRW/r.JPY)*100;
+
+    /* 전일 비교용 localStorage */
+    var stored=lsGet('fx_today_v2');
+    var prevDay=lsGet('fx_prev_v2');
+    if(stored&&stored.date!==TODAY){
+      lsSet('fx_prev_v2',{date:stored.date,usd:stored.usd,eur:stored.eur,jpy:stored.jpy});
+      prevDay=lsGet('fx_prev_v2');
+    }
+    lsSet('fx_today_v2',{date:TODAY,usd:usd,eur:eur,jpy:jpy});
+
+    /* 1개월/6개월 전 값 */
+    var m1usd=h1?h1.rates.KRW:null;
+    var m1eur=h1?h1.rates.KRW/h1.rates.EUR:null;
+    var m1jpy=h1?(h1.rates.KRW/h1.rates.JPY)*100:null;
+    var m6usd=h6?h6.rates.KRW:null;
+    var m6eur=h6?h6.rates.KRW/h6.rates.EUR:null;
+    var m6jpy=h6?(h6.rates.KRW/h6.rates.JPY)*100:null;
+
+    function renderFxCard(id,cur,prev,m1,m6,label){
+      var rawFmt=function(v){ return comma(v,1); };
+      var prevChg=chgHtml(cur,prev&&prev[id.replace('fx-','')],label+' 전일 대비',rawFmt);
+      var h=getLbl(id);
+      h+='<div class="mc-val">'+comma(cur,1)+'</div>';
+      if(id==='fx-usd') h+='<div class="mc-sub">1달러</div>';
+      if(id==='fx-eur') h+='<div class="mc-sub">1유로</div>';
+      if(id==='fx-jpy') h+='<div class="mc-sub">100엔</div>';
+      if(prevChg) h+=prevChg;
+      h+=fxHistHtml(cur,m1,m6,rawFmt);
+      document.getElementById(id).innerHTML=h;
+    }
+
+    /* 전일 prev 객체에서 꺼내기 */
+    var prevUsd=prevDay?prevDay.usd:null;
+    var prevEur=prevDay?prevDay.eur:null;
+    var prevJpy=prevDay?prevDay.jpy:null;
+
+    /* USD 카드 */
+    var h=getLbl('fx-usd');
+    h+='<div class="mc-val">'+comma(usd,1)+'</div><div class="mc-sub">1달러</div>';
+    if(prevUsd) h+=chgHtml(usd,prevUsd,'전일 종가 대비',function(v){return comma(v,1);});
+    h+=fxHistHtml(usd,m1usd,m6usd);
+    document.getElementById('fx-usd').innerHTML=h;
+
+    /* EUR 카드 */
+    h=getLbl('fx-eur');
+    h+='<div class="mc-val">'+comma(eur,1)+'</div><div class="mc-sub">1유로</div>';
+    if(prevEur) h+=chgHtml(eur,prevEur,'전일 종가 대비',function(v){return comma(v,1);});
+    h+=fxHistHtml(eur,m1eur,m6eur);
+    document.getElementById('fx-eur').innerHTML=h;
+
+    /* JPY 카드 */
+    h=getLbl('fx-jpy');
+    h+='<div class="mc-val">'+comma(jpy,1)+'</div><div class="mc-sub">100엔</div>';
+    if(prevJpy) h+=chgHtml(jpy,prevJpy,'전일 종가 대비',function(v){return comma(v,1);});
+    h+=fxHistHtml(jpy,m1jpy,m6jpy);
+    document.getElementById('fx-jpy').innerHTML=h;
+
+  }).catch(function(){
+    ['fx-usd','fx-eur','fx-jpy'].forEach(function(id){ renderMcErr(id,'loadFX'); });
+  });
+}
+
+/* ════════════════ API: 지수 (Yahoo Finance v8, 5초, 경쟁 fetch) ════════════════ */
 var SYMBOLS=[
-  {sym:'^GSPC', id:'idx-sp500', label:'S&P 500', fmt:function(p){return comma(p,2);}},
-  {sym:'^IXIC', id:'idx-nasdaq',label:'NASDAQ',   fmt:function(p){return comma(p,2);}},
-  {sym:'^DJI',  id:'idx-dow',  label:'DOW',       fmt:function(p){return comma(p,0);}},
-  {sym:'^VIX',  id:'idx-vix',  label:'VIX',       fmt:function(p){return p.toFixed(2);}},
+  {sym:'^GSPC', id:'idx-sp500', lbl:'S&P 500', fmt:function(p){return comma(p,2);}},
+  {sym:'^IXIC', id:'idx-nasdaq',lbl:'NASDAQ',   fmt:function(p){return comma(p,2);}},
+  {sym:'^DJI',  id:'idx-dow',  lbl:'DOW',       fmt:function(p){return comma(p,0);}},
+  {sym:'^VIX',  id:'idx-vix',  lbl:'VIX',       fmt:function(p){return p.toFixed(2);}},
 ];
 
-function applyQuote(sym,price,prevClose){
-  var chg=price-prevClose, pct=(chg/prevClose)*100;
-  var dir=chg>0?1:chg<0?-1:0;
-  if(sym.id==='idx-vix'){
+function applyQuote(sym,price,prev){
+  var id=sym.id;
+  if(id==='idx-vix'){
+    var chg=price-prev, pct=(chg/Math.abs(prev))*100;
     var vc=price<15?'vix-low':price<25?'vix-mid':'vix-high';
-    var arr=chg>0?'▲':chg<0?'▼':'─', cls=chg>0?'down':chg<0?'up':'flat';
-    /* VIX: 상승=위험(빨강), 하락=안전(초록) — 역방향 표시 */
-    document.getElementById(sym.id).innerHTML=getLbl(sym.id)+
+    /* VIX: 상승=위험(down색), 하락=안전(up색) */
+    var cls=chg>0?'down':chg<0?'up':'flat', arrow=chg>0?'▲':chg<0?'▼':'─';
+    document.getElementById(id).innerHTML=getLbl(id)+
       '<div class="mc-val '+vc+'">'+sym.fmt(price)+'</div>'+
-      '<div class="mc-chg '+cls+'">'+arr+' '+Math.abs(pct).toFixed(2)+'%</div>';
+      '<div class="chg-row">'+
+        '<span class="chg-pct '+cls+'">'+arrow+' '+Math.abs(pct).toFixed(2)+'%</span>'+
+        '<span class="chg-raw '+cls+'">'+Math.abs(chg).toFixed(2)+'</span>'+
+      '</div>'+
+      '<div class="chg-note">전일 종가 대비</div>';
   } else {
-    var chgTxt=Math.abs(chg).toFixed(2)+' ('+Math.abs(pct).toFixed(2)+'%)';
-    renderMc(sym.id,sym.fmt(price),null,chgTxt,dir);
+    var chg2=price-prev, pct2=(chg2/Math.abs(prev))*100;
+    var cls2=chg2>0?'up':chg2<0?'down':'flat', arrow2=chg2>0?'▲':chg2<0?'▼':'─';
+    document.getElementById(id).innerHTML=getLbl(id)+
+      '<div class="mc-val">'+sym.fmt(price)+'</div>'+
+      '<div class="chg-row">'+
+        '<span class="chg-pct '+cls2+'">'+arrow2+' '+Math.abs(pct2).toFixed(2)+'%</span>'+
+        '<span class="chg-raw '+cls2+'">'+Math.abs(chg2).toFixed(2)+'</span>'+
+      '</div>'+
+      '<div class="chg-note">전일 종가 대비</div>';
   }
 }
 
-function fetchOneSymbol(sym){
-  var url='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym.sym)+'?interval=1d&range=2d&includePrePost=false';
-  return fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url),{cache:'no-store'})
-    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
-    .then(function(j){
-      var res=j.chart&&j.chart.result&&j.chart.result[0];
-      if(!res) throw 0;
-      var meta=res.meta;
-      var price=meta.regularMarketPrice;
-      var prev=meta.previousClose||meta.chartPreviousClose;
-      if(!price||!prev) throw 0;
-      applyQuote(sym,price,prev);
-    });
-}
-
-function fetchAllSymbolsV8(){
-  /* 4개 병렬 요청 — 하나라도 실패하면 해당 카드만 오류 */
-  SYMBOLS.forEach(function(sym){
-    fetchOneSymbol(sym).catch(function(){
-      /* 2차 폴백: corsproxy.io */
-      var url='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym.sym)+'?interval=1d&range=2d';
-      fetch('https://corsproxy.io/?'+encodeURIComponent(url),{cache:'no-store'})
-        .then(function(r){ if(!r.ok) throw 0; return r.json(); })
-        .then(function(j){
-          var data=j.contents?JSON.parse(j.contents):j;
-          var res=data.chart&&data.chart.result&&data.chart.result[0];
-          if(!res) throw 0;
-          var meta=res.meta, price=meta.regularMarketPrice, prev=meta.previousClose||meta.chartPreviousClose;
-          if(!price||!prev) throw 0;
-          applyQuote(sym,price,prev);
-        })
-        .catch(function(){ renderMcErr(sym.id,'loadIndices'); });
-    });
-  });
-  flashDot('idx-dot');
+function fetchSymbol(sym){
+  var enc=encodeURIComponent(sym.sym);
+  var yahooUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+enc+'?interval=1d&range=2d&includePrePost=false';
+  var proxies=[
+    'https://api.allorigins.win/raw?url='+encodeURIComponent(yahooUrl),
+    'https://corsproxy.io/?'+encodeURIComponent(yahooUrl),
+    yahooUrl  /* 직접 — 가끔 됨 */
+  ];
+  return raceFetch(proxies).then(function(j){
+    var res=j.chart&&j.chart.result&&j.chart.result[0];
+    if(!res) throw 0;
+    var meta=res.meta;
+    var price=meta.regularMarketPrice;
+    var prev=meta.previousClose||meta.chartPreviousClose;
+    if(!price||!prev) throw 0;
+    applyQuote(sym,price,prev);
+  }).catch(function(){ renderMcErr(sym.id,'loadIndices'); });
 }
 
 function loadIndices(){
-  fetchAllSymbolsV8();
+  SYMBOLS.forEach(function(sym){ fetchSymbol(sym); });
 }
 
-/* ════════════════════════════════
-   F&G: 하루 1회 (localStorage 캐시)
-════════════════════════════════ */
-var TODAY=new Date().toDateString();
-
-function fgCacheKey(type){ return 'fg_'+type+'_'+TODAY; }
+/* ════════════════ F&G (하루 1회, localStorage 캐시) ════════════════ */
+var TODAY_STR=new Date().toDateString();
 
 function loadCrypto(){
-  var cache=lsGet(fgCacheKey('crypto'));
+  var cache=lsGet('fg_crypto_'+TODAY_STR);
   if(cache){ renderFG('crypto-body',cache.s,cache.p,cache.w1,cache.m1,cache.m6); return; }
-
   fetch('https://api.alternative.me/fng/?limit=185&format=json',{cache:'no-store'})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
     .then(function(j){
       var d=j.data;
-      var s=parseInt(d[0].value), p=parseInt(d[1].value);
-      var w1=d[6]?parseInt(d[6].value):null;
-      var m1=d[29]?parseInt(d[29].value):null;
-      var m6=d[182]?parseInt(d[182].value):null;
-      lsSet(fgCacheKey('crypto'),{s:s,p:p,w1:w1,m1:m1,m6:m6});
-      renderFG('crypto-body',s,p,w1,m1,m6);
+      var obj={
+        s:parseInt(d[0].value), p:parseInt(d[1].value),
+        w1:d[6]?parseInt(d[6].value):null,
+        m1:d[29]?parseInt(d[29].value):null,
+        m6:d[182]?parseInt(d[182].value):null
+      };
+      lsSet('fg_crypto_'+TODAY_STR,obj);
+      renderFG('crypto-body',obj.s,obj.p,obj.w1,obj.m1,obj.m6);
     })
     .catch(function(){ renderFGErr('crypto-body','loadCrypto'); });
 }
 
 function loadStock(){
-  var cache=lsGet(fgCacheKey('stock'));
+  var cache=lsGet('fg_stock_'+TODAY_STR);
   if(cache){ renderFG('stock-body',cache.s,cache.p,cache.w1,cache.m1,cache.m6); return; }
-
   fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata',{cache:'no-store',headers:{Accept:'application/json'}})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
     .then(function(j){
@@ -465,55 +498,39 @@ function loadStock(){
       var s=Math.round(fg.score), p=Math.round(fg.previous_close);
       var w1=fg.previous_1_week?Math.round(fg.previous_1_week):null;
       var m1=fg.previous_1_month?Math.round(fg.previous_1_month):null;
-
-      /* 6개월 전: historical 배열에서 timestamp 기준으로 탐색 */
       var m6=null;
       var hist=(j.fear_and_greed_historical&&j.fear_and_greed_historical.data)||[];
       if(hist.length){
         var sixMoAgo=Date.now()-182*24*60*60*1000;
         var best=null, bestDiff=Infinity;
         for(var i=0;i<hist.length;i++){
-          /* CNN timestamp는 밀리초가 아닌 경우가 있어 두 경우 모두 처리 */
-          var ts=hist[i].x;
-          if(ts<1e12) ts=ts*1000; /* 초 단위라면 ms로 변환 */
-          var diff=Math.abs(ts-sixMoAgo);
-          if(diff<bestDiff){ bestDiff=diff; best=hist[i]; }
+          var ts=hist[i].x; if(ts<1e12) ts=ts*1000;
+          var df=Math.abs(ts-sixMoAgo);
+          if(df<bestDiff&&typeof hist[i].y==='number'){ bestDiff=df; best=hist[i]; }
         }
-        if(best && typeof best.y==='number') m6=Math.round(best.y);
+        if(best) m6=Math.round(best.y);
       }
-
-      lsSet(fgCacheKey('stock'),{s:s,p:p,w1:w1,m1:m1,m6:m6});
-      renderFG('stock-body',s,p,w1,m1,m6);
+      var obj={s:s,p:p,w1:w1,m1:m1,m6:m6};
+      lsSet('fg_stock_'+TODAY_STR,obj);
+      renderFG('stock-body',obj.s,obj.p,obj.w1,obj.m1,obj.m6);
     })
     .catch(function(){ renderFGErr('stock-body','loadStock'); });
 }
 
-/* ════════════════════════════════
-   타임스탬프
-════════════════════════════════ */
+/* ════════════════ 타임스탬프 & 인터벌 ════════════════ */
 function tick(){
   var t=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   document.getElementById('updated-txt').textContent='업데이트 '+t;
 }
 
-/* ════════════════════════════════
-   초기 로드 & 인터벌 설정
-════════════════════════════════ */
-/* F&G: 최초 1회만 */
-loadStock();
-loadCrypto();
-
-/* 환율: 즉시 + 10분마다 */
-loadFX();
-setInterval(loadFX, 10*60*1000);
-
-/* 지수: 즉시 + 10초마다 */
-loadIndices();
-setInterval(loadIndices, 10*1000);
-
-/* 타임스탬프: 1초마다 */
-tick();
-setInterval(tick, 1000);
+/* F&G: 최초 1회 */
+loadStock(); loadCrypto();
+/* 환율: 즉시 + 10분 */
+loadFX(); setInterval(loadFX,10*60*1000);
+/* 지수: 즉시 + 5초 */
+loadIndices(); setInterval(loadIndices,5*1000);
+/* 타임스탬프: 1초 */
+tick(); setInterval(tick,1000);
 </script>
 </body>
 </html>
