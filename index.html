@@ -37,26 +37,24 @@
     .sec-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.4px; color:var(--txt-3); }
     .sec-src   { font-size:10px; color:var(--txt-4); }
 
-    /* ── 환율 3컬럼 ── */
-    .fx-row { display:grid; grid-template-columns:repeat(3,1fr); }
-    .fx-item { padding-right:18px; }
-    .fx-item+.fx-item { padding-left:18px; border-left:1px solid var(--rule); }
-    .fx-item:last-child { padding-right:0; }
+    /* ── 환율 그리드 (모바일: 2열, 태블릿+: 3열) ── */
+    .fx-row { display:grid; grid-template-columns:repeat(2,1fr); gap:22px 20px; }
+    .fx-item .flag { font-size:13px; vertical-align:-1px; margin-right:2px; }
     .fx-item .mc-lbl { font-size:9px; font-weight:600; color:var(--txt-4); text-transform:uppercase; letter-spacing:0.7px; margin-bottom:5px; }
     .fx-item .mc-val { font-family:var(--mono); font-size:16px; font-weight:500; color:var(--txt-1); letter-spacing:-0.4px; line-height:1.1; }
     .fx-item .mc-sub { font-size:9px; color:var(--txt-4); margin-top:2px; }
-    .fx-item .chg-row { display:flex; align-items:baseline; gap:4px; margin-top:6px; flex-wrap:wrap; }
+    .fx-item .chg-row { display:flex; align-items:baseline; gap:4px; margin-top:6px; }
     .fx-item .chg-pct { font-family:var(--mono); font-size:12px; font-weight:700; }
     .fx-item .chg-raw { font-family:var(--mono); font-size:9px; opacity:0.5; }
     .fx-item .chg-note { font-size:8px; color:var(--txt-4); margin-top:1px; }
     .fx-item .mc-err   { font-size:11px; color:var(--down); margin-top:6px; }
     .fx-item .mc-retry { font-size:11px; color:#1a6fd4; background:none; border:none; cursor:pointer; font-family:var(--sans); padding:0; margin-left:4px; font-weight:600; }
 
-    /* 환율 히스토리 인라인 */
-    .fx-hist-line { display:flex; align-items:center; gap:4px; margin-top:7px; flex-wrap:wrap; }
-    .fx-hist-item { font-size:9px; color:var(--txt-4); white-space:nowrap; }
+    /* 환율 히스토리 — 항상 3줄로 */
+    .fx-hist-line { display:flex; flex-direction:column; gap:2px; margin-top:7px; }
+    .fx-hist-item { font-size:9px; color:var(--txt-4); }
     .fx-hist-item b { font-weight:700; }
-    .fx-hist-dot  { font-size:9px; color:var(--txt-4); opacity:0.3; }
+    .fx-hist-dot  { display:none; }
 
     /* ── 지수 행 ── */
     .idx-list { display:flex; flex-direction:column; }
@@ -131,7 +129,8 @@
     /* ══ 태블릿 520px~ ══ */
     @media (min-width:520px) {
       .shell { max-width:680px; }
-      .fx-item .mc-val { font-size:20px; }
+      .fx-row { grid-template-columns:repeat(3,1fr); gap:22px 18px; }
+      .fx-item .mc-val { font-size:18px; }
       .idx-row .mc-val { font-size:21px; }
       .idx-row .mc-lbl { flex:0 0 85px; font-size:12px; }
       .idx-row .chg-pct { font-size:14px; }
@@ -148,6 +147,8 @@
       .topbar { padding:48px 0 28px; }
       .desktop-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 64px; align-items:start; }
       .col-left, .col-right { display:flex; flex-direction:column; }
+      .fx-row { grid-template-columns:repeat(3,1fr); gap:24px 14px; }
+      .fx-item .mc-val { font-size:16px; }
       /* 차트: 모바일 슬롯 숨김, 데스크탑 슬롯 표시 */
       #chart-slot-left { display:none !important; }
       #chart-slot-right { display:block; }
@@ -190,9 +191,11 @@
           <span class="sec-src">frankfurter.app</span>
         </div>
         <div class="fx-row">
-          <div class="fx-item" id="fx-usd"><div class="mc-lbl">USD/KRW</div><div class="sk" style="height:17px;width:80%;margin-top:4px"></div><div class="sk" style="height:9px;width:60%;margin-top:7px"></div><div class="sk" style="height:9px;width:95%;margin-top:5px"></div></div>
-          <div class="fx-item" id="fx-eur"><div class="mc-lbl">EUR/KRW</div><div class="sk" style="height:17px;width:80%;margin-top:4px"></div><div class="sk" style="height:9px;width:60%;margin-top:7px"></div><div class="sk" style="height:9px;width:95%;margin-top:5px"></div></div>
-          <div class="fx-item" id="fx-jpy"><div class="mc-lbl">JPY/KRW</div><div class="sk" style="height:17px;width:80%;margin-top:4px"></div><div class="sk" style="height:9px;width:60%;margin-top:7px"></div><div class="sk" style="height:9px;width:95%;margin-top:5px"></div></div>
+          <div class="fx-item" id="fx-usd"><div class="mc-lbl"><span class="flag">🇺🇸</span> USD/KRW</div><div class="sk" style="height:17px;width:80%;margin-top:4px"></div><div class="sk" style="height:9px;width:60%;margin-top:7px"></div><div class="sk" style="height:9px;width:95%;margin-top:5px"></div></div>
+          <div class="fx-item" id="fx-eur"><div class="mc-lbl"><span class="flag">🇪🇺</span> EUR/KRW</div><div class="sk" style="height:17px;width:80%;margin-top:4px"></div><div class="sk" style="height:9px;width:60%;margin-top:7px"></div><div class="sk" style="height:9px;width:95%;margin-top:5px"></div></div>
+          <div class="fx-item" id="fx-jpy"><div class="mc-lbl"><span class="flag">🇯🇵</span> JPY/KRW</div><div class="sk" style="height:17px;width:80%;margin-top:4px"></div><div class="sk" style="height:9px;width:60%;margin-top:7px"></div><div class="sk" style="height:9px;width:95%;margin-top:5px"></div></div>
+          <div class="fx-item" id="fx-gbp"><div class="mc-lbl"><span class="flag">🇬🇧</span> GBP/KRW</div><div class="sk" style="height:17px;width:80%;margin-top:4px"></div><div class="sk" style="height:9px;width:60%;margin-top:7px"></div><div class="sk" style="height:9px;width:95%;margin-top:5px"></div></div>
+          <div class="fx-item" id="fx-cny"><div class="mc-lbl"><span class="flag">🇨🇳</span> CNY/KRW</div><div class="sk" style="height:17px;width:80%;margin-top:4px"></div><div class="sk" style="height:9px;width:60%;margin-top:7px"></div><div class="sk" style="height:9px;width:95%;margin-top:5px"></div></div>
         </div>
       </div>
 
@@ -357,35 +360,49 @@ function raceFetch(urls){
   });
 }
 
-/* ════ API: 환율 (6개월·1년·3년 비교) ════ */
+/* ════ API: 환율 (GBP·CNY 추가, 6개월·1년·3년 비교) ════ */
 function loadFX(){
   var TODAY=new Date().toDateString(), base='https://api.frankfurter.app/';
+  var params='?from=USD&to=KRW,EUR,JPY,GBP,CNY';
   Promise.all([
-    fetch(base+'latest?from=USD&to=KRW,EUR,JPY',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}),
-    fetch(base+dateStr(182)+'?from=USD&to=KRW,EUR,JPY',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;}),
-    fetch(base+dateStr(365)+'?from=USD&to=KRW,EUR,JPY',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;}),
-    fetch(base+dateStr(365*3)+'?from=USD&to=KRW,EUR,JPY',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;})
+    fetch(base+'latest'+params,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}),
+    fetch(base+dateStr(182)+params,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;}),
+    fetch(base+dateStr(365)+params,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;}),
+    fetch(base+dateStr(365*3)+params,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;})
   ]).then(function(res){
     var cur=res[0],h6=res[1],y1=res[2],y3=res[3],r=cur.rates;
-    var usd=r.KRW, eur=r.KRW/r.EUR, jpy=(r.KRW/r.JPY)*100;
-    var stored=lsGet('fx_today_v3'), prevDay=lsGet('fx_prev_v3');
-    if(stored&&stored.date!==TODAY){ lsSet('fx_prev_v3',{date:stored.date,usd:stored.usd,eur:stored.eur,jpy:stored.jpy}); prevDay=lsGet('fx_prev_v3'); }
-    lsSet('fx_today_v3',{date:TODAY,usd:usd,eur:eur,jpy:jpy});
-    function rv(h,k){ return h?h.rates[k]:null; }
-    function re(h){ return h?h.rates.KRW/h.rates.EUR:null; }
-    function rj(h){ return h?(h.rates.KRW/h.rates.JPY)*100:null; }
-    var pu=prevDay?prevDay.usd:null, pe=prevDay?prevDay.eur:null, pj=prevDay?prevDay.jpy:null;
+    /* 현재값: 기준통화 USD 대비 KRW 환산 */
+    var usd=r.KRW;                          /* 1 USD = X KRW */
+    var eur=r.KRW/r.EUR;                    /* 1 EUR = X KRW */
+    var jpy=(r.KRW/r.JPY)*100;             /* 100 JPY = X KRW */
+    var gbp=r.KRW/r.GBP;                   /* 1 GBP = X KRW */
+    var cny=r.KRW/r.CNY;                   /* 1 CNY = X KRW */
+    /* 전일 비교용 localStorage */
+    var stored=lsGet('fx_today_v4'), prevDay=lsGet('fx_prev_v4');
+    if(stored&&stored.date!==TODAY){
+      lsSet('fx_prev_v4',{date:stored.date,usd:stored.usd,eur:stored.eur,jpy:stored.jpy,gbp:stored.gbp,cny:stored.cny});
+      prevDay=lsGet('fx_prev_v4');
+    }
+    lsSet('fx_today_v4',{date:TODAY,usd:usd,eur:eur,jpy:jpy,gbp:gbp,cny:cny});
+    /* 역사 데이터 헬퍼 */
+    function hv(h,key){ return h&&h.rates[key]?h.rates.KRW/h.rates[key]:null; }
+    function hj(h){ return h&&h.rates.JPY?(h.rates.KRW/h.rates.JPY)*100:null; }
+    function hu(h){ return h?h.rates.KRW:null; }
+    var pu=prevDay?prevDay.usd:null, pe=prevDay?prevDay.eur:null;
+    var pj=prevDay?prevDay.jpy:null, pg=prevDay?prevDay.gbp:null, pc=prevDay?prevDay.cny:null;
     function card(id,val,sub,prev,m6v,y1v,y3v){
       var h=getLbl(id)+'<div class="mc-val">'+comma(val,1)+'</div><div class="mc-sub">'+sub+'</div>';
       if(prev) h+=chgHtml(val,prev,'전일 종가 대비',function(v){return comma(v,1);});
       h+=fxHistHtml(val,m6v,y1v,y3v);
       document.getElementById(id).innerHTML=h;
     }
-    card('fx-usd',usd,'1달러',pu, rv(h6,'KRW'), rv(y1,'KRW'), rv(y3,'KRW'));
-    card('fx-eur',eur,'1유로',pe, re(h6), re(y1), re(y3));
-    card('fx-jpy',jpy,'100엔',pj, rj(h6), rj(y1), rj(y3));
+    card('fx-usd',usd,'1달러', pu, hu(h6), hu(y1), hu(y3));
+    card('fx-eur',eur,'1유로', pe, hv(h6,'EUR'), hv(y1,'EUR'), hv(y3,'EUR'));
+    card('fx-jpy',jpy,'100엔', pj, hj(h6), hj(y1), hj(y3));
+    card('fx-gbp',gbp,'1파운드',pg, hv(h6,'GBP'), hv(y1,'GBP'), hv(y3,'GBP'));
+    card('fx-cny',cny,'1위안', pc, hv(h6,'CNY'), hv(y1,'CNY'), hv(y3,'CNY'));
   }).catch(function(){
-    ['fx-usd','fx-eur','fx-jpy'].forEach(function(id){renderMcErr(id,'loadFX');});
+    ['fx-usd','fx-eur','fx-jpy','fx-gbp','fx-cny'].forEach(function(id){renderMcErr(id,'loadFX');});
   });
 }
 
