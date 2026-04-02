@@ -4,36 +4,48 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>투자 지표 대시보드</title>
-  <meta name="theme-color" content="#0f0f11" />
+  <meta name="theme-color" content="#f4f4f6" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg-page: #0f0f11; --bg-card: #18181c; --bg-chip: #222228;
-      --border: rgba(255,255,255,0.07);
-      --txt-1: #f0f0f2; --txt-2: #888892; --txt-3: #555560;
-      --up: #3ecf8e; --down: #f26c6c; --flat: #888892;
-      --r-sm: 8px; --r-md: 12px; --r-lg: 16px;
+      /* ── 화이트 테마 컬러 ── */
+      --bg-page:  #f0f0f4;
+      --bg-card:  #ffffff;
+      --bg-chip:  #f4f4f8;
+      --bg-chip2: #eaeaef;
+      --border:   rgba(0,0,0,0.08);
+      --border-md:rgba(0,0,0,0.13);
+      --txt-1:    #111111;
+      --txt-2:    #333333;
+      --txt-3:    #666666;
+      --txt-4:    #999999;
+      --up:       #0a8a55;
+      --down:     #d93025;
+      --flat:     #666666;
+      --r-sm: 10px; --r-md: 14px; --r-lg: 18px;
       --sans: 'Pretendard', -apple-system, sans-serif;
       --mono: 'DM Mono', monospace;
-      /* 반응형 토큰 — 모바일 기본값 */
-      --pad-x: 14px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 8px rgba(0,0,0,0.04);
+
+      /* ── 반응형 토큰 (모바일 기본) ── */
+      --pad-x: 16px;
       --pad-top: 48px;
-      --gap: 8px;
-      --mc-min: 82px;
-      --mc-fs: 17px;
-      --mc-lbl-fs: 10px;
-      --mc-chg-fs: 11px;
-      --sec-title-fs: 11px;
-      --tb-fs: 22px;
-      --fg-num-fs: 46px;
-      --fg-lbl-fs: 14px;
+      --gap: 10px;
+      --mc-min: 90px;
+      --mc-fs: 18px;
+      --mc-lbl-fs: 11px;
+      --mc-chg-fs: 12px;
+      --sec-title-fs: 13px;
+      --tb-fs: 24px;
+      --fg-num-fs: 48px;
+      --fg-lbl-fs: 15px;
       --gsvg-max: 280px;
     }
 
@@ -45,238 +57,281 @@
       min-height: 100dvh;
     }
 
-    /* ── 셸: 모바일 기본 ── */
-    .shell { max-width: 430px; margin: 0 auto; padding: 0 0 56px; }
+    .shell { max-width: 430px; margin: 0 auto; padding: 0 0 60px; }
 
     /* ── 탑바 ── */
-    .topbar { display:flex; align-items:center; justify-content:space-between; padding:var(--pad-top) var(--pad-x) 20px; }
-    .topbar-title { font-size:var(--tb-fs); font-weight:600; letter-spacing:-0.5px; }
-    .badge-live { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:500; color:#3ecf8e; background:rgba(62,207,142,0.12); padding:4px 10px; border-radius:20px; }
-    .dot { width:5px; height:5px; border-radius:50%; background:#3ecf8e; animation:blink 1.4s ease-in-out infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+    .topbar { display:flex; align-items:center; justify-content:space-between; padding:var(--pad-top) var(--pad-x) 22px; }
+    .topbar-title { font-size:var(--tb-fs); font-weight:700; letter-spacing:-0.6px; color:var(--txt-1); }
+    .badge-live { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600; color:#0a8a55; background:rgba(10,138,85,0.1); padding:5px 11px; border-radius:20px; }
+    .dot { width:6px; height:6px; border-radius:50%; background:#0a8a55; animation:blink 1.4s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
     /* ── 섹션 ── */
-    .sec { padding: 0 var(--pad-x) 16px; }
-    .sec-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; }
-    .sec-title { font-size:var(--sec-title-fs); font-weight:500; color:var(--txt-3); text-transform:uppercase; letter-spacing:1px; }
-    .sec-note { font-size:10px; color:var(--txt-3); }
-    .divider { height:0.5px; background:var(--border); margin:0 var(--pad-x) 16px; }
+    .sec { padding: 0 var(--pad-x) 18px; }
+    .sec-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .sec-title {
+      font-size: var(--sec-title-fs);
+      font-weight: 700;
+      color: var(--txt-1);
+      letter-spacing: -0.2px;
+    }
+    .sec-note { font-size:11px; color:var(--txt-4); font-weight:400; }
+    .divider { height:1px; background:var(--border); margin:0 var(--pad-x) 18px; }
 
     /* ── 그리드 ── */
     .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--gap); }
     .grid2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--gap); }
 
     /* ── 미니 카드 ── */
-    .mc { background:var(--bg-card); border-radius:var(--r-md); border:0.5px solid var(--border); padding:12px 12px 14px; min-height:var(--mc-min); }
-    .mc-lbl { font-size:var(--mc-lbl-fs); font-weight:500; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:7px; }
-    .mc-val { font-family:var(--mono); font-size:var(--mc-fs); font-weight:500; color:var(--txt-1); letter-spacing:-0.4px; line-height:1.15; }
-    .mc-sub { font-size:9px; color:var(--txt-3); margin-top:1px; }
-    .mc-chg { font-family:var(--mono); font-size:var(--mc-chg-fs); font-weight:500; margin-top:6px; }
-    .up { color:var(--up); } .down { color:var(--down); } .flat { color:var(--flat); }
-    .vix-low { color:var(--up); } .vix-mid { color:#EF9F27; } .vix-high { color:var(--down); }
+    .mc {
+      background: var(--bg-card);
+      border-radius: var(--r-md);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 13px 13px 15px;
+      min-height: var(--mc-min);
+    }
+    .mc-lbl {
+      font-size: var(--mc-lbl-fs);
+      font-weight: 600;
+      color: var(--txt-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .mc-val {
+      font-family: var(--mono);
+      font-size: var(--mc-fs);
+      font-weight: 500;
+      color: var(--txt-1);
+      letter-spacing: -0.3px;
+      line-height: 1.15;
+    }
+    .mc-sub { font-size:10px; color:var(--txt-4); margin-top:2px; font-weight:400; }
+    .mc-chg { font-family:var(--mono); font-size:var(--mc-chg-fs); font-weight:500; margin-top:7px; }
+    .up   { color: var(--up); }
+    .down { color: var(--down); }
+    .flat { color: var(--flat); }
+    .vix-low  { color: var(--up); }
+    .vix-mid  { color: #c07800; }
+    .vix-high { color: var(--down); }
 
     /* ── 스켈레톤 ── */
-    .sk { background:var(--bg-chip); border-radius:4px; animation:shimmer 1.2s ease-in-out infinite; }
-    @keyframes shimmer { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
+    .sk { background:var(--bg-chip2); border-radius:4px; animation:shimmer 1.3s ease-in-out infinite; }
+    @keyframes shimmer { 0%,100%{opacity:0.5} 50%{opacity:1} }
 
     /* ── 미니 카드 오류 ── */
-    .mc-err { font-size:11px; color:var(--down); margin-top:8px; }
-    .mc-retry { font-size:11px; color:#6ba5f5; background:none; border:none; cursor:pointer; font-family:var(--sans); padding:0; margin-left:4px; }
+    .mc-err { font-size:12px; color:var(--down); margin-top:8px; font-weight:500; }
+    .mc-retry { font-size:12px; color:#1a6fd4; background:none; border:none; cursor:pointer; font-family:var(--sans); padding:0; margin-left:5px; font-weight:600; }
 
     /* ── F&G 카드 ── */
-    .fg-wrap { display:flex; flex-direction:column; gap:10px; }
-    .fgc { background:var(--bg-card); border-radius:var(--r-lg); border:0.5px solid var(--border); padding:16px 18px 18px; }
-    .fgc-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
-    .fgc-type { font-size:10px; font-weight:500; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.8px; }
-    .fgc-src { font-size:10px; color:var(--txt-3); }
-    .fgc-title { font-size:14px; font-weight:500; color:var(--txt-2); margin-bottom:14px; }
+    .fg-wrap { display:flex; flex-direction:column; gap:12px; }
+    .fgc {
+      background: var(--bg-card);
+      border-radius: var(--r-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 18px 20px 20px;
+    }
+    .fgc-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+    .fgc-type {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--txt-3);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .fgc-src {
+      font-size: 11px;
+      color: var(--txt-4);
+      font-weight: 400;
+      background: var(--bg-chip);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .fgc-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--txt-1);
+      margin-bottom: 16px;
+      letter-spacing: -0.3px;
+    }
 
     /* ── 게이지 ── */
     .gw { display:flex; flex-direction:column; align-items:center; }
     .gsvg { width:100%; max-width:var(--gsvg-max); }
     .gends { display:flex; justify-content:space-between; width:100%; max-width:var(--gsvg-max); margin-top:-4px; padding:0 6px; }
-    .gend { font-size:10px; color:var(--txt-3); }
+    .gend { font-size:11px; color:var(--txt-3); font-weight:500; }
 
     /* ── 점수 ── */
     .sb { text-align:center; margin-top:8px; }
     .sb-num { font-family:var(--mono); font-size:var(--fg-num-fs); font-weight:500; line-height:1; letter-spacing:-1px; }
-    .sb-lbl { font-size:var(--fg-lbl-fs); font-weight:500; margin-top:4px; }
-    .sb-chg { font-size:11px; color:var(--txt-3); margin-top:4px; font-family:var(--mono); }
+    .sb-lbl { font-size:var(--fg-lbl-fs); font-weight:700; margin-top:5px; letter-spacing:-0.2px; }
+    .sb-chg { font-size:12px; color:var(--txt-3); margin-top:5px; font-family:var(--mono); }
 
     /* ── 세그 바 ── */
-    .segbar { display:flex; gap:3px; margin-top:14px; }
-    .seg { height:3px; border-radius:2px; flex:1; opacity:0.2; }
+    .segbar { display:flex; gap:4px; margin-top:16px; }
+    .seg { height:4px; border-radius:2px; flex:1; opacity:0.2; }
     .seg.on { opacity:1; }
 
     /* ── 히스토리 ── */
-    .hrow { display:flex; gap:6px; margin-top:12px; }
-    .hchip { flex:1; background:var(--bg-chip); border-radius:var(--r-sm); padding:8px 6px; text-align:center; }
-    .hlbl { font-size:9px; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.4px; }
-    .hval { font-family:var(--mono); font-size:14px; font-weight:500; margin-top:3px; }
+    .hrow { display:flex; gap:8px; margin-top:14px; }
+    .hchip {
+      flex:1;
+      background: var(--bg-chip);
+      border-radius: var(--r-sm);
+      border: 1px solid var(--border);
+      padding: 9px 6px;
+      text-align: center;
+    }
+    .hlbl {
+      font-size: 10px;
+      color: var(--txt-3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .hval { font-family:var(--mono); font-size:15px; font-weight:500; margin-top:4px; }
 
     /* ── F&G 오류 ── */
-    .fg-err { text-align:center; padding:20px 10px; }
-    .fg-err-txt { font-size:13px; color:var(--down); }
-    .fg-retry { display:inline-block; margin-top:8px; font-size:12px; color:#6ba5f5; background:none; border:none; cursor:pointer; font-family:var(--sans); }
+    .fg-err { text-align:center; padding:24px 10px; }
+    .fg-err-txt { font-size:14px; color:var(--down); font-weight:500; }
+    .fg-retry { display:inline-block; margin-top:10px; font-size:13px; color:#1a6fd4; background:none; border:none; cursor:pointer; font-family:var(--sans); font-weight:600; }
 
     /* ── 광고·푸터 ── */
-    .ad { margin:0 var(--pad-x) 14px; background:var(--bg-card); border:0.5px dashed rgba(255,255,255,0.1); border-radius:var(--r-sm); padding:10px; text-align:center; font-size:10px; color:var(--txt-3); }
-    .footer { text-align:center; padding:4px var(--pad-x) 0; font-size:10px; color:var(--txt-3); line-height:1.8; font-family:var(--mono); }
+    .ad {
+      margin: 0 var(--pad-x) 16px;
+      background: var(--bg-chip);
+      border: 1px dashed var(--border-md);
+      border-radius: var(--r-sm);
+      padding: 11px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--txt-4);
+      font-weight: 400;
+    }
+    .footer {
+      text-align: center;
+      padding: 4px var(--pad-x) 0;
+      font-size: 11px;
+      color: var(--txt-4);
+      line-height: 1.8;
+      font-family: var(--mono);
+    }
 
-    /* ══════════════════════════════════════════
-       태블릿 (480px ~ 768px)
-       단일 컬럼 유지, 폰트·여백·카드 크기 확대
-    ══════════════════════════════════════════ */
+    /* ══ 태블릿 480~768px ══ */
     @media (min-width: 480px) {
       :root {
-        --pad-x: 20px;
-        --pad-top: 52px;
-        --gap: 10px;
-        --mc-min: 100px;
+        --pad-x: 22px;
+        --pad-top: 56px;
+        --gap: 12px;
+        --mc-min: 106px;
         --mc-fs: 22px;
-        --mc-lbl-fs: 11px;
+        --mc-lbl-fs: 12px;
         --mc-chg-fs: 13px;
-        --sec-title-fs: 12px;
-        --tb-fs: 26px;
-        --fg-num-fs: 54px;
-        --fg-lbl-fs: 16px;
+        --sec-title-fs: 15px;
+        --tb-fs: 28px;
+        --fg-num-fs: 56px;
+        --fg-lbl-fs: 17px;
         --gsvg-max: 340px;
       }
-      .shell { max-width: 680px; padding: 0 0 64px; }
-      .mc { padding: 16px 16px 18px; border-radius: 14px; }
+      .shell { max-width: 700px; padding: 0 0 72px; }
+      .mc { padding: 16px 16px 18px; }
       .fgc { padding: 20px 24px 22px; }
-      .hval { font-size: 16px; }
-      .hlbl { font-size: 10px; }
+      .hval { font-size: 17px; }
+      .hlbl { font-size: 11px; }
       .hchip { padding: 10px 8px; }
-      /* 태블릿에서 지수 4열 한 줄 */
       .grid2 { grid-template-columns: repeat(4, minmax(0,1fr)); }
     }
 
-    /* ══════════════════════════════════════════
-       데스크탑 (769px~)
-       좌: 환율 + 지수 / 우: 공포탐욕 — 2컬럼
-    ══════════════════════════════════════════ */
+    /* ══ 데스크탑 769px~ ══ */
     @media (min-width: 769px) {
       :root {
         --pad-x: 0px;
-        --pad-top: 40px;
+        --pad-top: 44px;
         --gap: 12px;
         --mc-min: 110px;
         --mc-fs: 20px;
         --mc-lbl-fs: 11px;
         --mc-chg-fs: 12px;
-        --sec-title-fs: 11px;
-        --tb-fs: 26px;
+        --sec-title-fs: 14px;
+        --tb-fs: 28px;
         --fg-num-fs: 52px;
-        --fg-lbl-fs: 15px;
+        --fg-lbl-fs: 16px;
         --gsvg-max: 300px;
       }
-
-      body { padding: 0 32px; }
-      .shell { max-width: 1100px; padding: 0 0 64px; }
-
-      /* 탑바 */
-      .topbar { padding: var(--pad-top) 0 28px; }
-
-      /* 2컬럼 메인 레이아웃 */
-      .main-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 24px;
-        align-items: start;
-      }
-
-      /* 왼쪽: 환율 + 지수 */
-      .col-left { display: flex; flex-direction: column; }
+      body { padding: 0 36px; }
+      .shell { max-width: 1120px; padding: 0 0 72px; }
+      .topbar { padding: var(--pad-top) 0 30px; }
+      .main-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; }
+      .col-left { display:flex; flex-direction:column; }
       .col-left .sec { padding: 0 0 20px; }
       .col-left .divider { margin: 0 0 20px; }
-
-      /* 오른쪽: 공포탐욕 */
-      .col-right { display: flex; flex-direction: column; }
       .col-right .sec { padding: 0; }
-
-      /* 데스크탑에서 F&G 카드 2개 세로 배치 */
-      .fg-wrap { gap: 14px; }
-
-      /* 데스크탑에서 지수 2열 유지 (2x2) */
+      .fg-wrap { gap: 16px; }
       .grid2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
-
-      /* 환율은 3열 유지 */
-      .grid3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
-
-      /* 광고·푸터 */
-      .ad { margin: 20px 0 14px; }
-      .footer { text-align: left; padding: 4px 0 0; }
-
-      .mc { padding: 14px 14px 16px; }
+      .ad { margin: 20px 0 16px; }
+      .footer { text-align:left; padding: 4px 0 0; }
     }
 
-    /* ══════════════════════════════════════════
-       와이드 데스크탑 (1024px~)
-       여백과 폰트 한 단계 더 확대
-    ══════════════════════════════════════════ */
+    /* ══ 와이드 1024px~ ══ */
     @media (min-width: 1024px) {
       :root {
         --mc-fs: 22px;
-        --fg-num-fs: 56px;
+        --fg-num-fs: 58px;
         --gsvg-max: 320px;
       }
       .mc { padding: 16px 16px 18px; }
-      .fgc { padding: 20px 22px 22px; }
+      .fgc { padding: 22px 26px 24px; }
     }
   </style>
 </head>
 <body>
 <div class="shell">
 
-  <!-- 탑바 -->
   <div class="topbar">
     <span class="topbar-title">투자 지표</span>
     <span class="badge-live"><span class="dot"></span>실시간</span>
   </div>
 
-  <!-- 데스크탑 2컬럼 래퍼 -->
   <div class="main-grid">
 
-    <!-- 왼쪽 컬럼: 환율 + 지수 -->
+    <!-- 왼쪽: 환율 + 지수 -->
     <div class="col-left">
 
-      <!-- 환율 -->
       <div class="sec">
         <div class="sec-header">
           <span class="sec-title">환율</span>
           <span class="sec-note">open.er-api.com</span>
         </div>
         <div class="grid3">
-          <div class="mc" id="fx-usd"><div class="mc-lbl">USD/KRW</div><div class="sk" style="height:20px;width:75%;margin-top:4px"></div><div class="sk" style="height:11px;width:55%;margin-top:8px"></div></div>
-          <div class="mc" id="fx-eur"><div class="mc-lbl">EUR/KRW</div><div class="sk" style="height:20px;width:75%;margin-top:4px"></div><div class="sk" style="height:11px;width:55%;margin-top:8px"></div></div>
-          <div class="mc" id="fx-jpy"><div class="mc-lbl">JPY/KRW</div><div class="sk" style="height:20px;width:75%;margin-top:4px"></div><div class="sk" style="height:11px;width:55%;margin-top:8px"></div></div>
+          <div class="mc" id="fx-usd"><div class="mc-lbl">USD/KRW</div><div class="sk" style="height:20px;width:72%;margin-top:4px"></div><div class="sk" style="height:12px;width:50%;margin-top:8px"></div></div>
+          <div class="mc" id="fx-eur"><div class="mc-lbl">EUR/KRW</div><div class="sk" style="height:20px;width:72%;margin-top:4px"></div><div class="sk" style="height:12px;width:50%;margin-top:8px"></div></div>
+          <div class="mc" id="fx-jpy"><div class="mc-lbl">JPY/KRW</div><div class="sk" style="height:20px;width:72%;margin-top:4px"></div><div class="sk" style="height:12px;width:50%;margin-top:8px"></div></div>
         </div>
       </div>
 
       <div class="divider"></div>
 
-      <!-- 미국 주요 지수 -->
       <div class="sec">
         <div class="sec-header">
           <span class="sec-title">미국 주요 지수</span>
           <span class="sec-note">Yahoo Finance</span>
         </div>
         <div class="grid2">
-          <div class="mc" id="idx-sp500"><div class="mc-lbl">S&amp;P 500</div><div class="sk" style="height:20px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
-          <div class="mc" id="idx-nasdaq"><div class="mc-lbl">NASDAQ</div><div class="sk" style="height:20px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
-          <div class="mc" id="idx-dow"><div class="mc-lbl">DOW</div><div class="sk" style="height:20px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
-          <div class="mc" id="idx-vix"><div class="mc-lbl">VIX</div><div class="sk" style="height:20px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
+          <div class="mc" id="idx-sp500"><div class="mc-lbl">S&amp;P 500</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:12px;width:62%;margin-top:8px"></div></div>
+          <div class="mc" id="idx-nasdaq"><div class="mc-lbl">NASDAQ</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:12px;width:62%;margin-top:8px"></div></div>
+          <div class="mc" id="idx-dow"><div class="mc-lbl">DOW</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:12px;width:62%;margin-top:8px"></div></div>
+          <div class="mc" id="idx-vix"><div class="mc-lbl">VIX</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:12px;width:62%;margin-top:8px"></div></div>
         </div>
       </div>
 
-      <!-- 광고 (데스크탑: 왼쪽 하단) -->
       <div class="ad">광고 영역 — 유료 결제 시 제거됩니다</div>
       <div class="footer" id="updated-txt">—</div>
 
-    </div><!-- /col-left -->
+    </div>
 
-    <!-- 오른쪽 컬럼: 공포탐욕 -->
+    <!-- 오른쪽: 공포탐욕 -->
     <div class="col-right">
       <div class="sec">
         <div class="sec-header">
@@ -284,46 +339,64 @@
         </div>
         <div class="fg-wrap">
           <div class="fgc">
-            <div class="fgc-meta"><span class="fgc-type">미국 주식시장</span><span class="fgc-src">CNN</span></div>
+            <div class="fgc-meta">
+              <span class="fgc-type">미국 주식시장</span>
+              <span class="fgc-src">CNN</span>
+            </div>
             <div class="fgc-title">공포 &amp; 탐욕 지수</div>
-            <div id="stock-body"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0"><div class="sk" style="width:100%;max-width:280px;height:88px;border-radius:8px"></div><div class="sk" style="width:90px;height:42px;border-radius:4px"></div><div class="sk" style="width:130px;height:13px;border-radius:4px"></div></div></div>
+            <div id="stock-body">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0">
+                <div class="sk" style="width:100%;max-width:280px;height:90px;border-radius:8px"></div>
+                <div class="sk" style="width:88px;height:44px;border-radius:6px"></div>
+                <div class="sk" style="width:120px;height:14px;border-radius:4px"></div>
+              </div>
+            </div>
           </div>
           <div class="fgc">
-            <div class="fgc-meta"><span class="fgc-type">암호화폐</span><span class="fgc-src">Alternative.me</span></div>
+            <div class="fgc-meta">
+              <span class="fgc-type">암호화폐</span>
+              <span class="fgc-src">Alternative.me</span>
+            </div>
             <div class="fgc-title">공포 &amp; 탐욕 지수</div>
-            <div id="crypto-body"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0"><div class="sk" style="width:100%;max-width:280px;height:88px;border-radius:8px"></div><div class="sk" style="width:90px;height:42px;border-radius:4px"></div><div class="sk" style="width:130px;height:13px;border-radius:4px"></div></div></div>
+            <div id="crypto-body">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0">
+                <div class="sk" style="width:100%;max-width:280px;height:90px;border-radius:8px"></div>
+                <div class="sk" style="width:88px;height:44px;border-radius:6px"></div>
+                <div class="sk" style="width:120px;height:14px;border-radius:4px"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div><!-- /col-right -->
+    </div>
 
-  </div><!-- /main-grid -->
+  </div>
+</div>
 
-</div><!-- /shell -->
 <script>
 /* ─── 공포탐욕 존 ─── */
 var ZONES = [
-  {kr:'극도의 공포', color:'#E24B4A', from:0,  to:25},
-  {kr:'공포',        color:'#EF9F27', from:25, to:45},
-  {kr:'중립',         color:'#888780', from:45, to:55},
-  {kr:'탐욕',         color:'#639922', from:55, to:75},
-  {kr:'극도의 탐욕',  color:'#1D9E75', from:75, to:101},
+  {kr:'극도의 공포', color:'#d93025', from:0,  to:25},
+  {kr:'공포',        color:'#c07800', from:25, to:45},
+  {kr:'중립',         color:'#666666', from:45, to:55},
+  {kr:'탐욕',         color:'#2e7d32', from:55, to:75},
+  {kr:'극도의 탐욕',  color:'#0a6640', from:75, to:101},
 ];
-function getZone(s) { return ZONES.find(function(z){return s>=z.from&&s<z.to;}) || ZONES[4]; }
+function getZone(s) { return ZONES.find(function(z){return s>=z.from&&s<z.to;})||ZONES[4]; }
 
 function buildGauge(score) {
-  var cx=140, cy=105, R=88, sw=10, gap=0.018, p='';
-  ZONES.forEach(function(z) {
+  var cx=140,cy=105,R=88,sw=11,gap=0.018,p='';
+  ZONES.forEach(function(z){
     var a1=Math.PI*(z.from/100)+gap, a2=Math.PI*(z.to/100)-gap;
     var sx=cx-R*Math.cos(a1), sy=cy-R*Math.sin(a1);
     var ex=cx-R*Math.cos(a2), ey=cy-R*Math.sin(a2);
-    p+='<path d="M'+sx.toFixed(2)+','+sy.toFixed(2)+' A'+R+','+R+' 0 0 1 '+ex.toFixed(2)+','+ey.toFixed(2)+'" fill="none" stroke="'+z.color+'" stroke-width="'+sw+'" stroke-linecap="round" opacity="0.2"/>';
+    p+='<path d="M'+sx.toFixed(2)+','+sy.toFixed(2)+' A'+R+','+R+' 0 0 1 '+ex.toFixed(2)+','+ey.toFixed(2)+'" fill="none" stroke="'+z.color+'" stroke-width="'+sw+'" stroke-linecap="round" opacity="0.15"/>';
     var cap=Math.min(score,z.to);
     if(cap>z.from){
       var fa1=Math.PI*(z.from/100)+gap, fa2=Math.PI*(cap/100)-(score<=z.to?gap:0);
       if(fa2>fa1){
-        var fsx=cx-R*Math.cos(fa1), fsy=cy-R*Math.sin(fa1);
-        var fex=cx-R*Math.cos(fa2), fey=cy-R*Math.sin(fa2);
+        var fsx=cx-R*Math.cos(fa1),fsy=cy-R*Math.sin(fa1);
+        var fex=cx-R*Math.cos(fa2),fey=cy-R*Math.sin(fa2);
         p+='<path d="M'+fsx.toFixed(2)+','+fsy.toFixed(2)+' A'+R+','+R+' 0 0 1 '+fex.toFixed(2)+','+fey.toFixed(2)+'" fill="none" stroke="'+z.color+'" stroke-width="'+sw+'" stroke-linecap="round"/>';
       }
     }
@@ -331,60 +404,70 @@ function buildGauge(score) {
   var na=Math.PI*(score/100);
   var nx=(cx-70*Math.cos(na)).toFixed(2), ny=(cy-70*Math.sin(na)).toFixed(2);
   var zn=getZone(score);
-  return '<svg class="gsvg" viewBox="0 0 280 112" xmlns="http://www.w3.org/2000/svg">'+p+'<line x1="'+cx+'" y1="'+cy+'" x2="'+nx+'" y2="'+ny+'" stroke="'+zn.color+'" stroke-width="2.5" stroke-linecap="round"/><circle cx="'+cx+'" cy="'+cy+'" r="5.5" fill="'+zn.color+'"/><circle cx="'+cx+'" cy="'+cy+'" r="2.8" fill="#18181c"/></svg>';
+  return '<svg class="gsvg" viewBox="0 0 280 112" xmlns="http://www.w3.org/2000/svg">'+p+
+    '<line x1="'+cx+'" y1="'+cy+'" x2="'+nx+'" y2="'+ny+'" stroke="'+zn.color+'" stroke-width="2.5" stroke-linecap="round"/>'+
+    '<circle cx="'+cx+'" cy="'+cy+'" r="6" fill="'+zn.color+'"/>'+
+    '<circle cx="'+cx+'" cy="'+cy+'" r="3" fill="#ffffff"/></svg>';
 }
 
 function buildSegBar(score) {
-  var zn=getZone(score), html='<div class="segbar">';
-  ZONES.forEach(function(z){ html+='<div class="seg'+(z===zn?' on':'')+'" style="background:'+z.color+'"></div>'; });
-  return html+'</div>';
+  var zn=getZone(score), h='<div class="segbar">';
+  ZONES.forEach(function(z){ h+='<div class="seg'+(z===zn?' on':'')+'" style="background:'+z.color+'"></div>'; });
+  return h+'</div>';
 }
 
-function buildHist(w1,m1,y1) {
-  function fmt(v){ return v!=null?'<span style="color:'+getZone(v).color+'">'+v+'</span>':'<span style="color:var(--txt-3)">—</span>'; }
-  return '<div class="hrow"><div class="hchip"><div class="hlbl">1주 전</div><div class="hval">'+fmt(w1)+'</div></div><div class="hchip"><div class="hlbl">1개월 전</div><div class="hval">'+fmt(m1)+'</div></div><div class="hchip"><div class="hlbl">1년 전</div><div class="hval">'+fmt(y1)+'</div></div></div>';
+/* 히스토리: w1=1주전, m1=1개월전, m6=6개월전 */
+function buildHist(w1, m1, m6) {
+  function fmt(v){ return v!=null?'<span style="color:'+getZone(v).color+'">'+v+'</span>':'<span style="color:#aaa">—</span>'; }
+  return '<div class="hrow">'+
+    '<div class="hchip"><div class="hlbl">1주 전</div><div class="hval">'+fmt(w1)+'</div></div>'+
+    '<div class="hchip"><div class="hlbl">1개월 전</div><div class="hval">'+fmt(m1)+'</div></div>'+
+    '<div class="hchip"><div class="hlbl">6개월 전</div><div class="hval">'+fmt(m6)+'</div></div>'+
+    '</div>';
 }
 
-function renderFG(id, score, prev, w1, m1, y1) {
+function renderFG(id, score, prev, w1, m1, m6) {
   var zn=getZone(score), diff=score-prev;
   document.getElementById(id).innerHTML =
-    '<div class="gw">'+buildGauge(score)+'<div class="gends"><span class="gend">공포</span><span class="gend">탐욕</span></div></div>'+
-    '<div class="sb"><div class="sb-num" style="color:'+zn.color+'">'+score+'</div><div class="sb-lbl" style="color:'+zn.color+'">'+zn.kr+'</div><div class="sb-chg">전일 대비 '+(diff>=0?'+':'')+diff+' · 전일 '+prev+'</div></div>'+
-    buildSegBar(score)+buildHist(w1,m1,y1);
+    '<div class="gw">'+buildGauge(score)+
+    '<div class="gends"><span class="gend">공포</span><span class="gend">탐욕</span></div></div>'+
+    '<div class="sb">'+
+      '<div class="sb-num" style="color:'+zn.color+'">'+score+'</div>'+
+      '<div class="sb-lbl" style="color:'+zn.color+'">'+zn.kr+'</div>'+
+      '<div class="sb-chg">전일 대비 '+(diff>=0?'+':'')+diff+' &nbsp;·&nbsp; 전일 '+prev+'</div>'+
+    '</div>'+
+    buildSegBar(score)+buildHist(w1,m1,m6);
 }
 
 function renderFGErr(id, retryName) {
   document.getElementById(id).innerHTML =
-    '<div class="fg-err"><div class="fg-err-txt">데이터를 불러올 수 없습니다</div>'+
+    '<div class="fg-err">'+
+    '<div class="fg-err-txt">데이터를 불러올 수 없습니다</div>'+
     '<button class="fg-retry" onclick="'+retryName+'()">다시 시도 ↻</button></div>';
 }
 
 /* ─── 미니 카드 ─── */
-function getLbl(id) { return document.getElementById(id).querySelector('.mc-lbl').outerHTML; }
+function getLbl(id){ return document.getElementById(id).querySelector('.mc-lbl').outerHTML; }
 
 function renderMc(id, val, sub, chgTxt, dir) {
-  var cls = dir===1?'up':dir===-1?'down':'flat';
-  var arrow = dir===1?'▲':dir===-1?'▼':'─';
-  var html = getLbl(id)+'<div class="mc-val">'+val+'</div>';
-  if(sub) html += '<div class="mc-sub">'+sub+'</div>';
-  if(chgTxt) html += '<div class="mc-chg '+cls+'">'+arrow+' '+chgTxt+'</div>';
-  document.getElementById(id).innerHTML = html;
+  var cls=dir===1?'up':dir===-1?'down':'flat';
+  var arrow=dir===1?'▲':dir===-1?'▼':'─';
+  var h=getLbl(id)+'<div class="mc-val">'+val+'</div>';
+  if(sub) h+='<div class="mc-sub">'+sub+'</div>';
+  if(chgTxt) h+='<div class="mc-chg '+cls+'">'+arrow+' '+chgTxt+'</div>';
+  document.getElementById(id).innerHTML=h;
 }
 
 function renderMcErr(id, retryName) {
-  document.getElementById(id).innerHTML =
-    getLbl(id)+
-    '<div class="mc-err">오류 <button class="mc-retry" onclick="'+retryName+'()">↻</button></div>';
+  document.getElementById(id).innerHTML=getLbl(id)+
+    '<div class="mc-err">오류 <button class="mc-retry" onclick="'+retryName+'()">↻ 재시도</button></div>';
 }
 
-function comma(n, d) {
-  d = d||0;
-  return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});
-}
+function comma(n,d){ d=d||0; return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d}); }
 
 /* ─── API: 환율 ─── */
 function loadFX() {
-  fetch('https://open.er-api.com/v6/latest/USD', {cache:'no-store'})
+  fetch('https://open.er-api.com/v6/latest/USD',{cache:'no-store'})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
     .then(function(j){
       var r=j.rates;
@@ -397,20 +480,15 @@ function loadFX() {
     });
 }
 
-/* ─── API: 지수 (Yahoo Finance + CORS 프록시 폴백) ─── */
-var IDX_MAP = {
-  '%5EGSPC':'idx-sp500',
-  '%5EIXIC':'idx-nasdaq',
-  '%5EDJI':'idx-dow',
-  '%5EVIX':'idx-vix'
-};
+/* ─── API: 지수 (Yahoo Finance → allorigins 프록시) ─── */
+var IDX_MAP = {'%5EGSPC':'idx-sp500','%5EIXIC':'idx-nasdaq','%5EDJI':'idx-dow','%5EVIX':'idx-vix'};
 
-function parseAndRenderIndices(j) {
-  var results = (j.quoteResponse && j.quoteResponse.result) || [];
+function applyIndices(j) {
+  var results=(j.quoteResponse&&j.quoteResponse.result)||[];
   if(!results.length) throw 0;
   results.forEach(function(q){
-    var key = encodeURIComponent(q.symbol);
-    var id = IDX_MAP[key];
+    var key=encodeURIComponent(q.symbol);
+    var id=IDX_MAP[key];
     if(!id) return;
     var price=q.regularMarketPrice, chg=q.regularMarketChange, pct=q.regularMarketChangePercent;
     var dir=chg>0?1:chg<0?-1:0;
@@ -429,17 +507,20 @@ function parseAndRenderIndices(j) {
 }
 
 function loadIndices() {
-  var syms = Object.keys(IDX_MAP).join(',');
-  var yahooUrl = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols='+syms;
-  fetch(yahooUrl, {cache:'no-store', headers:{Accept:'application/json'}})
+  var syms=Object.keys(IDX_MAP).join(',');
+  var url='https://query1.finance.yahoo.com/v7/finance/quote?symbols='+syms;
+
+  /* 1차: allorigins (가장 안정적인 무료 CORS 프록시) */
+  fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url),{cache:'no-store'})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
-    .then(function(j){ parseAndRenderIndices(j); })
+    .then(function(j){ applyIndices(j); })
     .catch(function(){
-      fetch('https://corsproxy.io/?' + encodeURIComponent(yahooUrl), {cache:'no-store'})
+      /* 2차: corsproxy.io 폴백 */
+      fetch('https://corsproxy.io/?'+encodeURIComponent(url),{cache:'no-store'})
         .then(function(r){ if(!r.ok) throw 0; return r.json(); })
         .then(function(j){
-          var data = j.contents ? JSON.parse(j.contents) : j;
-          parseAndRenderIndices(data);
+          var data=j.contents?JSON.parse(j.contents):j;
+          applyIndices(data);
         })
         .catch(function(){
           Object.keys(IDX_MAP).forEach(function(k){ renderMcErr(IDX_MAP[k],'loadIndices'); });
@@ -447,24 +528,37 @@ function loadIndices() {
     });
 }
 
-/* ─── API: 암호화폐 F&G ─── */
+/* ─── API: 암호화폐 F&G (limit=185 → 6개월치) ─── */
 function loadCrypto() {
-  fetch('https://api.alternative.me/fng/?limit=35&format=json', {cache:'no-store'})
+  fetch('https://api.alternative.me/fng/?limit=185&format=json',{cache:'no-store'})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
     .then(function(j){
       var d=j.data;
-      renderFG('crypto-body',parseInt(d[0].value),parseInt(d[1].value),parseInt(d[6]&&d[6].value),parseInt(d[29]&&d[29].value),null);
+      var today=parseInt(d[0].value);
+      var prev=parseInt(d[1].value);
+      var w1=d[6]?parseInt(d[6].value):null;
+      var m1=d[29]?parseInt(d[29].value):null;
+      var m6=d[182]?parseInt(d[182].value):null;
+      renderFG('crypto-body', today, prev, w1, m1, m6);
     })
     .catch(function(){ renderFGErr('crypto-body','loadCrypto'); });
 }
 
 /* ─── API: 주식 F&G (CNN) ─── */
 function loadStock() {
-  fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata', {cache:'no-store', headers:{Accept:'application/json'}})
+  fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata',{cache:'no-store',headers:{Accept:'application/json'}})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
     .then(function(j){
       var fg=j.fear_and_greed;
-      renderFG('stock-body',Math.round(fg.score),Math.round(fg.previous_close),Math.round(fg.previous_1_week),Math.round(fg.previous_1_month),Math.round(fg.previous_1_year));
+      /* CNN API는 6개월 데이터 없음 → graphdata 배열에서 추출 */
+      var m6=null;
+      if(j.fear_and_greed_historical && j.fear_and_greed_historical.data){
+        var hist=j.fear_and_greed_historical.data;
+        if(hist.length>182) m6=Math.round(hist[hist.length-183].x);
+      }
+      renderFG('stock-body',
+        Math.round(fg.score), Math.round(fg.previous_close),
+        Math.round(fg.previous_1_week), Math.round(fg.previous_1_month), m6);
     })
     .catch(function(){ renderFGErr('stock-body','loadStock'); });
 }
@@ -472,16 +566,10 @@ function loadStock() {
 /* ─── 타임스탬프 & 갱신 ─── */
 function tick() {
   var t=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  document.getElementById('updated-txt').textContent='마지막 업데이트 '+t+' · 60초마다 자동 갱신';
+  document.getElementById('updated-txt').textContent='업데이트 '+t+' · 60초 자동갱신';
 }
 
-function refresh() {
-  loadFX();
-  loadIndices();
-  loadStock();
-  loadCrypto();
-  tick();
-}
+function refresh(){ loadFX(); loadIndices(); loadStock(); loadCrypto(); tick(); }
 
 refresh();
 setInterval(refresh, 60000);
