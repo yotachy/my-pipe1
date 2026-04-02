@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>투자 지표 대시보드</title>
-  <meta name="theme-color" content="#f4f4f6" />
+  <title>Golden Braid</title>
+  <meta name="theme-color" content="#f0f0f4" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -13,51 +13,21 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      /* ── 화이트 테마 컬러 ── */
-      --bg-page:  #f0f0f4;
-      --bg-card:  #ffffff;
-      --bg-chip:  #f4f4f8;
-      --bg-chip2: #eaeaef;
-      --border:   rgba(0,0,0,0.08);
-      --border-md:rgba(0,0,0,0.13);
-      --txt-1:    #111111;
-      --txt-2:    #333333;
-      --txt-3:    #666666;
-      --txt-4:    #999999;
-      --up:       #0a8a55;
-      --down:     #d93025;
-      --flat:     #666666;
+      --bg-page: #f0f0f4; --bg-card: #ffffff; --bg-chip: #f4f4f8; --bg-chip2: #eaeaef;
+      --border: rgba(0,0,0,0.08); --border-md: rgba(0,0,0,0.13);
+      --txt-1: #111111; --txt-2: #333333; --txt-3: #555555; --txt-4: #999999;
+      --up: #0a8a55; --down: #d93025; --flat: #666666;
+      --vix-ok: #0a8a55; --vix-warn: #c07800; --vix-danger: #d93025;
       --r-sm: 10px; --r-md: 14px; --r-lg: 18px;
-      --sans: 'Pretendard', -apple-system, sans-serif;
-      --mono: 'DM Mono', monospace;
+      --sans: 'Pretendard', -apple-system, sans-serif; --mono: 'DM Mono', monospace;
       --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 8px rgba(0,0,0,0.04);
-
-      /* ── 반응형 토큰 (모바일 기본) ── */
-      --pad-x: 16px;
-      --pad-top: 48px;
-      --gap: 10px;
-      --mc-min: 90px;
-      --mc-fs: 18px;
-      --mc-lbl-fs: 11px;
-      --mc-chg-fs: 12px;
-      --sec-title-fs: 13px;
-      --tb-fs: 24px;
-      --fg-num-fs: 48px;
-      --fg-lbl-fs: 15px;
-      --gsvg-max: 280px;
+      --pad-x: 16px; --pad-top: 48px; --gap: 10px;
+      --mc-min: 90px; --mc-fs: 18px; --mc-lbl-fs: 11px; --mc-chg-fs: 12px;
+      --sec-fs: 14px; --tb-fs: 24px; --fg-num-fs: 48px; --fg-lbl-fs: 15px; --gsvg-max: 280px;
     }
-
-    html, body {
-      background: var(--bg-page);
-      color: var(--txt-1);
-      font-family: var(--sans);
-      -webkit-font-smoothing: antialiased;
-      min-height: 100dvh;
-    }
-
-    .shell { max-width: 430px; margin: 0 auto; padding: 0 0 60px; }
+    html, body { background:var(--bg-page); color:var(--txt-1); font-family:var(--sans); -webkit-font-smoothing:antialiased; min-height:100dvh; }
+    .shell { max-width:430px; margin:0 auto; padding:0 0 60px; }
 
     /* ── 탑바 ── */
     .topbar { display:flex; align-items:center; justify-content:space-between; padding:var(--pad-top) var(--pad-x) 22px; }
@@ -67,95 +37,49 @@
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
     /* ── 섹션 ── */
-    .sec { padding: 0 var(--pad-x) 18px; }
+    .sec { padding:0 var(--pad-x) 18px; }
     .sec-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-    .sec-title {
-      font-size: var(--sec-title-fs);
-      font-weight: 700;
-      color: var(--txt-1);
-      letter-spacing: -0.2px;
-    }
-    .sec-note { font-size:11px; color:var(--txt-4); font-weight:400; }
-    .divider { height:1px; background:var(--border); margin:0 var(--pad-x) 18px; }
+    .sec-title { font-size:var(--sec-fs); font-weight:700; color:var(--txt-1); letter-spacing:-0.2px; }
 
-    /* ── 그리드 ── */
+    /* ── 통일된 소스 뱃지 ── */
+    .src-badge {
+      font-size:10px; font-weight:600; color:var(--txt-3);
+      background:var(--bg-chip2); border:1px solid var(--border);
+      padding:3px 8px; border-radius:6px; letter-spacing:0.2px;
+    }
+
+    .divider { height:1px; background:var(--border); margin:0 var(--pad-x) 18px; }
     .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--gap); }
     .grid2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--gap); }
 
     /* ── 미니 카드 ── */
-    .mc {
-      background: var(--bg-card);
-      border-radius: var(--r-md);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      padding: 13px 13px 15px;
-      min-height: var(--mc-min);
-    }
-    .mc-lbl {
-      font-size: var(--mc-lbl-fs);
-      font-weight: 600;
-      color: var(--txt-3);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-    .mc-val {
-      font-family: var(--mono);
-      font-size: var(--mc-fs);
-      font-weight: 500;
-      color: var(--txt-1);
-      letter-spacing: -0.3px;
-      line-height: 1.15;
-    }
-    .mc-sub { font-size:10px; color:var(--txt-4); margin-top:2px; font-weight:400; }
+    .mc { background:var(--bg-card); border-radius:var(--r-md); border:1px solid var(--border); box-shadow:var(--shadow); padding:13px 13px 15px; min-height:var(--mc-min); }
+    .mc-lbl { font-size:var(--mc-lbl-fs); font-weight:600; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+    .mc-val { font-family:var(--mono); font-size:var(--mc-fs); font-weight:500; color:var(--txt-1); letter-spacing:-0.3px; line-height:1.15; }
+    .mc-sub { font-size:10px; color:var(--txt-4); margin-top:2px; }
     .mc-chg { font-family:var(--mono); font-size:var(--mc-chg-fs); font-weight:500; margin-top:7px; }
-    .up   { color: var(--up); }
-    .down { color: var(--down); }
-    .flat { color: var(--flat); }
-    .vix-low  { color: var(--up); }
-    .vix-mid  { color: #c07800; }
-    .vix-high { color: var(--down); }
+    .up { color:var(--up); } .down { color:var(--down); } .flat { color:var(--flat); }
+    .vix-low { color:var(--vix-ok); } .vix-mid { color:var(--vix-warn); } .vix-high { color:var(--vix-danger); }
+
+    /* ── 갱신 인디케이터 ── */
+    .refresh-dot { display:inline-block; width:5px; height:5px; border-radius:50%; background:var(--txt-4); margin-left:5px; vertical-align:middle; opacity:0; transition:opacity 0.2s; }
+    .refresh-dot.flash { opacity:1; }
 
     /* ── 스켈레톤 ── */
     .sk { background:var(--bg-chip2); border-radius:4px; animation:shimmer 1.3s ease-in-out infinite; }
     @keyframes shimmer { 0%,100%{opacity:0.5} 50%{opacity:1} }
 
-    /* ── 미니 카드 오류 ── */
+    /* ── 오류 ── */
     .mc-err { font-size:12px; color:var(--down); margin-top:8px; font-weight:500; }
     .mc-retry { font-size:12px; color:#1a6fd4; background:none; border:none; cursor:pointer; font-family:var(--sans); padding:0; margin-left:5px; font-weight:600; }
 
     /* ── F&G 카드 ── */
     .fg-wrap { display:flex; flex-direction:column; gap:12px; }
-    .fgc {
-      background: var(--bg-card);
-      border-radius: var(--r-lg);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      padding: 18px 20px 20px;
-    }
+    .fgc { background:var(--bg-card); border-radius:var(--r-lg); border:1px solid var(--border); box-shadow:var(--shadow); padding:18px 20px 20px; }
     .fgc-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
-    .fgc-type {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--txt-3);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-    .fgc-src {
-      font-size: 11px;
-      color: var(--txt-4);
-      font-weight: 400;
-      background: var(--bg-chip);
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-    .fgc-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--txt-1);
-      margin-bottom: 16px;
-      letter-spacing: -0.3px;
-    }
+    .fgc-type { font-size:11px; font-weight:700; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.8px; }
+    .fgc-title { font-size:16px; font-weight:700; color:var(--txt-1); margin-bottom:16px; letter-spacing:-0.3px; }
+    .fg-note { font-size:10px; color:var(--txt-4); text-align:center; margin-top:8px; }
 
     /* ── 게이지 ── */
     .gw { display:flex; flex-direction:column; align-items:center; }
@@ -176,21 +100,8 @@
 
     /* ── 히스토리 ── */
     .hrow { display:flex; gap:8px; margin-top:14px; }
-    .hchip {
-      flex:1;
-      background: var(--bg-chip);
-      border-radius: var(--r-sm);
-      border: 1px solid var(--border);
-      padding: 9px 6px;
-      text-align: center;
-    }
-    .hlbl {
-      font-size: 10px;
-      color: var(--txt-3);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
+    .hchip { flex:1; background:var(--bg-chip); border-radius:var(--r-sm); border:1px solid var(--border); padding:9px 6px; text-align:center; }
+    .hlbl { font-size:10px; color:var(--txt-3); font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }
     .hval { font-family:var(--mono); font-size:15px; font-weight:500; margin-top:4px; }
 
     /* ── F&G 오류 ── */
@@ -199,90 +110,42 @@
     .fg-retry { display:inline-block; margin-top:10px; font-size:13px; color:#1a6fd4; background:none; border:none; cursor:pointer; font-family:var(--sans); font-weight:600; }
 
     /* ── 광고·푸터 ── */
-    .ad {
-      margin: 0 var(--pad-x) 16px;
-      background: var(--bg-chip);
-      border: 1px dashed var(--border-md);
-      border-radius: var(--r-sm);
-      padding: 11px;
-      text-align: center;
-      font-size: 11px;
-      color: var(--txt-4);
-      font-weight: 400;
-    }
-    .footer {
-      text-align: center;
-      padding: 4px var(--pad-x) 0;
-      font-size: 11px;
-      color: var(--txt-4);
-      line-height: 1.8;
-      font-family: var(--mono);
-    }
+    .ad { margin:0 var(--pad-x) 16px; background:var(--bg-chip); border:1px dashed var(--border-md); border-radius:var(--r-sm); padding:11px; text-align:center; font-size:11px; color:var(--txt-4); }
+    .footer-row { display:flex; justify-content:space-between; align-items:center; padding:4px var(--pad-x) 0; }
+    .footer-txt { font-size:11px; color:var(--txt-4); font-family:var(--mono); }
+    .footer-intervals { font-size:10px; color:var(--txt-4); text-align:right; line-height:1.7; }
 
-    /* ══ 태블릿 480~768px ══ */
-    @media (min-width: 480px) {
-      :root {
-        --pad-x: 22px;
-        --pad-top: 56px;
-        --gap: 12px;
-        --mc-min: 106px;
-        --mc-fs: 22px;
-        --mc-lbl-fs: 12px;
-        --mc-chg-fs: 13px;
-        --sec-title-fs: 15px;
-        --tb-fs: 28px;
-        --fg-num-fs: 56px;
-        --fg-lbl-fs: 17px;
-        --gsvg-max: 340px;
-      }
-      .shell { max-width: 700px; padding: 0 0 72px; }
-      .mc { padding: 16px 16px 18px; }
-      .fgc { padding: 20px 24px 22px; }
-      .hval { font-size: 17px; }
-      .hlbl { font-size: 11px; }
-      .hchip { padding: 10px 8px; }
-      .grid2 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    /* ══ 태블릿 480px~ ══ */
+    @media (min-width:480px) {
+      :root { --pad-x:22px; --pad-top:56px; --gap:12px; --mc-min:106px; --mc-fs:22px; --mc-lbl-fs:12px; --mc-chg-fs:13px; --sec-fs:15px; --tb-fs:28px; --fg-num-fs:56px; --fg-lbl-fs:17px; --gsvg-max:340px; }
+      .shell { max-width:700px; padding:0 0 72px; }
+      .mc { padding:16px 16px 18px; }
+      .fgc { padding:20px 24px 22px; }
+      .hval { font-size:17px; } .hchip { padding:10px 8px; }
+      .grid2 { grid-template-columns:repeat(4,minmax(0,1fr)); }
     }
 
     /* ══ 데스크탑 769px~ ══ */
-    @media (min-width: 769px) {
-      :root {
-        --pad-x: 0px;
-        --pad-top: 44px;
-        --gap: 12px;
-        --mc-min: 110px;
-        --mc-fs: 20px;
-        --mc-lbl-fs: 11px;
-        --mc-chg-fs: 12px;
-        --sec-title-fs: 14px;
-        --tb-fs: 28px;
-        --fg-num-fs: 52px;
-        --fg-lbl-fs: 16px;
-        --gsvg-max: 300px;
-      }
-      body { padding: 0 36px; }
-      .shell { max-width: 1120px; padding: 0 0 72px; }
-      .topbar { padding: var(--pad-top) 0 30px; }
+    @media (min-width:769px) {
+      :root { --pad-x:0px; --pad-top:44px; --gap:12px; --mc-min:110px; --mc-fs:20px; --mc-lbl-fs:11px; --mc-chg-fs:12px; --sec-fs:14px; --tb-fs:28px; --fg-num-fs:52px; --fg-lbl-fs:16px; --gsvg-max:300px; }
+      body { padding:0 36px; }
+      .shell { max-width:1120px; padding:0 0 72px; }
+      .topbar { padding:var(--pad-top) 0 30px; }
       .main-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; }
       .col-left { display:flex; flex-direction:column; }
-      .col-left .sec { padding: 0 0 20px; }
-      .col-left .divider { margin: 0 0 20px; }
-      .col-right .sec { padding: 0; }
-      .fg-wrap { gap: 16px; }
-      .grid2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .ad { margin: 20px 0 16px; }
-      .footer { text-align:left; padding: 4px 0 0; }
+      .col-left .sec { padding:0 0 20px; }
+      .col-left .divider { margin:0 0 20px; }
+      .col-right .sec { padding:0; }
+      .grid2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .ad { margin:20px 0 16px; }
+      .footer-row { padding:4px 0 0; }
     }
 
     /* ══ 와이드 1024px~ ══ */
-    @media (min-width: 1024px) {
-      :root {
-        --mc-fs: 22px;
-        --fg-num-fs: 58px;
-        --gsvg-max: 320px;
-      }
-      .mc { padding: 16px 16px 18px; }
-      .fgc { padding: 22px 26px 24px; }
+    @media (min-width:1024px) {
+      :root { --mc-fs:22px; --fg-num-fs:58px; --gsvg-max:320px; }
+      .mc { padding:16px 16px 18px; }
+      .fgc { padding:22px 26px 24px; }
     }
   </style>
 </head>
@@ -290,7 +153,7 @@
 <div class="shell">
 
   <div class="topbar">
-    <span class="topbar-title">투자 지표</span>
+    <span class="topbar-title">Golden Braid</span>
     <span class="badge-live"><span class="dot"></span>실시간</span>
   </div>
 
@@ -299,10 +162,11 @@
     <!-- 왼쪽: 환율 + 지수 -->
     <div class="col-left">
 
+      <!-- 환율 -->
       <div class="sec">
         <div class="sec-header">
-          <span class="sec-title">환율</span>
-          <span class="sec-note">open.er-api.com</span>
+          <span class="sec-title">환율 <span class="refresh-dot" id="fx-dot"></span></span>
+          <span class="src-badge">open.er-api.com</span>
         </div>
         <div class="grid3">
           <div class="mc" id="fx-usd"><div class="mc-lbl">USD/KRW</div><div class="sk" style="height:20px;width:72%;margin-top:4px"></div><div class="sk" style="height:12px;width:50%;margin-top:8px"></div></div>
@@ -313,10 +177,11 @@
 
       <div class="divider"></div>
 
+      <!-- 미국 주요 지수 -->
       <div class="sec">
         <div class="sec-header">
-          <span class="sec-title">미국 주요 지수</span>
-          <span class="sec-note">Yahoo Finance</span>
+          <span class="sec-title">미국 주요 지수 <span class="refresh-dot" id="idx-dot"></span></span>
+          <span class="src-badge">Yahoo Finance</span>
         </div>
         <div class="grid2">
           <div class="mc" id="idx-sp500"><div class="mc-lbl">S&amp;P 500</div><div class="sk" style="height:20px;width:78%;margin-top:4px"></div><div class="sk" style="height:12px;width:62%;margin-top:8px"></div></div>
@@ -327,7 +192,10 @@
       </div>
 
       <div class="ad">광고 영역 — 유료 결제 시 제거됩니다</div>
-      <div class="footer" id="updated-txt">—</div>
+      <div class="footer-row">
+        <span class="footer-txt" id="updated-txt">—</span>
+        <span class="footer-intervals">환율 10분 · 지수 10초 · F&amp;G 일 1회</span>
+      </div>
 
     </div>
 
@@ -338,34 +206,25 @@
           <span class="sec-title">공포 &amp; 탐욕 지수</span>
         </div>
         <div class="fg-wrap">
+
           <div class="fgc">
             <div class="fgc-meta">
               <span class="fgc-type">미국 주식시장</span>
-              <span class="fgc-src">CNN</span>
+              <span class="src-badge">CNN</span>
             </div>
             <div class="fgc-title">공포 &amp; 탐욕 지수</div>
-            <div id="stock-body">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0">
-                <div class="sk" style="width:100%;max-width:280px;height:90px;border-radius:8px"></div>
-                <div class="sk" style="width:88px;height:44px;border-radius:6px"></div>
-                <div class="sk" style="width:120px;height:14px;border-radius:4px"></div>
-              </div>
-            </div>
+            <div id="stock-body"><div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0"><div class="sk" style="width:100%;max-width:280px;height:90px;border-radius:8px"></div><div class="sk" style="width:88px;height:44px;border-radius:6px"></div><div class="sk" style="width:120px;height:14px;border-radius:4px"></div></div></div>
           </div>
+
           <div class="fgc">
             <div class="fgc-meta">
               <span class="fgc-type">암호화폐</span>
-              <span class="fgc-src">Alternative.me</span>
+              <span class="src-badge">Alternative.me</span>
             </div>
             <div class="fgc-title">공포 &amp; 탐욕 지수</div>
-            <div id="crypto-body">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0">
-                <div class="sk" style="width:100%;max-width:280px;height:90px;border-radius:8px"></div>
-                <div class="sk" style="width:88px;height:44px;border-radius:6px"></div>
-                <div class="sk" style="width:120px;height:14px;border-radius:4px"></div>
-              </div>
-            </div>
+            <div id="crypto-body"><div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0"><div class="sk" style="width:100%;max-width:280px;height:90px;border-radius:8px"></div><div class="sk" style="width:88px;height:44px;border-radius:6px"></div><div class="sk" style="width:120px;height:14px;border-radius:4px"></div></div></div>
           </div>
+
         </div>
       </div>
     </div>
@@ -374,7 +233,9 @@
 </div>
 
 <script>
-/* ─── 공포탐욕 존 ─── */
+/* ════════════════════════════════
+   공포탐욕 존 정의
+════════════════════════════════ */
 var ZONES = [
   {kr:'극도의 공포', color:'#d93025', from:0,  to:25},
   {kr:'공포',        color:'#c07800', from:25, to:45},
@@ -382,43 +243,35 @@ var ZONES = [
   {kr:'탐욕',         color:'#2e7d32', from:55, to:75},
   {kr:'극도의 탐욕',  color:'#0a6640', from:75, to:101},
 ];
-function getZone(s) { return ZONES.find(function(z){return s>=z.from&&s<z.to;})||ZONES[4]; }
+function getZone(s){ return ZONES.find(function(z){return s>=z.from&&s<z.to;})||ZONES[4]; }
 
-function buildGauge(score) {
+function buildGauge(score){
   var cx=140,cy=105,R=88,sw=11,gap=0.018,p='';
   ZONES.forEach(function(z){
     var a1=Math.PI*(z.from/100)+gap, a2=Math.PI*(z.to/100)-gap;
-    var sx=cx-R*Math.cos(a1), sy=cy-R*Math.sin(a1);
-    var ex=cx-R*Math.cos(a2), ey=cy-R*Math.sin(a2);
+    var sx=cx-R*Math.cos(a1), sy=cy-R*Math.sin(a1), ex=cx-R*Math.cos(a2), ey=cy-R*Math.sin(a2);
     p+='<path d="M'+sx.toFixed(2)+','+sy.toFixed(2)+' A'+R+','+R+' 0 0 1 '+ex.toFixed(2)+','+ey.toFixed(2)+'" fill="none" stroke="'+z.color+'" stroke-width="'+sw+'" stroke-linecap="round" opacity="0.15"/>';
     var cap=Math.min(score,z.to);
     if(cap>z.from){
       var fa1=Math.PI*(z.from/100)+gap, fa2=Math.PI*(cap/100)-(score<=z.to?gap:0);
       if(fa2>fa1){
-        var fsx=cx-R*Math.cos(fa1),fsy=cy-R*Math.sin(fa1);
-        var fex=cx-R*Math.cos(fa2),fey=cy-R*Math.sin(fa2);
+        var fsx=cx-R*Math.cos(fa1),fsy=cy-R*Math.sin(fa1),fex=cx-R*Math.cos(fa2),fey=cy-R*Math.sin(fa2);
         p+='<path d="M'+fsx.toFixed(2)+','+fsy.toFixed(2)+' A'+R+','+R+' 0 0 1 '+fex.toFixed(2)+','+fey.toFixed(2)+'" fill="none" stroke="'+z.color+'" stroke-width="'+sw+'" stroke-linecap="round"/>';
       }
     }
   });
-  var na=Math.PI*(score/100);
-  var nx=(cx-70*Math.cos(na)).toFixed(2), ny=(cy-70*Math.sin(na)).toFixed(2);
-  var zn=getZone(score);
-  return '<svg class="gsvg" viewBox="0 0 280 112" xmlns="http://www.w3.org/2000/svg">'+p+
-    '<line x1="'+cx+'" y1="'+cy+'" x2="'+nx+'" y2="'+ny+'" stroke="'+zn.color+'" stroke-width="2.5" stroke-linecap="round"/>'+
-    '<circle cx="'+cx+'" cy="'+cy+'" r="6" fill="'+zn.color+'"/>'+
-    '<circle cx="'+cx+'" cy="'+cy+'" r="3" fill="#ffffff"/></svg>';
+  var na=Math.PI*(score/100), nx=(cx-70*Math.cos(na)).toFixed(2), ny=(cy-70*Math.sin(na)).toFixed(2), zn=getZone(score);
+  return '<svg class="gsvg" viewBox="0 0 280 112" xmlns="http://www.w3.org/2000/svg">'+p+'<line x1="'+cx+'" y1="'+cy+'" x2="'+nx+'" y2="'+ny+'" stroke="'+zn.color+'" stroke-width="2.5" stroke-linecap="round"/><circle cx="'+cx+'" cy="'+cy+'" r="6" fill="'+zn.color+'"/><circle cx="'+cx+'" cy="'+cy+'" r="3" fill="#ffffff"/></svg>';
 }
 
-function buildSegBar(score) {
-  var zn=getZone(score), h='<div class="segbar">';
+function buildSegBar(score){
+  var zn=getZone(score),h='<div class="segbar">';
   ZONES.forEach(function(z){ h+='<div class="seg'+(z===zn?' on':'')+'" style="background:'+z.color+'"></div>'; });
   return h+'</div>';
 }
 
-/* 히스토리: w1=1주전, m1=1개월전, m6=6개월전 */
-function buildHist(w1, m1, m6) {
-  function fmt(v){ return v!=null?'<span style="color:'+getZone(v).color+'">'+v+'</span>':'<span style="color:#aaa">—</span>'; }
+function buildHist(w1,m1,m6){
+  function fmt(v){ return v!=null&&!isNaN(v)?'<span style="color:'+getZone(v).color+'">'+v+'</span>':'<span style="color:#bbb">—</span>'; }
   return '<div class="hrow">'+
     '<div class="hchip"><div class="hlbl">1주 전</div><div class="hval">'+fmt(w1)+'</div></div>'+
     '<div class="hchip"><div class="hlbl">1개월 전</div><div class="hval">'+fmt(m1)+'</div></div>'+
@@ -426,153 +279,241 @@ function buildHist(w1, m1, m6) {
     '</div>';
 }
 
-function renderFG(id, score, prev, w1, m1, m6) {
-  var zn=getZone(score), diff=score-prev;
-  document.getElementById(id).innerHTML =
-    '<div class="gw">'+buildGauge(score)+
-    '<div class="gends"><span class="gend">공포</span><span class="gend">탐욕</span></div></div>'+
-    '<div class="sb">'+
-      '<div class="sb-num" style="color:'+zn.color+'">'+score+'</div>'+
-      '<div class="sb-lbl" style="color:'+zn.color+'">'+zn.kr+'</div>'+
-      '<div class="sb-chg">전일 대비 '+(diff>=0?'+':'')+diff+' &nbsp;·&nbsp; 전일 '+prev+'</div>'+
-    '</div>'+
+function renderFG(id,score,prev,w1,m1,m6){
+  var zn=getZone(score),diff=score-prev;
+  document.getElementById(id).innerHTML=
+    '<div class="gw">'+buildGauge(score)+'<div class="gends"><span class="gend">공포</span><span class="gend">탐욕</span></div></div>'+
+    '<div class="sb"><div class="sb-num" style="color:'+zn.color+'">'+score+'</div><div class="sb-lbl" style="color:'+zn.color+'">'+zn.kr+'</div><div class="sb-chg">전일 대비 '+(diff>=0?'+':'')+diff+' &nbsp;·&nbsp; 전일 '+prev+'</div></div>'+
     buildSegBar(score)+buildHist(w1,m1,m6);
 }
 
-function renderFGErr(id, retryName) {
-  document.getElementById(id).innerHTML =
-    '<div class="fg-err">'+
-    '<div class="fg-err-txt">데이터를 불러올 수 없습니다</div>'+
-    '<button class="fg-retry" onclick="'+retryName+'()">다시 시도 ↻</button></div>';
+function renderFGErr(id,retryName){
+  document.getElementById(id).innerHTML='<div class="fg-err"><div class="fg-err-txt">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="'+retryName+'()">다시 시도 ↻</button></div>';
 }
 
-/* ─── 미니 카드 ─── */
+/* ════════════════════════════════
+   미니 카드
+════════════════════════════════ */
 function getLbl(id){ return document.getElementById(id).querySelector('.mc-lbl').outerHTML; }
 
-function renderMc(id, val, sub, chgTxt, dir) {
-  var cls=dir===1?'up':dir===-1?'down':'flat';
-  var arrow=dir===1?'▲':dir===-1?'▼':'─';
+function renderMc(id,val,sub,chgTxt,dir){
+  var cls=dir===1?'up':dir===-1?'down':'flat', arrow=dir===1?'▲':dir===-1?'▼':'─';
   var h=getLbl(id)+'<div class="mc-val">'+val+'</div>';
   if(sub) h+='<div class="mc-sub">'+sub+'</div>';
   if(chgTxt) h+='<div class="mc-chg '+cls+'">'+arrow+' '+chgTxt+'</div>';
   document.getElementById(id).innerHTML=h;
 }
 
-function renderMcErr(id, retryName) {
-  document.getElementById(id).innerHTML=getLbl(id)+
-    '<div class="mc-err">오류 <button class="mc-retry" onclick="'+retryName+'()">↻ 재시도</button></div>';
+function renderMcErr(id,retryName){
+  document.getElementById(id).innerHTML=getLbl(id)+'<div class="mc-err">오류 <button class="mc-retry" onclick="'+retryName+'()">↻ 재시도</button></div>';
 }
 
 function comma(n,d){ d=d||0; return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d}); }
 
-/* ─── API: 환율 ─── */
-function loadFX() {
+function flashDot(dotId){
+  var el=document.getElementById(dotId);
+  if(!el) return;
+  el.classList.add('flash');
+  setTimeout(function(){ el.classList.remove('flash'); }, 600);
+}
+
+/* ════════════════════════════════
+   localStorage 헬퍼
+════════════════════════════════ */
+function lsGet(key){ try{ return JSON.parse(localStorage.getItem(key)); }catch(e){ return null; } }
+function lsSet(key,val){ try{ localStorage.setItem(key,JSON.stringify(val)); }catch(e){} }
+
+/* ════════════════════════════════
+   API: 환율 (10분 갱신, 전일 비교)
+════════════════════════════════ */
+function loadFX(){
   fetch('https://open.er-api.com/v6/latest/USD',{cache:'no-store'})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
     .then(function(j){
       var r=j.rates;
-      renderMc('fx-usd', comma(r.KRW,1), '1달러', null, 0);
-      renderMc('fx-eur', comma(r.KRW/r.EUR,1), '1유로', null, 0);
-      renderMc('fx-jpy', comma((r.KRW/r.JPY)*100,1), '100엔', null, 0);
+      var today=new Date().toDateString();
+      var prev=lsGet('fx_prev');
+
+      /* 전일 비교: 날짜가 바뀌면 오늘 값을 이전 값으로 승계 */
+      var stored=lsGet('fx_today');
+      if(stored && stored.date!==today){
+        lsSet('fx_prev',{date:stored.date,usd:stored.usd,eur:stored.eur,jpy:stored.jpy});
+        prev=lsGet('fx_prev');
+      }
+      lsSet('fx_today',{date:today,usd:r.KRW,eur:r.KRW/r.EUR,jpy:(r.KRW/r.JPY)*100});
+
+      function fxChg(cur,p,label){
+        if(!p||!p[label]) return null;
+        var diff=cur-p[label], pct=(diff/p[label])*100;
+        return {diff:diff,pct:pct,dir:diff>0?1:diff<0?-1:0};
+      }
+
+      var usd=r.KRW, eur=r.KRW/r.EUR, jpy=(r.KRW/r.JPY)*100;
+      var cu=fxChg(usd,prev,'usd'), ce=fxChg(eur,prev,'eur'), cj=fxChg(jpy,prev,'jpy');
+
+      renderMc('fx-usd', comma(usd,1), '1달러', cu?Math.abs(cu.diff).toFixed(1)+' ('+Math.abs(cu.pct).toFixed(2)+'%)':null, cu?cu.dir:0);
+      renderMc('fx-eur', comma(eur,1), '1유로', ce?Math.abs(ce.diff).toFixed(1)+' ('+Math.abs(ce.pct).toFixed(2)+'%)':null, ce?ce.dir:0);
+      renderMc('fx-jpy', comma(jpy,1), '100엔', cj?Math.abs(cj.diff).toFixed(1)+' ('+Math.abs(cj.pct).toFixed(2)+'%)':null, cj?cj.dir:0);
+      flashDot('fx-dot');
     })
     .catch(function(){
       ['fx-usd','fx-eur','fx-jpy'].forEach(function(id){ renderMcErr(id,'loadFX'); });
     });
 }
 
-/* ─── API: 지수 (Yahoo Finance → allorigins 프록시) ─── */
-var IDX_MAP = {'%5EGSPC':'idx-sp500','%5EIXIC':'idx-nasdaq','%5EDJI':'idx-dow','%5EVIX':'idx-vix'};
+/* ════════════════════════════════
+   API: 미국 지수 (Yahoo Finance v8, 10초 갱신)
+   v8/chart 방식으로 심볼별 요청 → allorigins 프록시
+════════════════════════════════ */
+var SYMBOLS=[
+  {sym:'^GSPC', id:'idx-sp500', label:'S&P 500', fmt:function(p){return comma(p,2);}},
+  {sym:'^IXIC', id:'idx-nasdaq',label:'NASDAQ',   fmt:function(p){return comma(p,2);}},
+  {sym:'^DJI',  id:'idx-dow',  label:'DOW',       fmt:function(p){return comma(p,0);}},
+  {sym:'^VIX',  id:'idx-vix',  label:'VIX',       fmt:function(p){return p.toFixed(2);}},
+];
 
-function applyIndices(j) {
-  var results=(j.quoteResponse&&j.quoteResponse.result)||[];
-  if(!results.length) throw 0;
-  results.forEach(function(q){
-    var key=encodeURIComponent(q.symbol);
-    var id=IDX_MAP[key];
-    if(!id) return;
-    var price=q.regularMarketPrice, chg=q.regularMarketChange, pct=q.regularMarketChangePercent;
-    var dir=chg>0?1:chg<0?-1:0;
-    if(id==='idx-vix'){
-      var vc=price<15?'vix-low':price<25?'vix-mid':'vix-high';
-      var arr=chg>0?'▲':chg<0?'▼':'─';
-      var cls=chg>0?'down':chg<0?'up':'flat';
-      document.getElementById(id).innerHTML=getLbl(id)+
-        '<div class="mc-val '+vc+'">'+price.toFixed(2)+'</div>'+
-        '<div class="mc-chg '+cls+'">'+arr+' '+Math.abs(pct).toFixed(2)+'%</div>';
-    } else {
-      var val=id==='idx-dow'?comma(price,0):comma(price,2);
-      renderMc(id,val,null,Math.abs(chg).toFixed(2)+' ('+Math.abs(pct).toFixed(2)+'%)',dir);
-    }
-  });
+function applyQuote(sym,price,prevClose){
+  var chg=price-prevClose, pct=(chg/prevClose)*100;
+  var dir=chg>0?1:chg<0?-1:0;
+  if(sym.id==='idx-vix'){
+    var vc=price<15?'vix-low':price<25?'vix-mid':'vix-high';
+    var arr=chg>0?'▲':chg<0?'▼':'─', cls=chg>0?'down':chg<0?'up':'flat';
+    /* VIX: 상승=위험(빨강), 하락=안전(초록) — 역방향 표시 */
+    document.getElementById(sym.id).innerHTML=getLbl(sym.id)+
+      '<div class="mc-val '+vc+'">'+sym.fmt(price)+'</div>'+
+      '<div class="mc-chg '+cls+'">'+arr+' '+Math.abs(pct).toFixed(2)+'%</div>';
+  } else {
+    var chgTxt=Math.abs(chg).toFixed(2)+' ('+Math.abs(pct).toFixed(2)+'%)';
+    renderMc(sym.id,sym.fmt(price),null,chgTxt,dir);
+  }
 }
 
-function loadIndices() {
-  var syms=Object.keys(IDX_MAP).join(',');
-  var url='https://query1.finance.yahoo.com/v7/finance/quote?symbols='+syms;
-
-  /* 1차: allorigins (가장 안정적인 무료 CORS 프록시) */
-  fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url),{cache:'no-store'})
+function fetchOneSymbol(sym){
+  var url='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym.sym)+'?interval=1d&range=2d&includePrePost=false';
+  return fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url),{cache:'no-store'})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
-    .then(function(j){ applyIndices(j); })
-    .catch(function(){
-      /* 2차: corsproxy.io 폴백 */
+    .then(function(j){
+      var res=j.chart&&j.chart.result&&j.chart.result[0];
+      if(!res) throw 0;
+      var meta=res.meta;
+      var price=meta.regularMarketPrice;
+      var prev=meta.previousClose||meta.chartPreviousClose;
+      if(!price||!prev) throw 0;
+      applyQuote(sym,price,prev);
+    });
+}
+
+function fetchAllSymbolsV8(){
+  /* 4개 병렬 요청 — 하나라도 실패하면 해당 카드만 오류 */
+  SYMBOLS.forEach(function(sym){
+    fetchOneSymbol(sym).catch(function(){
+      /* 2차 폴백: corsproxy.io */
+      var url='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym.sym)+'?interval=1d&range=2d';
       fetch('https://corsproxy.io/?'+encodeURIComponent(url),{cache:'no-store'})
         .then(function(r){ if(!r.ok) throw 0; return r.json(); })
         .then(function(j){
           var data=j.contents?JSON.parse(j.contents):j;
-          applyIndices(data);
+          var res=data.chart&&data.chart.result&&data.chart.result[0];
+          if(!res) throw 0;
+          var meta=res.meta, price=meta.regularMarketPrice, prev=meta.previousClose||meta.chartPreviousClose;
+          if(!price||!prev) throw 0;
+          applyQuote(sym,price,prev);
         })
-        .catch(function(){
-          Object.keys(IDX_MAP).forEach(function(k){ renderMcErr(IDX_MAP[k],'loadIndices'); });
-        });
+        .catch(function(){ renderMcErr(sym.id,'loadIndices'); });
     });
+  });
+  flashDot('idx-dot');
 }
 
-/* ─── API: 암호화폐 F&G (limit=185 → 6개월치) ─── */
-function loadCrypto() {
+function loadIndices(){
+  fetchAllSymbolsV8();
+}
+
+/* ════════════════════════════════
+   F&G: 하루 1회 (localStorage 캐시)
+════════════════════════════════ */
+var TODAY=new Date().toDateString();
+
+function fgCacheKey(type){ return 'fg_'+type+'_'+TODAY; }
+
+function loadCrypto(){
+  var cache=lsGet(fgCacheKey('crypto'));
+  if(cache){ renderFG('crypto-body',cache.s,cache.p,cache.w1,cache.m1,cache.m6); return; }
+
   fetch('https://api.alternative.me/fng/?limit=185&format=json',{cache:'no-store'})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
     .then(function(j){
       var d=j.data;
-      var today=parseInt(d[0].value);
-      var prev=parseInt(d[1].value);
+      var s=parseInt(d[0].value), p=parseInt(d[1].value);
       var w1=d[6]?parseInt(d[6].value):null;
       var m1=d[29]?parseInt(d[29].value):null;
       var m6=d[182]?parseInt(d[182].value):null;
-      renderFG('crypto-body', today, prev, w1, m1, m6);
+      lsSet(fgCacheKey('crypto'),{s:s,p:p,w1:w1,m1:m1,m6:m6});
+      renderFG('crypto-body',s,p,w1,m1,m6);
     })
     .catch(function(){ renderFGErr('crypto-body','loadCrypto'); });
 }
 
-/* ─── API: 주식 F&G (CNN) ─── */
-function loadStock() {
+function loadStock(){
+  var cache=lsGet(fgCacheKey('stock'));
+  if(cache){ renderFG('stock-body',cache.s,cache.p,cache.w1,cache.m1,cache.m6); return; }
+
   fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata',{cache:'no-store',headers:{Accept:'application/json'}})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
     .then(function(j){
       var fg=j.fear_and_greed;
-      /* CNN API는 6개월 데이터 없음 → graphdata 배열에서 추출 */
+      var s=Math.round(fg.score), p=Math.round(fg.previous_close);
+      var w1=fg.previous_1_week?Math.round(fg.previous_1_week):null;
+      var m1=fg.previous_1_month?Math.round(fg.previous_1_month):null;
+
+      /* 6개월 전: historical 배열에서 timestamp 기준으로 탐색 */
       var m6=null;
-      if(j.fear_and_greed_historical && j.fear_and_greed_historical.data){
-        var hist=j.fear_and_greed_historical.data;
-        if(hist.length>182) m6=Math.round(hist[hist.length-183].x);
+      var hist=(j.fear_and_greed_historical&&j.fear_and_greed_historical.data)||[];
+      if(hist.length){
+        var sixMoAgo=Date.now()-182*24*60*60*1000;
+        var best=null, bestDiff=Infinity;
+        for(var i=0;i<hist.length;i++){
+          /* CNN timestamp는 밀리초가 아닌 경우가 있어 두 경우 모두 처리 */
+          var ts=hist[i].x;
+          if(ts<1e12) ts=ts*1000; /* 초 단위라면 ms로 변환 */
+          var diff=Math.abs(ts-sixMoAgo);
+          if(diff<bestDiff){ bestDiff=diff; best=hist[i]; }
+        }
+        if(best && typeof best.y==='number') m6=Math.round(best.y);
       }
-      renderFG('stock-body',
-        Math.round(fg.score), Math.round(fg.previous_close),
-        Math.round(fg.previous_1_week), Math.round(fg.previous_1_month), m6);
+
+      lsSet(fgCacheKey('stock'),{s:s,p:p,w1:w1,m1:m1,m6:m6});
+      renderFG('stock-body',s,p,w1,m1,m6);
     })
     .catch(function(){ renderFGErr('stock-body','loadStock'); });
 }
 
-/* ─── 타임스탬프 & 갱신 ─── */
-function tick() {
+/* ════════════════════════════════
+   타임스탬프
+════════════════════════════════ */
+function tick(){
   var t=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  document.getElementById('updated-txt').textContent='업데이트 '+t+' · 60초 자동갱신';
+  document.getElementById('updated-txt').textContent='업데이트 '+t;
 }
 
-function refresh(){ loadFX(); loadIndices(); loadStock(); loadCrypto(); tick(); }
+/* ════════════════════════════════
+   초기 로드 & 인터벌 설정
+════════════════════════════════ */
+/* F&G: 최초 1회만 */
+loadStock();
+loadCrypto();
 
-refresh();
-setInterval(refresh, 60000);
+/* 환율: 즉시 + 10분마다 */
+loadFX();
+setInterval(loadFX, 10*60*1000);
+
+/* 지수: 즉시 + 10초마다 */
+loadIndices();
+setInterval(loadIndices, 10*1000);
+
+/* 타임스탬프: 1초마다 */
+tick();
+setInterval(tick, 1000);
 </script>
 </body>
 </html>
