@@ -258,7 +258,7 @@ function loadFX() {
     });
 }
 
-/* ─── API: 지수 (Yahoo Finance) ─── */
+/* ─── API: 지수 (Yahoo Finance via CORS proxy) ─── */
 var IDX_MAP = {
   '%5EGSPC':'idx-sp500',
   '%5EIXIC':'idx-nasdaq',
@@ -266,34 +266,52 @@ var IDX_MAP = {
   '%5EVIX':'idx-vix'
 };
 
+/* Yahoo Finance는 브라우저 직접 호출 시 CORS 차단 → corsproxy.io 경유 */
+var CORS_PROXY = 'https://corsproxy.io/?';
+
+function parseAndRenderIndices(j) {
+  var results = (j.quoteResponse && j.quoteResponse.result) || [];
+  if(!results.length) throw 0;
+  results.forEach(function(q){
+    var key = encodeURIComponent(q.symbol);
+    var id = IDX_MAP[key];
+    if(!id) return;
+    var price=q.regularMarketPrice, chg=q.regularMarketChange, pct=q.regularMarketChangePercent;
+    var dir=chg>0?1:chg<0?-1:0;
+    if(id==='idx-vix'){
+      var vc=price<15?'vix-low':price<25?'vix-mid':'vix-high';
+      var arr=chg>0?'▲':chg<0?'▼':'─';
+      var cls=chg>0?'down':chg<0?'up':'flat';
+      document.getElementById(id).innerHTML=getLbl(id)+
+        '<div class="mc-val '+vc+'">'+price.toFixed(2)+'</div>'+
+        '<div class="mc-chg '+cls+'">'+arr+' '+Math.abs(pct).toFixed(2)+'%</div>';
+    } else {
+      var val=id==='idx-dow'?comma(price,0):comma(price,2);
+      renderMc(id,val,null,Math.abs(chg).toFixed(2)+' ('+Math.abs(pct).toFixed(2)+'%)',dir);
+    }
+  });
+}
+
 function loadIndices() {
   var syms = Object.keys(IDX_MAP).join(',');
-  fetch('https://query1.finance.yahoo.com/v7/finance/quote?symbols='+syms, {cache:'no-store', headers:{Accept:'application/json'}})
+  var yahooUrl = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols='+syms;
+
+  /* 1차: 직접 호출 시도 */
+  fetch(yahooUrl, {cache:'no-store', headers:{Accept:'application/json'}})
     .then(function(r){ if(!r.ok) throw 0; return r.json(); })
-    .then(function(j){
-      var results = (j.quoteResponse && j.quoteResponse.result) || [];
-      if(!results.length) throw 0;
-      results.forEach(function(q){
-        var key = encodeURIComponent(q.symbol);
-        var id = IDX_MAP[key];
-        if(!id) return;
-        var price=q.regularMarketPrice, chg=q.regularMarketChange, pct=q.regularMarketChangePercent;
-        var dir=chg>0?1:chg<0?-1:0;
-        if(id==='idx-vix'){
-          var vc=price<15?'vix-low':price<25?'vix-mid':'vix-high';
-          var arr=chg>0?'▲':chg<0?'▼':'─';
-          var cls=chg>0?'down':chg<0?'up':'flat';
-          document.getElementById(id).innerHTML=getLbl(id)+
-            '<div class="mc-val '+vc+'">'+price.toFixed(2)+'</div>'+
-            '<div class="mc-chg '+cls+'">'+arr+' '+Math.abs(pct).toFixed(2)+'%</div>';
-        } else {
-          var val=id==='idx-dow'?comma(price,0):comma(price,2);
-          renderMc(id,val,null,Math.abs(chg).toFixed(2)+' ('+Math.abs(pct).toFixed(2)+'%)',dir);
-        }
-      });
-    })
+    .then(function(j){ parseAndRenderIndices(j); })
     .catch(function(){
-      Object.values(IDX_MAP).forEach(function(id){ renderMcErr(id,'loadIndices'); });
+      /* 2차: CORS 프록시 경유 */
+      fetch(CORS_PROXY + encodeURIComponent(yahooUrl), {cache:'no-store'})
+        .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+        .then(function(j){
+          /* corsproxy.io는 응답을 { contents: "..." } 로 감싸는 경우도 있음 */
+          var data = (j.contents) ? JSON.parse(j.contents) : j;
+          parseAndRenderIndices(data);
+        })
+        .catch(function(){
+          Object.keys(IDX_MAP).forEach(function(k){ renderMcErr(IDX_MAP[k],'loadIndices'); });
+        });
     });
 }
 
