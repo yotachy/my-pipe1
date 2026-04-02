@@ -4,122 +4,103 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>투자 지표 대시보드</title>
-  <meta name="description" content="환율, 미국 주요 지수, 공포탐욕 지수를 실시간으로 확인하세요." />
   <meta name="theme-color" content="#0f0f11" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="투자지표" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg-page:  #0f0f11;
-      --bg-card:  #18181c;
-      --bg-chip:  #222228;
-      --border:   rgba(255,255,255,0.07);
-      --txt-1:    #f0f0f2;
-      --txt-2:    #888892;
-      --txt-3:    #555560;
-      --up:       #3ecf8e;
-      --down:     #f26c6c;
-      --flat:     #888892;
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --font-sans: 'Pretendard', -apple-system, sans-serif;
-      --font-mono: 'DM Mono', monospace;
+      --bg-page: #0f0f11; --bg-card: #18181c; --bg-chip: #222228;
+      --border: rgba(255,255,255,0.07);
+      --txt-1: #f0f0f2; --txt-2: #888892; --txt-3: #555560;
+      --up: #3ecf8e; --down: #f26c6c; --flat: #888892;
+      --r-sm: 8px; --r-md: 12px; --r-lg: 16px;
+      --sans: 'Pretendard', -apple-system, sans-serif;
+      --mono: 'DM Mono', monospace;
     }
-    html, body {
-      background: var(--bg-page);
-      color: var(--txt-1);
-      font-family: var(--font-sans);
-      min-height: 100dvh;
-      -webkit-font-smoothing: antialiased;
-    }
+    html, body { background: var(--bg-page); color: var(--txt-1); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
     .shell { max-width: 420px; margin: 0 auto; padding: 0 0 48px; }
 
-    /* Top Bar */
+    /* topbar */
     .topbar { display:flex; align-items:center; justify-content:space-between; padding:52px 18px 20px; }
     .topbar-title { font-size:22px; font-weight:600; letter-spacing:-0.5px; }
     .badge-live { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:500; color:#3ecf8e; background:rgba(62,207,142,0.12); padding:4px 10px; border-radius:20px; }
-    .dot-live { width:5px; height:5px; border-radius:50%; background:#3ecf8e; animation:blink 1.4s ease-in-out infinite; }
+    .dot { width:5px; height:5px; border-radius:50%; background:#3ecf8e; animation:blink 1.4s ease-in-out infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-    /* Section */
-    .section { padding: 0 14px 16px; }
-    .section-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; }
-    .section-title { font-size:11px; font-weight:500; color:var(--txt-3); text-transform:uppercase; letter-spacing:1px; }
-    .section-note { font-size:10px; color:var(--txt-3); }
+    /* section */
+    .sec { padding: 0 14px 16px; }
+    .sec-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; }
+    .sec-title { font-size:11px; font-weight:500; color:var(--txt-3); text-transform:uppercase; letter-spacing:1px; }
+    .sec-note { font-size:10px; color:var(--txt-3); }
+    .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+    .grid2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .divider { height:0.5px; background:var(--border); margin:0 14px 16px; }
 
-    /* Grids */
-    .grid-3 { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; }
-    .grid-2 { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
-
-    /* Mini Card */
-    .mc { background:var(--bg-card); border-radius:var(--radius-md); border:0.5px solid var(--border); padding:12px 12px 14px; min-height:86px; }
-    .mc-label { font-size:10px; font-weight:500; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:7px; }
-    .mc-value { font-family:var(--font-mono); font-size:17px; font-weight:500; color:var(--txt-1); letter-spacing:-0.4px; line-height:1.15; }
+    /* mini card */
+    .mc { background:var(--bg-card); border-radius:var(--r-md); border:0.5px solid var(--border); padding:12px 12px 14px; min-height:86px; }
+    .mc-lbl { font-size:10px; font-weight:500; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:7px; }
+    .mc-val { font-family:var(--mono); font-size:17px; font-weight:500; color:var(--txt-1); letter-spacing:-0.4px; line-height:1.15; }
     .mc-sub { font-size:9px; color:var(--txt-3); margin-top:1px; }
-    .mc-change { font-family:var(--font-mono); font-size:11px; font-weight:500; margin-top:6px; }
-    .mc-change.up   { color:var(--up); }
-    .mc-change.down { color:var(--down); }
-    .mc-change.flat { color:var(--flat); }
+    .mc-chg { font-family:var(--mono); font-size:11px; font-weight:500; margin-top:6px; }
+    .up   { color:var(--up); }
+    .down { color:var(--down); }
+    .flat { color:var(--flat); }
     .vix-low  { color:var(--up); }
     .vix-mid  { color:#EF9F27; }
     .vix-high { color:var(--down); }
 
-    /* Skeleton */
+    /* skeleton */
     .sk { background:var(--bg-chip); border-radius:4px; animation:shimmer 1.2s ease-in-out infinite; }
     @keyframes shimmer { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
 
-    /* Divider */
-    .divider { height:0.5px; background:var(--border); margin:0 14px 16px; }
+    /* error in mini card */
+    .mc-err { font-size:11px; color:var(--down); margin-top:8px; }
+    .mc-retry { font-size:11px; color:#6ba5f5; background:none; border:none; cursor:pointer; font-family:var(--sans); padding:0; margin-left:4px; }
 
-    /* F&G Card */
-    .fg-card { background:var(--bg-card); border-radius:var(--radius-lg); border:0.5px solid var(--border); padding:16px 18px 18px; margin-bottom:10px; }
-    .fg-card:last-child { margin-bottom:0; }
-    .fg-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
-    .fg-type { font-size:10px; font-weight:500; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.8px; }
-    .fg-src { font-size:10px; color:var(--txt-3); }
-    .fg-title { font-size:14px; font-weight:500; color:var(--txt-2); margin-bottom:14px; }
+    /* fg card */
+    .fgc { background:var(--bg-card); border-radius:var(--r-lg); border:0.5px solid var(--border); padding:16px 18px 18px; margin-bottom:10px; }
+    .fgc:last-child { margin-bottom:0; }
+    .fgc-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
+    .fgc-type { font-size:10px; font-weight:500; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.8px; }
+    .fgc-src { font-size:10px; color:var(--txt-3); }
+    .fgc-title { font-size:14px; font-weight:500; color:var(--txt-2); margin-bottom:14px; }
 
-    /* Gauge */
-    .gauge-wrap { display:flex; flex-direction:column; align-items:center; }
-    .gauge-svg  { width:100%; max-width:280px; }
-    .gauge-ends { display:flex; justify-content:space-between; width:100%; max-width:280px; margin-top:-4px; padding:0 6px; }
-    .gauge-end-txt { font-size:10px; color:var(--txt-3); }
+    /* gauge */
+    .gw { display:flex; flex-direction:column; align-items:center; }
+    .gsvg { width:100%; max-width:280px; }
+    .gends { display:flex; justify-content:space-between; width:100%; max-width:280px; margin-top:-4px; padding:0 6px; }
+    .gend { font-size:10px; color:var(--txt-3); }
 
-    /* Score */
-    .score-block { text-align:center; margin-top:8px; }
-    .score-num { font-family:var(--font-mono); font-size:46px; font-weight:500; line-height:1; letter-spacing:-1px; }
-    .score-lbl { font-size:14px; font-weight:500; margin-top:4px; }
-    .score-change { font-size:11px; color:var(--txt-3); margin-top:4px; font-family:var(--font-mono); }
+    /* score */
+    .sb { text-align:center; margin-top:8px; }
+    .sb-num { font-family:var(--mono); font-size:46px; font-weight:500; line-height:1; letter-spacing:-1px; }
+    .sb-lbl { font-size:14px; font-weight:500; margin-top:4px; }
+    .sb-chg { font-size:11px; color:var(--txt-3); margin-top:4px; font-family:var(--mono); }
 
-    /* Seg bar */
-    .seg-bar { display:flex; gap:3px; margin-top:14px; }
-    .seg { height:3px; border-radius:2px; flex:1; opacity:0.2; transition:opacity 0.3s; }
+    /* seg bar */
+    .segbar { display:flex; gap:3px; margin-top:14px; }
+    .seg { height:3px; border-radius:2px; flex:1; opacity:0.2; }
     .seg.on { opacity:1; }
 
-    /* Hist */
-    .hist-row { display:flex; gap:6px; margin-top:12px; }
-    .hist-chip { flex:1; background:var(--bg-chip); border-radius:var(--radius-sm); padding:8px 6px; text-align:center; }
-    .hist-lbl { font-size:9px; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.4px; }
-    .hist-val { font-family:var(--font-mono); font-size:14px; font-weight:500; margin-top:3px; }
+    /* hist */
+    .hrow { display:flex; gap:6px; margin-top:12px; }
+    .hchip { flex:1; background:var(--bg-chip); border-radius:var(--r-sm); padding:8px 6px; text-align:center; }
+    .hlbl { font-size:9px; color:var(--txt-3); text-transform:uppercase; letter-spacing:0.4px; }
+    .hval { font-family:var(--mono); font-size:14px; font-weight:500; margin-top:3px; }
 
-    /* Error */
-    .err-inline { font-size:11px; color:#f26c6c; padding:10px 0 2px; }
-    .retry-btn { font-size:11px; color:#6ba5f5; background:none; border:none; cursor:pointer; font-family:var(--font-sans); padding:0; margin-left:4px; }
+    /* fg error */
     .fg-err { text-align:center; padding:20px 10px; }
-    .fg-err-txt { font-size:13px; color:#f26c6c; }
-    .fg-retry { display:inline-block; margin-top:8px; font-size:12px; color:#6ba5f5; background:none; border:none; cursor:pointer; font-family:var(--font-sans); }
+    .fg-err-txt { font-size:13px; color:var(--down); }
+    .fg-retry { display:inline-block; margin-top:8px; font-size:12px; color:#6ba5f5; background:none; border:none; cursor:pointer; font-family:var(--sans); }
 
-    /* Ad & Footer */
-    .ad-banner { margin:0 14px 14px; background:var(--bg-card); border:0.5px dashed rgba(255,255,255,0.1); border-radius:var(--radius-sm); padding:10px; text-align:center; font-size:10px; color:var(--txt-3); }
-    .footer { text-align:center; padding:4px 14px 0; font-size:10px; color:var(--txt-3); line-height:1.8; }
-    .footer-mono { font-family:var(--font-mono); }
+    /* footer */
+    .ad { margin:0 14px 14px; background:var(--bg-card); border:0.5px dashed rgba(255,255,255,0.1); border-radius:var(--r-sm); padding:10px; text-align:center; font-size:10px; color:var(--txt-3); }
+    .footer { text-align:center; padding:4px 14px 0; font-size:10px; color:var(--txt-3); line-height:1.8; font-family:var(--mono); }
   </style>
 </head>
 <body>
@@ -127,205 +108,233 @@
 
   <div class="topbar">
     <span class="topbar-title">투자 지표</span>
-    <span class="badge-live"><span class="dot-live"></span>실시간</span>
+    <span class="badge-live"><span class="dot"></span>실시간</span>
   </div>
 
   <!-- 환율 -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">환율</span>
-      <span class="section-note">open.er-api.com</span>
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sec-title">환율</span>
+      <span class="sec-note">open.er-api.com</span>
     </div>
-    <div class="grid-3">
-      <div class="mc" id="fx-usd"><div class="mc-label">USD/KRW</div><div class="sk" style="height:18px;width:75%;margin-top:4px"></div><div class="sk" style="height:11px;width:55%;margin-top:8px"></div></div>
-      <div class="mc" id="fx-eur"><div class="mc-label">EUR/KRW</div><div class="sk" style="height:18px;width:75%;margin-top:4px"></div><div class="sk" style="height:11px;width:55%;margin-top:8px"></div></div>
-      <div class="mc" id="fx-jpy"><div class="mc-label">JPY/KRW</div><div class="sk" style="height:18px;width:75%;margin-top:4px"></div><div class="sk" style="height:11px;width:55%;margin-top:8px"></div></div>
+    <div class="grid3">
+      <div class="mc" id="fx-usd"><div class="mc-lbl">USD/KRW</div><div class="sk" style="height:18px;width:75%;margin-top:4px"></div><div class="sk" style="height:11px;width:55%;margin-top:8px"></div></div>
+      <div class="mc" id="fx-eur"><div class="mc-lbl">EUR/KRW</div><div class="sk" style="height:18px;width:75%;margin-top:4px"></div><div class="sk" style="height:11px;width:55%;margin-top:8px"></div></div>
+      <div class="mc" id="fx-jpy"><div class="mc-lbl">JPY/KRW</div><div class="sk" style="height:18px;width:75%;margin-top:4px"></div><div class="sk" style="height:11px;width:55%;margin-top:8px"></div></div>
     </div>
   </div>
 
   <!-- 미국 주요 지수 -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">미국 주요 지수</span>
-      <span class="section-note">Yahoo Finance</span>
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sec-title">미국 주요 지수</span>
+      <span class="sec-note">Yahoo Finance</span>
     </div>
-    <div class="grid-2">
-      <div class="mc" id="idx-sp500"><div class="mc-label">S&amp;P 500</div><div class="sk" style="height:18px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
-      <div class="mc" id="idx-nasdaq"><div class="mc-label">NASDAQ</div><div class="sk" style="height:18px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
-      <div class="mc" id="idx-dow"><div class="mc-label">DOW</div><div class="sk" style="height:18px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
-      <div class="mc" id="idx-vix"><div class="mc-label">VIX</div><div class="sk" style="height:18px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
+    <div class="grid2">
+      <div class="mc" id="idx-sp500"><div class="mc-lbl">S&amp;P 500</div><div class="sk" style="height:18px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
+      <div class="mc" id="idx-nasdaq"><div class="mc-lbl">NASDAQ</div><div class="sk" style="height:18px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
+      <div class="mc" id="idx-dow"><div class="mc-lbl">DOW</div><div class="sk" style="height:18px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
+      <div class="mc" id="idx-vix"><div class="mc-lbl">VIX</div><div class="sk" style="height:18px;width:80%;margin-top:4px"></div><div class="sk" style="height:11px;width:65%;margin-top:8px"></div></div>
     </div>
   </div>
 
   <div class="divider"></div>
 
   <!-- 공포탐욕 -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">공포 &amp; 탐욕 지수</span>
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sec-title">공포 &amp; 탐욕 지수</span>
     </div>
-    <div class="fg-card">
-      <div class="fg-meta"><span class="fg-type">미국 주식시장</span><span class="fg-src">CNN</span></div>
-      <div class="fg-title">공포 &amp; 탐욕 지수</div>
+    <div class="fgc">
+      <div class="fgc-meta"><span class="fgc-type">미국 주식시장</span><span class="fgc-src">CNN</span></div>
+      <div class="fgc-title">공포 &amp; 탐욕 지수</div>
       <div id="stock-body"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0"><div class="sk" style="width:100%;max-width:280px;height:88px;border-radius:8px"></div><div class="sk" style="width:90px;height:42px;border-radius:4px"></div><div class="sk" style="width:130px;height:13px;border-radius:4px"></div></div></div>
     </div>
-    <div class="fg-card">
-      <div class="fg-meta"><span class="fg-type">암호화폐</span><span class="fg-src">Alternative.me</span></div>
-      <div class="fg-title">공포 &amp; 탐욕 지수</div>
+    <div class="fgc">
+      <div class="fgc-meta"><span class="fgc-type">암호화폐</span><span class="fgc-src">Alternative.me</span></div>
+      <div class="fgc-title">공포 &amp; 탐욕 지수</div>
       <div id="crypto-body"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0"><div class="sk" style="width:100%;max-width:280px;height:88px;border-radius:8px"></div><div class="sk" style="width:90px;height:42px;border-radius:4px"></div><div class="sk" style="width:130px;height:13px;border-radius:4px"></div></div></div>
     </div>
   </div>
 
-  <div class="ad-banner">광고 영역 — 유료 결제 시 제거됩니다</div>
-
-  <div class="footer">
-    <div class="footer-mono" id="updated-txt">—</div>
-    <div>60초마다 자동 갱신</div>
-  </div>
+  <div class="ad">광고 영역 — 유료 결제 시 제거됩니다</div>
+  <div class="footer" id="updated-txt">—</div>
 
 </div>
 <script>
-/* ── 공포탐욕 유틸 ── */
-const ZONES=[
-  {kr:'극도의 공포',color:'#E24B4A',from:0,to:25},
-  {kr:'공포',color:'#EF9F27',from:25,to:45},
-  {kr:'중립',color:'#888780',from:45,to:55},
-  {kr:'탐욕',color:'#639922',from:55,to:75},
-  {kr:'극도의 탐욕',color:'#1D9E75',from:75,to:101},
+/* ─── 공포탐욕 존 ─── */
+var ZONES = [
+  {kr:'극도의 공포', color:'#E24B4A', from:0,  to:25},
+  {kr:'공포',        color:'#EF9F27', from:25, to:45},
+  {kr:'중립',         color:'#888780', from:45, to:55},
+  {kr:'탐욕',         color:'#639922', from:55, to:75},
+  {kr:'극도의 탐욕',  color:'#1D9E75', from:75, to:101},
 ];
-function getZone(s){return ZONES.find(z=>s>=z.from&&s<z.to)||ZONES[4];}
+function getZone(s) { return ZONES.find(function(z){return s>=z.from&&s<z.to;}) || ZONES[4]; }
 
-function buildGauge(score){
-  const cx=140,cy=105,R=88,sw=10,gap=0.018;
-  let p='';
-  ZONES.forEach(z=>{
-    const a1=Math.PI*(z.from/100)+gap, a2=Math.PI*(z.to/100)-gap;
-    const s={x:cx-R*Math.cos(a1),y:cy-R*Math.sin(a1)}, e={x:cx-R*Math.cos(a2),y:cy-R*Math.sin(a2)};
-    p+=`<path d="M${s.x.toFixed(2)},${s.y.toFixed(2)} A${R},${R} 0 0 1 ${e.x.toFixed(2)},${e.y.toFixed(2)}" fill="none" stroke="${z.color}" stroke-width="${sw}" stroke-linecap="round" opacity="0.2"/>`;
-    const cap=Math.min(score,z.to);
+function buildGauge(score) {
+  var cx=140, cy=105, R=88, sw=10, gap=0.018, p='';
+  ZONES.forEach(function(z) {
+    var a1=Math.PI*(z.from/100)+gap, a2=Math.PI*(z.to/100)-gap;
+    var sx=cx-R*Math.cos(a1), sy=cy-R*Math.sin(a1);
+    var ex=cx-R*Math.cos(a2), ey=cy-R*Math.sin(a2);
+    p+='<path d="M'+sx.toFixed(2)+','+sy.toFixed(2)+' A'+R+','+R+' 0 0 1 '+ex.toFixed(2)+','+ey.toFixed(2)+'" fill="none" stroke="'+z.color+'" stroke-width="'+sw+'" stroke-linecap="round" opacity="0.2"/>';
+    var cap=Math.min(score,z.to);
     if(cap>z.from){
-      const fa1=Math.PI*(z.from/100)+gap, fa2=Math.PI*(cap/100)-(score<=z.to?gap:0);
+      var fa1=Math.PI*(z.from/100)+gap, fa2=Math.PI*(cap/100)-(score<=z.to?gap:0);
       if(fa2>fa1){
-        const fs={x:cx-R*Math.cos(fa1),y:cy-R*Math.sin(fa1)}, fe={x:cx-R*Math.cos(fa2),y:cy-R*Math.sin(fa2)};
-        p+=`<path d="M${fs.x.toFixed(2)},${fs.y.toFixed(2)} A${R},${R} 0 0 1 ${fe.x.toFixed(2)},${fe.y.toFixed(2)}" fill="none" stroke="${z.color}" stroke-width="${sw}" stroke-linecap="round"/>`;
+        var fsx=cx-R*Math.cos(fa1), fsy=cy-R*Math.sin(fa1);
+        var fex=cx-R*Math.cos(fa2), fey=cy-R*Math.sin(fa2);
+        p+='<path d="M'+fsx.toFixed(2)+','+fsy.toFixed(2)+' A'+R+','+R+' 0 0 1 '+fex.toFixed(2)+','+fey.toFixed(2)+'" fill="none" stroke="'+z.color+'" stroke-width="'+sw+'" stroke-linecap="round"/>';
       }
     }
   });
-  const na=Math.PI*(score/100), nx=(cx-70*Math.cos(na)).toFixed(2), ny=(cy-70*Math.sin(na)).toFixed(2);
-  const zn=getZone(score);
-  return `<svg class="gauge-svg" viewBox="0 0 280 112" xmlns="http://www.w3.org/2000/svg">${p}<line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="${zn.color}" stroke-width="2.5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="5.5" fill="${zn.color}"/><circle cx="${cx}" cy="${cy}" r="2.8" fill="#18181c"/></svg>`;
+  var na=Math.PI*(score/100);
+  var nx=(cx-70*Math.cos(na)).toFixed(2), ny=(cy-70*Math.sin(na)).toFixed(2);
+  var zn=getZone(score);
+  return '<svg class="gsvg" viewBox="0 0 280 112" xmlns="http://www.w3.org/2000/svg">'+p+'<line x1="'+cx+'" y1="'+cy+'" x2="'+nx+'" y2="'+ny+'" stroke="'+zn.color+'" stroke-width="2.5" stroke-linecap="round"/><circle cx="'+cx+'" cy="'+cy+'" r="5.5" fill="'+zn.color+'"/><circle cx="'+cx+'" cy="'+cy+'" r="2.8" fill="#18181c"/></svg>';
 }
 
-function buildSegBar(score){
-  const zn=getZone(score);
-  return '<div class="seg-bar">'+ZONES.map(z=>`<div class="seg${z===zn?' on':''}" style="background:${z.color}"></div>`).join('')+'</div>';
+function buildSegBar(score) {
+  var zn=getZone(score), html='<div class="segbar">';
+  ZONES.forEach(function(z){ html+='<div class="seg'+(z===zn?' on':'')+'" style="background:'+z.color+'"></div>'; });
+  return html+'</div>';
 }
 
-function buildHist(w1,m1,y1){
-  const fmt=v=>v!=null?`<span style="color:${getZone(v).color}">${v}</span>`:`<span style="color:var(--txt-3)">—</span>`;
-  return `<div class="hist-row"><div class="hist-chip"><div class="hist-lbl">1주 전</div><div class="hist-val">${fmt(w1)}</div></div><div class="hist-chip"><div class="hist-lbl">1개월 전</div><div class="hist-val">${fmt(m1)}</div></div><div class="hist-chip"><div class="hist-lbl">1년 전</div><div class="hist-val">${fmt(y1)}</div></div></div>`;
+function buildHist(w1,m1,y1) {
+  function fmt(v){ return v!=null?'<span style="color:'+getZone(v).color+'">'+v+'</span>':'<span style="color:var(--txt-3)">—</span>'; }
+  return '<div class="hrow"><div class="hchip"><div class="hlbl">1주 전</div><div class="hval">'+fmt(w1)+'</div></div><div class="hchip"><div class="hlbl">1개월 전</div><div class="hval">'+fmt(m1)+'</div></div><div class="hchip"><div class="hlbl">1년 전</div><div class="hval">'+fmt(y1)+'</div></div></div>';
 }
 
-function renderFG(id,score,prev,w1,m1,y1){
-  const zn=getZone(score), diff=score-prev;
-  document.getElementById(id).innerHTML=`<div class="gauge-wrap">${buildGauge(score)}<div class="gauge-ends"><span class="gauge-end-txt">공포</span><span class="gauge-end-txt">탐욕</span></div></div><div class="score-block"><div class="score-num" style="color:${zn.color}">${score}</div><div class="score-lbl" style="color:${zn.color}">${zn.kr}</div><div class="score-change">전일 대비 ${diff>=0?'+':''}${diff} · 전일 ${prev}</div></div>${buildSegBar(score)}${buildHist(w1,m1,y1)}`;
+function renderFG(id, score, prev, w1, m1, y1) {
+  var zn=getZone(score), diff=score-prev;
+  document.getElementById(id).innerHTML =
+    '<div class="gw">'+buildGauge(score)+'<div class="gends"><span class="gend">공포</span><span class="gend">탐욕</span></div></div>'+
+    '<div class="sb"><div class="sb-num" style="color:'+zn.color+'">'+score+'</div><div class="sb-lbl" style="color:'+zn.color+'">'+zn.kr+'</div><div class="sb-chg">전일 대비 '+(diff>=0?'+':'')+diff+' · 전일 '+prev+'</div></div>'+
+    buildSegBar(score)+buildHist(w1,m1,y1);
 }
 
-function renderFGErr(id,fn){
-  document.getElementById(id).innerHTML=`<div class="fg-err"><div class="fg-err-txt">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="(${fn.toString()})()">다시 시도 ↻</button></div>`;
+function renderFGErr(id, retryName) {
+  document.getElementById(id).innerHTML =
+    '<div class="fg-err"><div class="fg-err-txt">데이터를 불러올 수 없습니다</div>'+
+    '<button class="fg-retry" onclick="'+retryName+'()">다시 시도 ↻</button></div>';
 }
 
-/* ── 미니카드 ── */
-function getMcLabel(id){return document.getElementById(id).querySelector('.mc-label').outerHTML;}
+/* ─── 미니 카드 ─── */
+function getLbl(id) { return document.getElementById(id).querySelector('.mc-lbl').outerHTML; }
 
-function renderMc(id,value,sub,changeTxt,dir){
-  const cls=dir===1?'up':dir===-1?'down':'flat';
-  const arrow=dir===1?'▲':dir===-1?'▼':'─';
-  document.getElementById(id).innerHTML=getMcLabel(id)+`<div class="mc-value">${value}</div>${sub?`<div class="mc-sub">${sub}</div>`:''}${changeTxt?`<div class="mc-change ${cls}">${arrow} ${changeTxt}</div>`:''}`;
+function renderMc(id, val, sub, chgTxt, dir) {
+  var cls = dir===1?'up':dir===-1?'down':'flat';
+  var arrow = dir===1?'▲':dir===-1?'▼':'─';
+  var html = getLbl(id)+'<div class="mc-val">'+val+'</div>';
+  if(sub) html += '<div class="mc-sub">'+sub+'</div>';
+  if(chgTxt) html += '<div class="mc-chg '+cls+'">'+arrow+' '+chgTxt+'</div>';
+  document.getElementById(id).innerHTML = html;
 }
 
-function renderMcErr(id,fn){
-  document.getElementById(id).innerHTML=getMcLabel(id)+`<div class="err-inline">오류<button class="retry-btn" onclick="(${fn.toString()})()">↻</button></div>`;
+function renderMcErr(id, retryName) {
+  document.getElementById(id).innerHTML =
+    getLbl(id)+
+    '<div class="mc-err">오류 <button class="mc-retry" onclick="'+retryName+'()">↻</button></div>';
 }
 
-function comma(n,d=0){return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});}
-
-/* ── API: 환율 ── */
-async function loadFX(){
-  try{
-    const res=await fetch('https://open.er-api.com/v6/latest/USD',{cache:'no-store'});
-    if(!res.ok) throw 0;
-    const r=(await res.json()).rates;
-    renderMc('fx-usd', comma(r.KRW,1), '1달러', null, 0);
-    renderMc('fx-eur', comma(r.KRW/r.EUR,1), '1유로', null, 0);
-    renderMc('fx-jpy', comma((r.KRW/r.JPY)*100,1), '100엔', null, 0);
-  }catch(e){
-    ['fx-usd','fx-eur','fx-jpy'].forEach(id=>renderMcErr(id,loadFX));
-  }
+function comma(n, d) {
+  d = d||0;
+  return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});
 }
 
-/* ── API: 지수 (Yahoo Finance) ── */
-const IDX={
+/* ─── API: 환율 ─── */
+function loadFX() {
+  fetch('https://open.er-api.com/v6/latest/USD', {cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(j){
+      var r=j.rates;
+      renderMc('fx-usd', comma(r.KRW,1), '1달러', null, 0);
+      renderMc('fx-eur', comma(r.KRW/r.EUR,1), '1유로', null, 0);
+      renderMc('fx-jpy', comma((r.KRW/r.JPY)*100,1), '100엔', null, 0);
+    })
+    .catch(function(){
+      ['fx-usd','fx-eur','fx-jpy'].forEach(function(id){ renderMcErr(id,'loadFX'); });
+    });
+}
+
+/* ─── API: 지수 (Yahoo Finance) ─── */
+var IDX_MAP = {
   '%5EGSPC':'idx-sp500',
   '%5EIXIC':'idx-nasdaq',
   '%5EDJI':'idx-dow',
-  '%5EVIX':'idx-vix',
+  '%5EVIX':'idx-vix'
 };
 
-async function loadIndices(){
-  const syms=Object.keys(IDX).join(',');
-  try{
-    const res=await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${syms}`,{cache:'no-store',headers:{Accept:'application/json'}});
-    if(!res.ok) throw 0;
-    const results=(await res.json()).quoteResponse?.result||[];
-    if(!results.length) throw 0;
-    results.forEach(q=>{
-      const id=IDX[encodeURIComponent(q.symbol)];
-      if(!id) return;
-      const price=q.regularMarketPrice, chg=q.regularMarketChange, pct=q.regularMarketChangePercent;
-      const dir=chg>0?1:chg<0?-1:0;
-      if(id==='idx-vix'){
-        const vc=price<15?'vix-low':price<25?'vix-mid':'vix-high';
-        const arr=chg>0?'▲':chg<0?'▼':'─';
-        const cls=chg>0?'down':chg<0?'up':'flat';
-        document.getElementById(id).innerHTML=getMcLabel(id)+`<div class="mc-value ${vc}">${price.toFixed(2)}</div><div class="mc-change ${cls}">${arr} ${Math.abs(pct).toFixed(2)}%</div>`;
-      } else {
-        const val=id==='idx-dow'?comma(price,0):comma(price,2);
-        renderMc(id,val,null,`${Math.abs(chg).toFixed(2)} (${Math.abs(pct).toFixed(2)}%)`,dir);
-      }
+function loadIndices() {
+  var syms = Object.keys(IDX_MAP).join(',');
+  fetch('https://query1.finance.yahoo.com/v7/finance/quote?symbols='+syms, {cache:'no-store', headers:{Accept:'application/json'}})
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(j){
+      var results = (j.quoteResponse && j.quoteResponse.result) || [];
+      if(!results.length) throw 0;
+      results.forEach(function(q){
+        var key = encodeURIComponent(q.symbol);
+        var id = IDX_MAP[key];
+        if(!id) return;
+        var price=q.regularMarketPrice, chg=q.regularMarketChange, pct=q.regularMarketChangePercent;
+        var dir=chg>0?1:chg<0?-1:0;
+        if(id==='idx-vix'){
+          var vc=price<15?'vix-low':price<25?'vix-mid':'vix-high';
+          var arr=chg>0?'▲':chg<0?'▼':'─';
+          var cls=chg>0?'down':chg<0?'up':'flat';
+          document.getElementById(id).innerHTML=getLbl(id)+
+            '<div class="mc-val '+vc+'">'+price.toFixed(2)+'</div>'+
+            '<div class="mc-chg '+cls+'">'+arr+' '+Math.abs(pct).toFixed(2)+'%</div>';
+        } else {
+          var val=id==='idx-dow'?comma(price,0):comma(price,2);
+          renderMc(id,val,null,Math.abs(chg).toFixed(2)+' ('+Math.abs(pct).toFixed(2)+'%)',dir);
+        }
+      });
+    })
+    .catch(function(){
+      Object.values(IDX_MAP).forEach(function(id){ renderMcErr(id,'loadIndices'); });
     });
-  }catch(e){
-    Object.values(IDX).forEach(id=>renderMcErr(id,loadIndices));
-  }
 }
 
-/* ── API: 암호화폐 F&G ── */
-async function loadCrypto(){
-  try{
-    const res=await fetch('https://api.alternative.me/fng/?limit=35&format=json',{cache:'no-store'});
-    if(!res.ok) throw 0;
-    const d=(await res.json()).data;
-    renderFG('crypto-body',parseInt(d[0].value),parseInt(d[1].value),parseInt(d[6]?.value),parseInt(d[29]?.value),null);
-  }catch(e){renderFGErr('crypto-body',loadCrypto);}
+/* ─── API: 암호화폐 F&G ─── */
+function loadCrypto() {
+  fetch('https://api.alternative.me/fng/?limit=35&format=json', {cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(j){
+      var d=j.data;
+      renderFG('crypto-body',parseInt(d[0].value),parseInt(d[1].value),parseInt(d[6]&&d[6].value),parseInt(d[29]&&d[29].value),null);
+    })
+    .catch(function(){ renderFGErr('crypto-body','loadCrypto'); });
 }
 
-/* ── API: 주식 F&G (CNN) ── */
-async function loadStock(){
-  try{
-    const res=await fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata',{cache:'no-store',headers:{Accept:'application/json'}});
-    if(!res.ok) throw 0;
-    const fg=(await res.json()).fear_and_greed;
-    renderFG('stock-body',Math.round(fg.score),Math.round(fg.previous_close),Math.round(fg.previous_1_week),Math.round(fg.previous_1_month),Math.round(fg.previous_1_year));
-  }catch(e){renderFGErr('stock-body',loadStock);}
+/* ─── API: 주식 F&G (CNN) ─── */
+function loadStock() {
+  fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata', {cache:'no-store', headers:{Accept:'application/json'}})
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(j){
+      var fg=j.fear_and_greed;
+      renderFG('stock-body',Math.round(fg.score),Math.round(fg.previous_close),Math.round(fg.previous_1_week),Math.round(fg.previous_1_month),Math.round(fg.previous_1_year));
+    })
+    .catch(function(){ renderFGErr('stock-body','loadStock'); });
 }
 
-/* ── 갱신 ── */
-function tick(){document.getElementById('updated-txt').textContent='마지막 업데이트 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+/* ─── 타임스탬프 & 갱신 ─── */
+function tick() {
+  var t=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('updated-txt').textContent='마지막 업데이트 '+t+' · 60초마다 자동 갱신';
+}
 
-async function refresh(){await Promise.all([loadFX(),loadIndices(),loadStock(),loadCrypto()]);tick();}
+function refresh() {
+  loadFX();
+  loadIndices();
+  loadStock();
+  loadCrypto();
+  tick();
+}
 
 refresh();
-setInterval(refresh,60000);
+setInterval(refresh, 60000);
 </script>
 </body>
 </html>
