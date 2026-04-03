@@ -397,9 +397,17 @@ function renderFGErr(id,fn){ document.getElementById(id).innerHTML='<div class="
 /* ════ 데이터 로더 ════ */
 function loadJSON(path, cb, errCb){
   fetch(path, {cache:'no-store'})
-    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
-    .then(cb)
-    .catch(errCb || function(){ console.warn('load failed:', path); });
+    .then(function(r){
+      if(r.status===404){
+        /* 서버가 아직 초기 수집 중 — 조용히 대기 */
+        console.info('대기 중:', path);
+        return null;
+      }
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    })
+    .then(function(j){ if(j) cb(j); })
+    .catch(errCb || function(e){ console.warn('load failed:', path, e); });
 }
 
 /* ════ 환율 ════ */
@@ -411,26 +419,33 @@ function renderFxCard(id, val, sub, prev, m6v, y1v, y3v){
   document.getElementById(id).innerHTML = h;
 }
 
-var _fxPrev = null;
-
 function loadFX(){
   loadJSON('/data/fx.json', function(data){
-    var r  = data.current.rates;
-    var h6 = data.h6m  && data.h6m.rates;
-    var y1 = data.y1   && data.y1.rates;
-    var y3 = data.y3   && data.y3.rates;
-    var usd = r.KRW,            eur = r.KRW/r.EUR,         jpy = (r.KRW/r.JPY)*100;
+    var r   = data.current.rates;
+    var pd  = data.prev_day && data.prev_day.rates;  /* 전 영업일 */
+    var h6  = data.h6m && data.h6m.rates;
+    var y1  = data.y1  && data.y1.rates;
+    var y3  = data.y3  && data.y3.rates;
+
+    var usd = r.KRW,            eur = r.KRW/r.EUR,           jpy = (r.KRW/r.JPY)*100;
     var gbp = r.KRW/r.GBP,     cny = r.KRW/r.CNY;
+
+    /* 전 영업일 값 */
+    var pusd = pd ? pd.KRW                          : null;
+    var peur = pd && pd.EUR ? pd.KRW/pd.EUR         : null;
+    var pjpy = pd && pd.JPY ? (pd.KRW/pd.JPY)*100  : null;
+    var pgbp = pd && pd.GBP ? pd.KRW/pd.GBP         : null;
+    var pcny = pd && pd.CNY ? pd.KRW/pd.CNY         : null;
+
     function hv(h,k){ return h&&h[k]?h.KRW/h[k]:null; }
-    function hj(h){ return h&&h.JPY?(h.KRW/h.JPY)*100:null; }
-    function hu(h){ return h?h.KRW:null; }
-    var p = _fxPrev;
-    renderFxCard('fx-usd', usd, '1달러',  p&&p.usd, hu(h6),      hu(y1),      hu(y3));
-    renderFxCard('fx-eur', eur, '1유로',  p&&p.eur, hv(h6,'EUR'),hv(y1,'EUR'),hv(y3,'EUR'));
-    renderFxCard('fx-jpy', jpy, '100엔',  p&&p.jpy, hj(h6),      hj(y1),      hj(y3));
-    renderFxCard('fx-gbp', gbp, '1파운드',p&&p.gbp, hv(h6,'GBP'),hv(y1,'GBP'),hv(y3,'GBP'));
-    renderFxCard('fx-cny', cny, '1위안',  p&&p.cny, hv(h6,'CNY'),hv(y1,'CNY'),hv(y3,'CNY'));
-    _fxPrev = {usd:usd, eur:eur, jpy:jpy, gbp:gbp, cny:cny};
+    function hj(h){   return h&&h.JPY?(h.KRW/h.JPY)*100:null; }
+    function hu(h){   return h?h.KRW:null; }
+
+    renderFxCard('fx-usd', usd, '1달러',   pusd, hu(h6),       hu(y1),       hu(y3));
+    renderFxCard('fx-eur', eur, '1유로',   peur, hv(h6,'EUR'), hv(y1,'EUR'), hv(y3,'EUR'));
+    renderFxCard('fx-jpy', jpy, '100엔',   pjpy, hj(h6),       hj(y1),       hj(y3));
+    renderFxCard('fx-gbp', gbp, '1파운드', pgbp, hv(h6,'GBP'), hv(y1,'GBP'), hv(y3,'GBP'));
+    renderFxCard('fx-cny', cny, '1위안',   pcny, hv(h6,'CNY'), hv(y1,'CNY'), hv(y3,'CNY'));
   });
 }
 
