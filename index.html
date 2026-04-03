@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>MoneyScope</title>
+  <title>MoneyScoop</title>
   <meta name="theme-color" content="#f5f5f7" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -28,7 +28,8 @@
 
     /* ── 탑바 ── */
     .topbar { display:flex; align-items:baseline; padding:44px 0 24px; border-bottom:1.5px solid var(--txt-1); margin-bottom:36px; }
-    .topbar-title { font-size:26px; font-weight:700; letter-spacing:-1px; color:var(--txt-1); text-decoration:none; }
+    .topbar-title { font-size:24px; font-weight:700; letter-spacing:-1px; color:var(--txt-1); text-decoration:none; display:flex; align-items:center; gap:10px; }
+    .logo-img { width:28px; height:28px; object-fit:contain; display:block; opacity:0.75; }
     .topbar-sub { font-size:11px; color:var(--txt-4); margin-left:12px; font-family:var(--mono); }
 
     /* ── 섹션 ── */
@@ -194,7 +195,7 @@
 
   <!-- 탑바: 실시간 배지 제거 -->
   <div class="topbar">
-    <a class="topbar-title" href="/">MoneyScope</a>
+    <a class="topbar-title" href="/"><img class="logo-img" src="data:image/png;base64,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" alt="MoneyScoop logo">MoneyScoop</a>
     <span class="topbar-sub" id="updated-txt">—</span>
   </div>
 
@@ -509,7 +510,7 @@ function fetchAndRenderChart(sym,range){
       var res=j.chart&&j.chart.result&&j.chart.result[0]; if(!res) throw 0;
       var ts=res.timestamp||[],closes=res.indicators.quote[0].close||[];
       var labels=[],values=[];
-      for(var i=0;i<ts.length;i++){ if(closes[i]!=null){ var d=new Date(ts[i]*1000); labels.push(d.toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})); values.push(closes[i]); } }
+      for(var i=0;i<ts.length;i++){ if(closes[i]!=null){ var d=new Date(ts[i]*1000); labels.push(d); values.push(closes[i]); } }
       if(!values.length) throw 0;
       var first=values[0],last=values[values.length-1],perfDiff=last-first,perfPct=(perfDiff/Math.abs(first))*100;
       var isUp=perfDiff>=0,color=isUp?'#0a7a4b':'#cc2a20',arrow=isUp?'▲':'▼';
@@ -526,7 +527,7 @@ function fetchAndRenderChart(sym,range){
           options:{responsive:true,maintainAspectRatio:false,
             plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){return sym.fmt(c.parsed.y);}}}},
             scales:{
-              x:{grid:{display:false},ticks:{maxTicksLimit:6,font:{family:"'DM Mono',monospace",size:9},color:'#b0b0b8'},border:{display:false}},
+              x:{grid:{display:false},ticks:{maxTicksLimit:7,font:{family:"'DM Mono',monospace",size:9},color:'#b0b0b8',callback:function(val,idx){var d=labels[idx];if(!d) return '';var yr=d.getFullYear(),mo=d.getMonth()+1,dy=d.getDate();if(range==='1D'||range==='1W') return mo+'월'+dy+'일'; if(range==='1M') return mo+'월'+dy+'일'; if(range==='6M') return yr+'년'+mo+'월'; if(range==='1Y'||range==='3Y') return yr+'년'+mo+'월'; return yr+'년';}},border:{display:false}},
               y:{position:'right',grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:"'DM Mono',monospace",size:9},color:'#b0b0b8',callback:function(v){if(sym.id==='idx-vix')return v.toFixed(1);return v>=10000?(v/1000).toFixed(0)+'K':v.toFixed(0);}},border:{display:false}}
             },animation:{duration:300}}
         });
