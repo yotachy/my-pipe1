@@ -208,7 +208,7 @@
         <div class="sec-hd">
           <div class="sec-hd-left">
             <span class="sec-label">미국 주요 지수</span>
-            <span class="sec-cycle">장중 10초</span>
+            <span class="sec-cycle">장중 15분</span>
           </div>
           <span class="sec-src">Yahoo Finance</span>
         </div>
@@ -562,9 +562,39 @@ function fetchAndRenderChart(sym, range){
   var rm  = RANGE_MAP[range] || RANGE_MAP['1Y'];
   var url = '/api/chart?sym='+encodeURIComponent(sym.sym)+'&iv='+rm.iv+'&rg='+rm.rg;
 
-  fetch(url, {cache:'no-store'})
-    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
-    .then(function(j){
+  /* 차트: 6시간 localStorage 캐시 → CORS 프록시 순 */
+  var cacheKey = 'chart_'+sym.sym+'_'+range;
+  var cached   = null;
+  try {
+    var ce = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+    if(ce && (Date.now() - ce.ts) < 6*3600*1000) cached = ce.data;
+  } catch(e){}
+
+  var doFetch = cached
+    ? Promise.resolve(cached)
+    : (function(){
+        var proxies = [
+          'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+          'https://corsproxy.io/?' + encodeURIComponent(url),
+          'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
+          url
+        ];
+        return new Promise(function(resolve, reject){
+          var done=false, errs=0;
+          proxies.forEach(function(p){
+            fetch(p, {cache:'no-store'}).then(function(r){
+              if(!r.ok) throw new Error(r.status); return r.json();
+            }).then(function(j){
+              if(!done){ done=true;
+                try{ localStorage.setItem(cacheKey, JSON.stringify({ts:Date.now(),data:j})); }catch(e){}
+                resolve(j);
+              }
+            }).catch(function(){ errs++; if(errs===proxies.length&&!done) reject(); });
+          });
+        });
+      })();
+
+  doFetch.then(function(j){
       var res = j.chart&&j.chart.result&&j.chart.result[0]; if(!res) throw new Error('no result');
       var ts     = res.timestamp || [];
       var closes = res.indicators.quote[0].close || [];
@@ -665,9 +695,9 @@ function fetchAndRenderChart(sym, range){
         });
       });
     })
-    .catch(function(e){
-      wrap.innerHTML='<div class="chart-err">데이터를 불러올 수 없습니다<br><button onclick="fetchAndRenderChart(activeSym,activeRange)" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-family:var(--sans);font-weight:600;">↻ 다시 시도</button></div>';
-    });
+  }).catch(function(){
+    wrap.innerHTML='<div class="chart-err">데이터를 불러올 수 없습니다<br><button onclick="fetchAndRenderChart(activeSym,activeRange)" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-family:var(--sans);font-weight:600;">↻ 다시 시도</button></div>';
+  });
 }
 
 /* ════ 타임스탬프 ════ */
