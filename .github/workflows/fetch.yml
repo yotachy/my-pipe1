@@ -29,7 +29,7 @@ jobs:
       - name: Fetch market data
         run: python fetch_data.py
 
-- name: Commit and push
+      - name: Commit and push
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
