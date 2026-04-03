@@ -420,7 +420,7 @@ function renderFxCard(id, val, sub, prev, m6v, y1v, y3v){
 }
 
 function loadFX(){
-  loadJSON('/data/fx.json', function(data){
+  loadJSON('data/fx.json', function(data){
     var r   = data.current.rates;
     var pd  = data.prev_day && data.prev_day.rates;  /* 전 영업일 */
     var h6  = data.h6m && data.h6m.rates;
@@ -471,7 +471,7 @@ function applyQuote(sym, price, prev){
 }
 
 function loadIndices(){
-  loadJSON('/data/indices.json', function(data){
+  loadJSON('data/indices.json', function(data){
     var quotes = data.quotes || {};
     SYMBOLS.forEach(function(sym){
       var q = quotes[sym.sym];
@@ -485,7 +485,7 @@ function loadIndices(){
 
 /* ════ 공포&탐욕 ════ */
 function loadFearGreed(){
-  loadJSON('/data/fear_greed.json', function(data){
+  loadJSON('data/fear_greed.json', function(data){
     if(data.stock){
       var s=data.stock;
       renderFG('stock-body', s.score, s.prev, s.w1, s.m1, s.m6);
