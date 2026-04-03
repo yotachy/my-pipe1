@@ -40,8 +40,13 @@
     .sec-src   { font-size:10px; color:var(--txt-4); }
 
     /* ── 환율 그리드 — 항상 2열, 5개라 3+2 배치 ── */
-    .fx-row { display:grid; grid-template-columns:repeat(2,1fr); gap:24px 22px; }
-    .fx-item .flag  { font-size:14px; vertical-align:-1px; margin-right:3px; }
+    .fx-row { display:grid; grid-template-columns:repeat(2,1fr); gap:0; align-items:start; }
+    .fx-item { padding:14px 16px 16px; border-bottom:1px solid var(--rule); }
+    .fx-item:nth-child(odd) { border-right:1px solid var(--rule); padding-right:20px; }
+    .fx-item:nth-child(even) { padding-left:20px; }
+    /* 5번째 항목: 혼자 한 행 차지 — 전체 폭 */
+    .fx-item:last-child:nth-child(odd) { grid-column:1/-1; border-right:none; }
+    .fx-item .flag  { width:18px; height:12px; vertical-align:-1px; margin-right:5px; border-radius:2px; object-fit:cover; display:inline-block; }
     .fx-item .mc-lbl{ font-size:11px; font-weight:600; color:var(--txt-4); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; display:flex; align-items:center; }
     .fx-item .mc-val{ font-family:var(--mono); font-size:19px; font-weight:500; color:var(--txt-1); letter-spacing:-0.5px; line-height:1.1; }
     .fx-item .mc-sub{ font-size:10px; color:var(--txt-4); margin-top:3px; }
@@ -81,8 +86,8 @@
     #chart-area { margin-bottom:36px; display:none; }
     .chart-hd   { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
     .chart-name { font-size:14px; font-weight:700; color:var(--txt-1); }
-    .chart-ranges { display:flex; gap:12px; }
-    .range-btn  { font-size:11px; font-weight:600; color:var(--txt-4); background:none; border:none; cursor:pointer; font-family:var(--sans); padding:2px 0; letter-spacing:0.4px; border-bottom:1.5px solid transparent; }
+    .chart-ranges { display:flex; gap:8px; flex-wrap:wrap; }
+    .range-btn  { font-size:11px; font-weight:600; color:var(--txt-4); background:none; border:none; cursor:pointer; font-family:var(--sans); padding:2px 0; letter-spacing:0.4px; border-bottom:1.5px solid transparent; white-space:nowrap; }
     .range-btn.active { color:var(--txt-1); border-bottom-color:var(--txt-1); }
     .chart-perf { font-family:var(--mono); font-size:24px; font-weight:500; margin-bottom:10px; min-height:30px; }
     .chart-canvas-wrap { position:relative; width:100%; height:160px; }
@@ -133,7 +138,12 @@
     /* ══ 태블릿 560px~ ══ */
     @media (min-width:560px) {
       .shell { max-width:680px; }
-      .fx-row { grid-template-columns:repeat(3,1fr); gap:26px 20px; }
+      .fx-row { grid-template-columns:repeat(3,1fr); }
+      .fx-item:nth-child(odd) { border-right:none; }
+      .fx-item:nth-child(3n) { border-right:none; }
+      .fx-item:nth-child(n) { border-right:1px solid var(--rule); padding-right:20px; padding-left:20px; }
+      .fx-item:nth-child(3n) { border-right:none; }
+      .fx-item:last-child:nth-child(odd) { grid-column:auto; border-right:none; }
       .fx-item .mc-val { font-size:21px; }
       .idx-row .mc-val { font-size:22px; }
       .idx-row .mc-lbl { flex:0 0 88px; font-size:14px; }
@@ -156,8 +166,8 @@
         align-items:start;
       }
       .col-left, .col-right { display:flex; flex-direction:column; }
-      /* 환율 데스크탑: 2열 유지 (5개 → 2+2+1 / 이미 2열 기본이라 OK) */
-      .fx-row { grid-template-columns:repeat(2,1fr); gap:26px 20px; }
+      /* 환율 데스크탑: 2열 유지 */
+      .fx-row { grid-template-columns:repeat(2,1fr); }
       .fx-item .mc-val { font-size:20px; }
       .idx-row .mc-lbl { flex:0 0 80px; font-size:13px; }
       .idx-row .mc-val { font-size:21px; }
@@ -228,11 +238,11 @@
           <span class="sec-src">frankfurter.app</span>
         </div>
         <div class="fx-row">
-          <div class="fx-item" id="fx-usd"><div class="mc-lbl"><span class="flag">🇺🇸</span>USD/KRW</div><div class="sk" style="height:20px;width:78%;margin-top:5px"></div><div class="sk" style="height:10px;width:55%;margin-top:8px"></div><div class="sk" style="height:34px;width:100%;margin-top:8px;border-radius:3px"></div></div>
-          <div class="fx-item" id="fx-eur"><div class="mc-lbl"><span class="flag">🇪🇺</span>EUR/KRW</div><div class="sk" style="height:20px;width:78%;margin-top:5px"></div><div class="sk" style="height:10px;width:55%;margin-top:8px"></div><div class="sk" style="height:34px;width:100%;margin-top:8px;border-radius:3px"></div></div>
-          <div class="fx-item" id="fx-jpy"><div class="mc-lbl"><span class="flag">🇯🇵</span>JPY/KRW</div><div class="sk" style="height:20px;width:78%;margin-top:5px"></div><div class="sk" style="height:10px;width:55%;margin-top:8px"></div><div class="sk" style="height:34px;width:100%;margin-top:8px;border-radius:3px"></div></div>
-          <div class="fx-item" id="fx-gbp"><div class="mc-lbl"><span class="flag">🇬🇧</span>GBP/KRW</div><div class="sk" style="height:20px;width:78%;margin-top:5px"></div><div class="sk" style="height:10px;width:55%;margin-top:8px"></div><div class="sk" style="height:34px;width:100%;margin-top:8px;border-radius:3px"></div></div>
-          <div class="fx-item" id="fx-cny"><div class="mc-lbl"><span class="flag">🇨🇳</span>CNY/KRW</div><div class="sk" style="height:20px;width:78%;margin-top:5px"></div><div class="sk" style="height:10px;width:55%;margin-top:8px"></div><div class="sk" style="height:34px;width:100%;margin-top:8px;border-radius:3px"></div></div>
+          <div class="fx-item" id="fx-usd"><div class="mc-lbl"><img class="flag" src="https://flagcdn.com/w40/us.png" alt="US">USD/KRW</div><div class="sk" style="height:20px;width:78%;margin-top:5px"></div><div class="sk" style="height:10px;width:55%;margin-top:8px"></div><div class="sk" style="height:34px;width:100%;margin-top:8px;border-radius:3px"></div></div>
+          <div class="fx-item" id="fx-eur"><div class="mc-lbl"><img class="flag" src="https://flagcdn.com/w40/eu.png" alt="EU">EUR/KRW</div><div class="sk" style="height:20px;width:78%;margin-top:5px"></div><div class="sk" style="height:10px;width:55%;margin-top:8px"></div><div class="sk" style="height:34px;width:100%;margin-top:8px;border-radius:3px"></div></div>
+          <div class="fx-item" id="fx-jpy"><div class="mc-lbl"><img class="flag" src="https://flagcdn.com/w40/jp.png" alt="JP">JPY/KRW</div><div class="sk" style="height:20px;width:78%;margin-top:5px"></div><div class="sk" style="height:10px;width:55%;margin-top:8px"></div><div class="sk" style="height:34px;width:100%;margin-top:8px;border-radius:3px"></div></div>
+          <div class="fx-item" id="fx-gbp"><div class="mc-lbl"><img class="flag" src="https://flagcdn.com/w40/gb.png" alt="GB">GBP/KRW</div><div class="sk" style="height:20px;width:78%;margin-top:5px"></div><div class="sk" style="height:10px;width:55%;margin-top:8px"></div><div class="sk" style="height:34px;width:100%;margin-top:8px;border-radius:3px"></div></div>
+          <div class="fx-item" id="fx-cny"><div class="mc-lbl"><img class="flag" src="https://flagcdn.com/w40/cn.png" alt="CN">CNY/KRW</div><div class="sk" style="height:20px;width:78%;margin-top:5px"></div><div class="sk" style="height:10px;width:55%;margin-top:8px"></div><div class="sk" style="height:34px;width:100%;margin-top:8px;border-radius:3px"></div></div>
         </div>
       </div>
 
@@ -271,10 +281,14 @@
   <div class="chart-hd">
     <span class="chart-name" id="chart-name">—</span>
     <div class="chart-ranges">
+      <button class="range-btn" data-r="1D" onclick="setRange('1D')">1D</button>
+      <button class="range-btn" data-r="1W" onclick="setRange('1W')">1W</button>
       <button class="range-btn" data-r="1M" onclick="setRange('1M')">1M</button>
-      <button class="range-btn" data-r="3M" onclick="setRange('3M')">3M</button>
+      <button class="range-btn" data-r="6M" onclick="setRange('6M')">6M</button>
       <button class="range-btn active" data-r="1Y" onclick="setRange('1Y')">1Y</button>
+      <button class="range-btn" data-r="3Y" onclick="setRange('3Y')">3Y</button>
       <button class="range-btn" data-r="5Y" onclick="setRange('5Y')">5Y</button>
+      <button class="range-btn" data-r="10Y" onclick="setRange('10Y')">10Y</button>
     </div>
   </div>
   <div class="chart-perf" id="chart-perf"></div>
@@ -486,7 +500,7 @@ function fetchAndRenderChart(sym,range){
   document.getElementById('chart-perf').textContent='';
   var wrap=document.querySelector('.chart-canvas-wrap');
   wrap.innerHTML='<div class="chart-loading">불러오는 중...</div>';
-  var rMap={'1M':['1d','1mo'],'3M':['1d','3mo'],'1Y':['1wk','1y'],'5Y':['1mo','5y']};
+  var rMap={'1D':['2m','1d'],'1W':['30m','5d'],'1M':['1d','1mo'],'6M':['1d','6mo'],'1Y':['1wk','1y'],'3Y':['1wk','3y'],'5Y':['1mo','5y'],'10Y':['1mo','10y']};
   var iv=rMap[range][0],rg=rMap[range][1];
   var enc=encodeURIComponent(sym.sym);
   var yUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+enc+'?interval='+iv+'&range='+rg;
@@ -549,6 +563,12 @@ function tick(){
 }
 
 ensureChartInSlot();
+
+/* S&P500 기본 차트 자동 로드 */
+activeSym=SYMBOLS[0];
+document.getElementById(SYMBOLS[0].id).classList.add('active');
+document.getElementById('chart-area').style.display='block';
+fetchAndRenderChart(SYMBOLS[0],activeRange);
 
 loadStock(); loadCrypto();
 loadFX();      setInterval(loadFX,     10*60*1000);
