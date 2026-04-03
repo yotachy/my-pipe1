@@ -26,8 +26,7 @@
 
     .topbar{display:flex;align-items:baseline;padding:44px 0 24px;border-bottom:1.5px solid var(--txt-1);margin-bottom:36px}
     .topbar-title{font-size:24px;font-weight:700;letter-spacing:-1px;color:var(--txt-1);text-decoration:none;display:flex;align-items:center;gap:10px}
-    .logo-img{width:28px;height:28px;object-fit:contain;opacity:.75}
-    .topbar-sub{font-size:11px;color:var(--txt-4);margin-left:12px;font-family:var(--mono)}
+    .logo-img{width:30px;height:30px;object-fit:contain;filter:contrast(0.7)}
 
     .section{margin-bottom:40px}
     .sec-hd{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--rule);margin-bottom:20px}
@@ -38,22 +37,22 @@
 
     /* 환율 */
     .fx-row{display:grid;grid-template-columns:repeat(2,1fr);gap:0;align-items:start}
-    .fx-item{padding:14px 16px 16px;border-bottom:1px solid var(--rule)}
+    .fx-item{padding:10px 14px 12px;border-bottom:1px solid var(--rule)}
     .fx-item:nth-child(odd){border-right:1px solid var(--rule);padding-right:20px}
     .fx-item:nth-child(even){padding-left:20px}
     .fx-item:last-child:nth-child(odd){grid-column:1/-1;border-right:none}
     .fx-item .flag{width:18px;height:12px;vertical-align:-1px;margin-right:5px;border-radius:2px;object-fit:cover;display:inline-block}
     .fx-item .mc-lbl{font-size:11px;font-weight:600;color:var(--txt-4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center}
-    .fx-item .mc-val{font-family:var(--mono);font-size:19px;font-weight:500;color:var(--txt-1);letter-spacing:-.5px;line-height:1.1}
-    .fx-item .mc-sub{font-size:10px;color:var(--txt-4);margin-top:3px}
-    .fx-item .chg-row{display:flex;align-items:baseline;gap:5px;margin-top:7px}
-    .fx-item .chg-pct{font-family:var(--mono);font-size:14px;font-weight:700}
+    .fx-item .mc-val{font-family:var(--mono);font-size:17px;font-weight:500;color:var(--txt-1);letter-spacing:-.5px;line-height:1.1}
+    .fx-item .mc-sub{font-size:9px;color:var(--txt-4);margin-top:1px}
+    .fx-item .chg-row{display:flex;align-items:baseline;gap:4px;margin-top:5px}
+    .fx-item .chg-pct{font-family:var(--mono);font-size:12px;font-weight:700}
     .fx-item .chg-raw{font-family:var(--mono);font-size:10px;opacity:.5}
     .fx-item .chg-note{font-size:9px;color:var(--txt-4);margin-top:2px}
     .fx-item .mc-err{font-size:12px;color:var(--down);margin-top:7px}
     .fx-item .mc-retry{font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-family:var(--sans);padding:0;margin-left:4px;font-weight:600}
-    .fx-hist-line{display:flex;flex-direction:column;gap:3px;margin-top:9px}
-    .fx-hist-item{font-size:10px;color:var(--txt-4)}
+    .fx-hist-line{display:flex;flex-direction:row;flex-wrap:wrap;gap:4px 10px;margin-top:6px}
+    .fx-hist-item{font-size:10px;color:var(--txt-4);white-space:nowrap}
     .fx-hist-item b{font-weight:700}
 
     /* 지수 */
@@ -119,10 +118,40 @@
     .footer-row{display:flex;justify-content:space-between}
     .footer-txt{font-size:10px;color:var(--txt-4);font-family:var(--mono)}
     #chart-slot{}
+
+    /* ── AdMob 광고 슬롯 ── */
+    .ad-slot{width:100%;overflow:hidden;text-align:center;background:#f0f0f2}
+    /* 상단 배너: 320x50 (모바일) / 728x90 (데스크탑) */
+    .ad-slot-top{height:50px;margin-bottom:12px}
+    /* 콘텐츠 중간 배너: 320x100 (Large Banner) */
+    .ad-slot-mid{height:100px;margin:16px 0}
+    /* 하단 고정 배너: 320x50 */
+    .ad-slot-bottom-fixed{
+      position:fixed;bottom:0;left:0;right:0;
+      height:50px;background:#f0f0f2;
+      z-index:999;border-top:1px solid var(--rule);
+      display:flex;align-items:center;justify-content:center;
+    }
+    /* 하단 고정 광고로 인한 body 여백 */
+    body{padding-bottom:50px}
+    @media(min-width:820px){
+      .ad-slot-top{height:90px}
+      .ad-slot-bottom-fixed{height:60px}
+      body{padding-bottom:60px}
+    }
+    /* 광고 레이블 */
+    .ad-label{font-size:9px;color:var(--txt-4);display:block;margin-bottom:2px;letter-spacing:0.5px}
+    /* 광고 없을 때 placeholder */
+    .ad-placeholder{
+      width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+      font-size:10px;color:var(--txt-4);font-family:var(--mono);
+      border:1px dashed var(--rule);border-radius:4px;
+    }
     /* 기본 레이아웃 — 단일 컬럼 */
-    .desktop-grid{display:block}
-    .col-left{display:block}
-    .col-right{display:block}
+    .desktop-grid{display:block;width:100%}
+    .col-left{display:block;width:100%}
+    .col-right{display:block;width:100%;overflow-x:hidden}
+    .fx-row{width:100%;overflow:hidden}
 
     @media(min-width:560px){
       .shell{max-width:680px}
@@ -142,16 +171,16 @@
     }
     @media(min-width:820px){
       body{padding:0 48px}
-      .shell{max-width:1240px;padding:0 0 80px}
+      .shell{max-width:1200px;padding:0 0 80px;overflow-x:hidden}
       .topbar{padding:48px 0 26px}
-      .desktop-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 72px;align-items:start}
+      .desktop-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 48px;align-items:start}
       .col-left,.col-right{display:flex;flex-direction:column}
-      .fx-row{grid-template-columns:repeat(2,1fr)}
-      .fx-item:nth-child(n){border-right:none;padding-right:16px;padding-left:16px}
-      .fx-item:nth-child(odd){border-right:1px solid var(--rule);padding-right:20px;padding-left:16px}
-      .fx-item:nth-child(even){padding-left:20px}
+      .fx-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .fx-item:nth-child(n){border-right:none;padding-right:12px;padding-left:12px}
+      .fx-item:nth-child(odd){border-right:1px solid var(--rule);padding-right:14px;padding-left:12px}
+      .fx-item:nth-child(even){padding-left:14px}
       .fx-item:last-child:nth-child(odd){grid-column:1/-1;border-right:none}
-      .fx-item .mc-val{font-size:20px}
+      .fx-item .mc-val{font-size:16px}
       .idx-row .mc-lbl{flex:0 0 80px;font-size:13px}
       .idx-row .mc-val{font-size:21px}
       .idx-row .chg-pct{font-size:15px}
@@ -173,10 +202,20 @@
 <div class="shell">
   <div class="topbar">
     <a class="topbar-title" href="./index.html">
-      <img class="logo-img" src="data:image/png;base64,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" alt="logo" />
+      <img class="logo-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAEfklEQVR42n2Xy04dRxCGv6qe43MSyzEyWaGsYIfIAzgLL5y35R2MpXgTrxwpDsYOEpaMYi/iRQDDAaa7suievswMjHTEMF1dXVV/Xf6W4+Nj67oOgBACqoqZASAihBAQkfyuzmHBA4Kq4r1HVct+5wjeg4CKFp0YIRjOOSwEAJxzdF3XYRYmBw4Kh3ezkNdBAMN7j4iMDPaT/YN+FcmHg9H3PR35kfRHypfqfSSFjWQbCQGCVfvHcpbltPESa0RbA5Kn6ZsgiJC8jz8zQ0WSfkneZ3MBS9ujDqeKqtMkFJXWwkNoa4NKCMGCJfylgSCvW6icsOJEssF7j1qwO4I8YG9V4GwCUUgGWVIuopUTUsI9hthAVVEz7n1qGCTFCDOoEm84qojKrC7Dim3pRZ3T6WFChVnrccyDclq7XntPikhZ15noqfd+umGIWsbM8rqqNB6GOifMmjVRaZI0VJVhAwTRappDuCOAMTFbWRGJocUqY2rZCkCVRn8IAU2gtkdZxGoQrhVZCU8JbzJktVpVUZBm46BznF9qkxBWiZXacjknp2HOFTNjuVyxXq959+6wauVDiUaD6o6Zc0IVHfp4FhrMjF0mYU7q/aVPCEIIxoPlktPTT7x69Rtd1+W5gcT1Uoo20e+9p2v7fVXnVuMoTZKZGUbgweIBx39/4OjoiGfPnrGxsYH3gb6/xcxwrmu7aK6qCIeooOMyE+r2KnfXtBnL5ZIvX76wt7fH5uaPnJ2dc3Dwgv39fc7Pz+PkywdPZ4fE0hzVedWvC2YlbGZG1zm897x9+yfL5ZIQAiHE71+//ouKpGgMk1Fyo6/TOQSbQqDVABkSZwhb7P3C1dWaq6tLPn/+h+VyhXMdfX/Ly5cHPH36C0+ebKY6n1aQSpk9qoKcfPxomOVstzIpiSlRIhFC4PuHD/njzRtubq7zt42NDU5PP7G9vcP2zg7X1zeRA1T7Y3TLUJLcHSdteMoHVJXFYsFiseD90RHOxf9j1iuvX//O7u4u29s7XF1exSlYqZLkmdTzJD0VBEYpgtaI9XrNxcU5fd9zePgXjx79gAh8+3aBasfz57+ytfUTl5eXOOeqBG66znQ2qNI559IMl9E0s5RwHWdn//Hhw3sMePz4caZlq9V37O39zNbWFuv1Gte5gSpVQ00mk7OhbycnJzbf9yVHRFVxzk0omqpwe9vT97eIaGJUU09HRKyatFpzwmmdD0q893jv27JMUzN3vgmjmlWaMLZ6RI/7QGnLuTmlnzrNEVGN76XOa9IjjRMlmdshFkJAQ2gnlo45YFvIqLqE65SAxFdtkszMmqlaiKrgnGtICi1/pbCf8aie5ZBjDTRkZo5vJD4gM5saVja7PiYqc9i3DGl+piQ+IDM0msnFwiwgKney6Lk6n5DSeqcKGhtHTSq5m1SqMqXxNAypofFjhxiR1mDxZnTf02I2X99TKGzEA+r1eKkdLsR6TwrO3BG45/C7cR5fdIbGlu4Frgqxa0jlIDxeF5HRqJbsmVmBcrx/iF7f91xfXxNC4H+zXNeYADdo6gAAAABJRU5ErkJggg==" alt="logo" />
       MoneyScoop
     </a>
-    <span class="topbar-sub" id="updated-txt">—</span>
+
+  </div>
+
+  <!-- AdMob 상단 배너 (320x50 / 728x90) -->
+  <div class="ad-slot ad-slot-top">
+    <!-- 여기에 AdMob 광고 코드 삽입
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="banner"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    -->
+    <div class="ad-placeholder">광고 영역 (상단 배너 320×50)</div>
   </div>
 
   <div class="desktop-grid">
@@ -199,6 +238,12 @@
         <div class="idx-footnote">클릭하면 차트 보기 · 전일 종가 대비</div>
       </div>
       <div id="chart-slot"></div>
+      <!-- AdMob 중간 배너 (Large Banner 320x100) -->
+      <div class="ad-slot ad-slot-mid">
+        <!-- 여기에 AdMob 광고 코드 삽입 -->
+        <div class="ad-placeholder">광고 영역 (중간 320×100)</div>
+      </div>
+
     </div>
 
     <!-- 오른쪽: 환율 + F&G -->
@@ -239,7 +284,6 @@
         </div>
       </div>
 
-      <div class="ad-txt">광고 영역 — 유료 결제 시 제거됩니다</div>
       <div class="footer-row"><span class="footer-txt"></span></div>
     </div>
   </div>
@@ -267,7 +311,6 @@
 /* ── 유틸 ── */
 function c(n,d){d=d||0;return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});}
 function getLbl(id){return document.getElementById(id).querySelector('.mc-lbl').outerHTML;}
-function tick(){document.getElementById('updated-txt').textContent='업데이트 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 
 /* ── 데이터 로더 (캐시버스팅 포함) ── */
 function loadJSON(path,cb,fallback){
@@ -586,9 +629,19 @@ loadFX();
 loadIndices();
 loadFearGreed();
 setInterval(loadFX,30*60*1000);
-setInterval(loadIndices,15*60*1000);
+setInterval(loadIndices,3*60*1000);
 setInterval(loadFearGreed,12*60*60*1000);
-tick();setInterval(tick,1000);
 </script>
+
+<!-- AdMob 하단 고정 배너 (320x50) — 항상 노출, 최고 수익 위치 -->
+<div class="ad-slot-bottom-fixed">
+  <!-- 여기에 AdMob 고정 배너 코드 삽입
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="banner" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  -->
+  <span class="ad-label">광고</span>
+  <div class="ad-placeholder" style="height:50px;width:320px">하단 고정 배너 (320×50)</div>
+</div>
 </body>
 </html>

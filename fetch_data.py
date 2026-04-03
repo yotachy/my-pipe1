@@ -51,13 +51,8 @@ def save(filename, data):
 def load(filename):
     path = os.path.join(DATA_DIR, filename)
     if os.path.exists(path):
-        try:
-            with open(path, 'r', encoding='utf-8') as f:
-                content = f.read().strip()
-                if content:
-                    return json.loads(content)
-        except Exception:
-            pass
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
     return None
 
 def is_market_open():
@@ -128,7 +123,7 @@ def fetch_indices():
             'market_open': False,
             'quotes':      quotes,
         })
-        log('장 마감 — 기존 지수 데이터 유지')
+        log('장 마감 — 종가 데이터 유지 (갱신 없음)')
         return
 
     for sym in SYMBOLS:
