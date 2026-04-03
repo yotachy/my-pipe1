@@ -208,7 +208,7 @@
         <div class="sec-hd">
           <div class="sec-hd-left">
             <span class="sec-label">미국 주요 지수</span>
-            <span class="sec-cycle">5초 갱신</span>
+            <span class="sec-cycle">장중 10초</span>
           </div>
           <span class="sec-src">Yahoo Finance</span>
         </div>
@@ -234,7 +234,7 @@
         <div class="sec-hd">
           <div class="sec-hd-left">
             <span class="sec-label">환율</span>
-            <span class="sec-cycle">10분 갱신</span>
+            <span class="sec-cycle">30분 갱신</span>
           </div>
           <span class="sec-src">frankfurter.app</span>
         </div>
@@ -252,7 +252,7 @@
         <div class="sec-hd">
           <div class="sec-hd-left">
             <span class="sec-label">공포 &amp; 탐욕</span>
-            <span class="sec-cycle">일 1회 갱신</span>
+            <span class="sec-cycle">12시간 갱신</span>
           </div>
         </div>
         <div class="fg-pair">
@@ -299,14 +299,29 @@
 </div>
 
 <script>
-/* ════ 유틸 ════ */
+/* ════════════════════════════════════════════
+   MoneyScoop — 로컬 서버 데이터 읽기 버전
+   /data/fx.json, /data/indices.json, /data/fear_greed.json
+════════════════════════════════════════════ */
+
+/* ── 유틸 ── */
 function comma(n,d){ d=d||0; return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d}); }
 function getLbl(id){ return document.getElementById(id).querySelector('.mc-lbl').outerHTML; }
-function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
-function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
-function dateStr(d){ var dt=new Date(); dt.setDate(dt.getDate()-d); return dt.toISOString().split('T')[0]; }
 
-/* ════ 등락률 HTML ════ */
+/* ── 날짜 포맷 헬퍼 — 통일된 방식 ── */
+function fmtDate(d, range){
+  var yr = d.getFullYear(), mo = d.getMonth()+1, dy = d.getDate();
+  var hh = String(d.getHours()).padStart(2,'0');
+  if(range==='1D')          return hh+'시';
+  if(range==='1W')          return mo+'/'+dy;
+  if(range==='1M')          return mo+'/'+dy;
+  if(range==='6M')          return mo+'월';
+  if(range==='1Y'||range==='3Y') return mo+'월';
+  return yr+'년';  /* 5Y, 10Y */
+}
+function fmtYear(yr){ return "'"+String(yr).slice(2)+'년'; }
+
+/* ── 등락률 HTML ── */
 function chgHtml(cur,prev,note,rawFmt){
   if(prev==null||isNaN(prev)||prev===0) return '';
   var diff=cur-prev, pct=(diff/Math.abs(prev))*100;
@@ -327,8 +342,8 @@ function fxHistHtml(cur,m6,y1,y3){
   return '<div class="fx-hist-line">'+item('6개월',m6)+item('1년',y1)+item('3년',y3)+'</div>';
 }
 
-function renderMcErr(id,fn){
-  document.getElementById(id).innerHTML=getLbl(id)+'<div class="mc-err">오류 <button class="mc-retry" onclick="'+fn+'()">↻</button></div>';
+function renderMcErr(id, msg){
+  document.getElementById(id).innerHTML=getLbl(id)+'<div class="mc-err">'+(msg||'데이터 없음')+'</div>';
 }
 
 /* ════ F&G ════ */
@@ -379,136 +394,100 @@ function renderFG(id,score,prev,w1,m1,m6){
 }
 function renderFGErr(id,fn){ document.getElementById(id).innerHTML='<div class="fg-err"><div class="fg-err-txt">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="'+fn+'()">다시 시도 ↻</button></div>'; }
 
-/* ════ fetch 유틸 ════ */
-function fetchWithTimeout(url, ms){
-  ms = ms || 8000;
-  var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  var timer = ctrl ? setTimeout(function(){ ctrl.abort(); }, ms) : null;
-  return fetch(url, {cache:'no-store', signal: ctrl ? ctrl.signal : undefined})
-    .then(function(r){
-      if(timer) clearTimeout(timer);
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      return r.json();
-    });
+/* ════ 데이터 로더 ════ */
+function loadJSON(path, cb, errCb){
+  fetch(path, {cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(cb)
+    .catch(errCb || function(){ console.warn('load failed:', path); });
 }
 
-function makeProxies(targetUrl){
-  var enc = encodeURIComponent(targetUrl);
-  return [
-    'https://api.allorigins.win/raw?url=' + enc,
-    'https://corsproxy.io/?' + enc,
-    'https://api.codetabs.com/v1/proxy?quest=' + enc,
-    'https://thingproxy.freeboard.io/fetch/' + enc,
-    targetUrl
-  ];
+/* ════ 환율 ════ */
+function renderFxCard(id, val, sub, prev, m6v, y1v, y3v){
+  var h = getLbl(id);
+  h += '<div class="mc-val">'+comma(val,1)+'</div><div class="mc-sub">'+sub+'</div>';
+  if(prev!=null) h += chgHtml(val, prev, '전일 종가 대비', function(v){return comma(v,1);});
+  h += fxHistHtml(val, m6v, y1v, y3v);
+  document.getElementById(id).innerHTML = h;
 }
 
-function raceFetch(urls){
-  return new Promise(function(resolve, reject){
-    var done = false, errs = 0, total = urls.length;
-    urls.forEach(function(url){
-      fetchWithTimeout(url, 9000)
-        .then(function(j){
-          if(!done){ done = true; resolve(j); }
-        })
-        .catch(function(){
-          errs++;
-          if(errs === total && !done) reject(new Error('all proxies failed'));
-        });
-    });
-  });
-}
+var _fxPrev = null;
 
-/* 짧은 캐시 (지수: 30초, 환율: 10분) */
-var _memCache = {};
-function memGet(key){ var e=_memCache[key]; return (e && Date.now()<e.exp) ? e.val : null; }
-function memSet(key, val, ttlMs){ _memCache[key]={val:val,exp:Date.now()+ttlMs}; }
-
-/* ════ API: 환율 ════ */
 function loadFX(){
-  var TODAY=new Date().toDateString(), base='https://api.frankfurter.app/';
-  var params='?from=USD&to=KRW,EUR,JPY,GBP,CNY';
-  Promise.all([
-    fetch(base+'latest'+params,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}),
-    fetch(base+dateStr(182)+params,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;}),
-    fetch(base+dateStr(365)+params,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;}),
-    fetch(base+dateStr(365*3)+params,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;})
-  ]).then(function(res){
-    var cur=res[0],h6=res[1],y1=res[2],y3=res[3],r=cur.rates;
-    var usd=r.KRW, eur=r.KRW/r.EUR, jpy=(r.KRW/r.JPY)*100, gbp=r.KRW/r.GBP, cny=r.KRW/r.CNY;
-    var stored=lsGet('fx_today_v4'),prevDay=lsGet('fx_prev_v4');
-    if(stored&&stored.date!==TODAY){ lsSet('fx_prev_v4',{date:stored.date,usd:stored.usd,eur:stored.eur,jpy:stored.jpy,gbp:stored.gbp,cny:stored.cny}); prevDay=lsGet('fx_prev_v4'); }
-    lsSet('fx_today_v4',{date:TODAY,usd:usd,eur:eur,jpy:jpy,gbp:gbp,cny:cny});
-    function hv(h,k){ return h&&h.rates[k]?h.rates.KRW/h.rates[k]:null; }
-    function hj(h){ return h&&h.rates.JPY?(h.rates.KRW/h.rates.JPY)*100:null; }
-    function hu(h){ return h?h.rates.KRW:null; }
-    var pu=prevDay?prevDay.usd:null,pe=prevDay?prevDay.eur:null,pj=prevDay?prevDay.jpy:null,pg=prevDay?prevDay.gbp:null,pc=prevDay?prevDay.cny:null;
-    function card(id,val,sub,prev,m6v,y1v,y3v){
-      var h=getLbl(id)+'<div class="mc-val">'+comma(val,1)+'</div><div class="mc-sub">'+sub+'</div>';
-      if(prev) h+=chgHtml(val,prev,'전일 종가 대비',function(v){return comma(v,1);});
-      h+=fxHistHtml(val,m6v,y1v,y3v);
-      document.getElementById(id).innerHTML=h;
-    }
-    card('fx-usd',usd,'1달러',pu,hu(h6),hu(y1),hu(y3));
-    card('fx-eur',eur,'1유로',pe,hv(h6,'EUR'),hv(y1,'EUR'),hv(y3,'EUR'));
-    card('fx-jpy',jpy,'100엔',pj,hj(h6),hj(y1),hj(y3));
-    card('fx-gbp',gbp,'1파운드',pg,hv(h6,'GBP'),hv(y1,'GBP'),hv(y3,'GBP'));
-    card('fx-cny',cny,'1위안',pc,hv(h6,'CNY'),hv(y1,'CNY'),hv(y3,'CNY'));
-  }).catch(function(){
-    ['fx-usd','fx-eur','fx-jpy','fx-gbp','fx-cny'].forEach(function(id){renderMcErr(id,'loadFX');});
+  loadJSON('/data/fx.json', function(data){
+    var r  = data.current.rates;
+    var h6 = data.h6m  && data.h6m.rates;
+    var y1 = data.y1   && data.y1.rates;
+    var y3 = data.y3   && data.y3.rates;
+    var usd = r.KRW,            eur = r.KRW/r.EUR,         jpy = (r.KRW/r.JPY)*100;
+    var gbp = r.KRW/r.GBP,     cny = r.KRW/r.CNY;
+    function hv(h,k){ return h&&h[k]?h.KRW/h[k]:null; }
+    function hj(h){ return h&&h.JPY?(h.KRW/h.JPY)*100:null; }
+    function hu(h){ return h?h.KRW:null; }
+    var p = _fxPrev;
+    renderFxCard('fx-usd', usd, '1달러',  p&&p.usd, hu(h6),      hu(y1),      hu(y3));
+    renderFxCard('fx-eur', eur, '1유로',  p&&p.eur, hv(h6,'EUR'),hv(y1,'EUR'),hv(y3,'EUR'));
+    renderFxCard('fx-jpy', jpy, '100엔',  p&&p.jpy, hj(h6),      hj(y1),      hj(y3));
+    renderFxCard('fx-gbp', gbp, '1파운드',p&&p.gbp, hv(h6,'GBP'),hv(y1,'GBP'),hv(y3,'GBP'));
+    renderFxCard('fx-cny', cny, '1위안',  p&&p.cny, hv(h6,'CNY'),hv(y1,'CNY'),hv(y3,'CNY'));
+    _fxPrev = {usd:usd, eur:eur, jpy:jpy, gbp:gbp, cny:cny};
   });
 }
 
-/* ════ API: 지수 ════ */
-var SYMBOLS=[
-  {sym:'^GSPC',id:'idx-sp500', name:'S&P 500',fmt:function(p){return comma(p,2);}},
-  {sym:'^IXIC',id:'idx-nasdaq',name:'NASDAQ',  fmt:function(p){return comma(p,2);}},
-  {sym:'^DJI', id:'idx-dow',  name:'DOW',      fmt:function(p){return comma(p,0);}},
-  {sym:'^VIX', id:'idx-vix',  name:'VIX',      fmt:function(p){return p.toFixed(2);}},
+/* ════ 지수 ════ */
+var SYMBOLS = [
+  {sym:'^GSPC', id:'idx-sp500',  name:'S&P 500', fmt:function(p){return comma(p,2);}},
+  {sym:'^IXIC', id:'idx-nasdaq', name:'NASDAQ',  fmt:function(p){return comma(p,2);}},
+  {sym:'^DJI',  id:'idx-dow',   name:'DOW',      fmt:function(p){return comma(p,0);}},
+  {sym:'^VIX',  id:'idx-vix',   name:'VIX',      fmt:function(p){return p.toFixed(2);}},
 ];
-function applyQuote(sym,price,prev){
-  var id=sym.id,chg=price-prev,pct=(chg/Math.abs(prev))*100;
+
+function applyQuote(sym, price, prev){
+  var id=sym.id, chg=price-prev, pct=(chg/Math.abs(prev))*100;
   var isVix=(id==='idx-vix');
   var cls=isVix?(chg>0?'down':chg<0?'up':'flat'):(chg>0?'up':chg<0?'down':'flat');
   var arrow=chg>0?'▲':chg<0?'▼':'─';
   var valCls=isVix?(price<15?'vix-low':price<25?'vix-mid':'vix-high'):'';
   document.getElementById(id).innerHTML=getLbl(id)+
     '<div class="mc-val '+valCls+'">'+sym.fmt(price)+'</div>'+
-    '<div class="chg-row"><span class="chg-pct '+cls+'">'+arrow+' '+Math.abs(pct).toFixed(2)+'%</span><span class="chg-raw '+cls+'">'+Math.abs(chg).toFixed(2)+'</span></div>'+
+    '<div class="chg-row"><span class="chg-pct '+cls+'">'+arrow+' '+Math.abs(pct).toFixed(2)+'%</span>'+
+    '<span class="chg-raw '+cls+'">'+Math.abs(chg).toFixed(2)+'</span></div>'+
     '<div class="chg-note">전일 종가 대비</div>';
 }
-function fetchSymbol(sym){
-  var cacheKey = 'quote_'+sym.sym;
-  var cached = memGet(cacheKey);
-  if(cached){ applyQuote(sym, cached.price, cached.prev); return Promise.resolve(); }
 
-  var yUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym.sym)+'?interval=1d&range=2d&includePrePost=false';
-  return raceFetch(makeProxies(yUrl))
-    .then(function(j){
-      var res=j.chart&&j.chart.result&&j.chart.result[0]; if(!res) throw new Error('no result');
-      var meta=res.meta, price=meta.regularMarketPrice, prev=meta.previousClose||meta.chartPreviousClose;
-      if(!price||!prev) throw new Error('no price');
-      memSet(cacheKey, {price:price,prev:prev}, 30000); /* 30초 캐시 */
-      applyQuote(sym,price,prev);
-    })
-    .catch(function(){
-      /* 스스로 재시도 1회 (query2 도메인) */
-      var yUrl2='https://query2.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym.sym)+'?interval=1d&range=2d';
-      return raceFetch(makeProxies(yUrl2))
-        .then(function(j){
-          var res=j.chart&&j.chart.result&&j.chart.result[0]; if(!res) throw new Error('no result');
-          var meta=res.meta, price=meta.regularMarketPrice, prev=meta.previousClose||meta.chartPreviousClose;
-          if(!price||!prev) throw new Error('no price');
-          memSet(cacheKey, {price:price,prev:prev}, 30000);
-          applyQuote(sym,price,prev);
-        })
-        .catch(function(){ renderMcErr(sym.id,'loadIndices'); });
+function loadIndices(){
+  loadJSON('/data/indices.json', function(data){
+    var quotes = data.quotes || {};
+    SYMBOLS.forEach(function(sym){
+      var q = quotes[sym.sym];
+      if(q && q.price && q.prev){
+        applyQuote(sym, q.price, q.prev);
+      }
+      /* 없으면 현재 스켈레톤/기존값 유지 */
     });
+  });
 }
-function loadIndices(){ SYMBOLS.forEach(function(sym){ fetchSymbol(sym); }); }
+
+/* ════ 공포&탐욕 ════ */
+function loadFearGreed(){
+  loadJSON('/data/fear_greed.json', function(data){
+    if(data.stock){
+      var s=data.stock;
+      renderFG('stock-body', s.score, s.prev, s.w1, s.m1, s.m6);
+    }
+    if(data.crypto){
+      var c=data.crypto;
+      renderFG('crypto-body', c.score, c.prev, c.w1, c.m1, c.m6);
+    }
+  }, function(){
+    renderFGErr('stock-body','loadFearGreed');
+    renderFGErr('crypto-body','loadFearGreed');
+  });
+}
 
 /* ════ 차트 ════ */
-var chartJsReady=false,chartJsCbs=[],chartInst=null,activeSym=null,activeRange='1Y';
+var chartJsReady=false, chartJsCbs=[], chartInst=null, activeSym=null, activeRange='1Y';
+
 function loadChartJs(cb){
   if(chartJsReady){cb();return;}
   chartJsCbs.push(cb);
@@ -519,7 +498,6 @@ function loadChartJs(cb){
   document.head.appendChild(s);
 }
 
-/* 차트는 항상 #chart-slot 안에 — 리사이즈 무관 */
 function ensureChartInSlot(){
   var el=document.getElementById('chart-area');
   var slot=document.getElementById('chart-slot');
@@ -539,126 +517,170 @@ function onIdxClick(i){
   document.getElementById(sym.id).classList.add('active');
   ensureChartInSlot();
   document.getElementById('chart-area').style.display='block';
-  fetchAndRenderChart(sym,activeRange);
+  fetchAndRenderChart(sym, activeRange);
 }
 
 function setRange(r){
   activeRange=r;
   document.querySelectorAll('.range-btn').forEach(function(b){b.classList.toggle('active',b.dataset.r===r);});
-  if(activeSym) fetchAndRenderChart(activeSym,r);
+  if(activeSym) fetchAndRenderChart(activeSym, r);
 }
 
-function fetchAndRenderChart(sym,range){
-  document.getElementById('chart-name').textContent=sym.name;
-  document.getElementById('chart-perf').textContent='';
-  var wrap=document.querySelector('.chart-canvas-wrap');
-  wrap.innerHTML='<div class="chart-loading">불러오는 중...</div>';
-  var rMap={'1D':['2m','1d'],'1W':['30m','5d'],'1M':['1d','1mo'],'6M':['1d','6mo'],'1Y':['1wk','1y'],'3Y':['1wk','3y'],'5Y':['1mo','5y'],'10Y':['1mo','10y']};
-  var iv=rMap[range][0],rg=rMap[range][1];
-  var enc=encodeURIComponent(sym.sym);
-  var yUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+enc+'?interval='+iv+'&range='+rg;
-  raceFetch(makeProxies(yUrl))
+/* 범위 → Yahoo interval/range 매핑 */
+var RANGE_MAP = {
+  '1D': {iv:'2m',  rg:'1d'},
+  '1W': {iv:'30m', rg:'5d'},
+  '1M': {iv:'1d',  rg:'1mo'},
+  '6M': {iv:'1d',  rg:'6mo'},
+  '1Y': {iv:'1wk', rg:'1y'},
+  '3Y': {iv:'1wk', rg:'3y'},
+  '5Y': {iv:'1mo', rg:'5y'},
+  '10Y':{iv:'1mo', rg:'10y'},
+};
+
+function fetchAndRenderChart(sym, range){
+  document.getElementById('chart-name').textContent = sym.name;
+  document.getElementById('chart-perf').textContent = '';
+  var wrap = document.querySelector('.chart-canvas-wrap');
+  wrap.innerHTML = '<div class="chart-loading">불러오는 중...</div>';
+
+  var rm  = RANGE_MAP[range] || RANGE_MAP['1Y'];
+  var url = '/api/chart?sym='+encodeURIComponent(sym.sym)+'&iv='+rm.iv+'&rg='+rm.rg;
+
+  fetch(url, {cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(j){
-      var res=j.chart&&j.chart.result&&j.chart.result[0]; if(!res) throw 0;
-      var ts=res.timestamp||[],closes=res.indicators.quote[0].close||[];
-      var labels=[],values=[];
-      for(var i=0;i<ts.length;i++){
+      var res = j.chart&&j.chart.result&&j.chart.result[0]; if(!res) throw new Error('no result');
+      var ts     = res.timestamp || [];
+      var closes = res.indicators.quote[0].close || [];
+
+      /* 날짜 객체 배열 + 값 배열 */
+      var labels = [], values = [];
+      for(var i=0; i<ts.length; i++){
         if(closes[i]!=null){
-          var d=new Date(ts[i]*1000);
-          labels.push(d);
+          labels.push(new Date(ts[i]*1000));
           values.push(closes[i]);
         }
       }
-      /* 선택 범위만 표시 (1D=오늘, 1W=7일 이내) */
-      var cutoff=null;
-      if(range==='1D'){ var c=new Date(); c.setHours(0,0,0,0); cutoff=c; }
-      else if(range==='1W'){ cutoff=new Date(Date.now()-7*24*3600*1000); }
-      if(cutoff){ var fi=0; while(fi<labels.length&&labels[fi]<cutoff) fi++; labels=labels.slice(fi); values=values.slice(fi); }
-      if(!values.length) throw 0;
-      var first=values[0],last=values[values.length-1],perfDiff=last-first,perfPct=(perfDiff/Math.abs(first))*100;
-      var isUp=perfDiff>=0,color=isUp?'#0a7a4b':'#cc2a20',arrow=isUp?'▲':'▼';
+      if(!values.length) throw new Error('empty');
+
+      var first=values[0], last=values[values.length-1];
+      var perfDiff=last-first, perfPct=(perfDiff/Math.abs(first))*100;
+      var isUp=perfDiff>=0, color=isUp?'#0a7a4b':'#cc2a20', arrow=isUp?'▲':'▼';
       document.getElementById('chart-perf').innerHTML='<span style="color:'+color+'">'+arrow+' '+Math.abs(perfPct).toFixed(2)+'%</span>';
+
       loadChartJs(function(){
         wrap.innerHTML='<canvas id="main-chart"></canvas>';
         if(chartInst){chartInst.destroy();chartInst=null;}
         var ctx=document.getElementById('main-chart').getContext('2d');
-        chartInst=new Chart(ctx,{
+
+        /* X축 tick: 년도 변경 시 'YY년 표시, 그 외 월/일/시 */
+        var tickCb = function(val, idx){
+          var d = labels[idx]; if(!d) return '';
+          var yr=d.getFullYear(), mo=d.getMonth()+1;
+          var prevD = idx>0 ? labels[idx-1] : null;
+          var yearChanged = prevD && prevD.getFullYear()!==yr;
+
+          /* 주/월 단위 이상이면 년 바뀔 때 'YY년 삽입 */
+          if(range==='6M'||range==='1Y'||range==='3Y'){
+            return yearChanged ? fmtYear(yr) : mo+'월';
+          }
+          if(range==='5Y'||range==='10Y') return yr+'년';
+          return fmtDate(d, range);
+        };
+
+        chartInst = new Chart(ctx,{
           type:'line',
-          data:{labels:labels,datasets:[{data:values,borderColor:color,borderWidth:2,fill:true,
-            backgroundColor:function(c){var chart=c.chart,ca=chart.chartArea;if(!ca)return color+'10';var g=chart.ctx.createLinearGradient(0,ca.top,0,ca.bottom);g.addColorStop(0,color+'28');g.addColorStop(1,color+'00');return g;},
-            pointRadius:0,pointHoverRadius:4,tension:0.2}]},
-          options:{responsive:true,maintainAspectRatio:false,
-            plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){return sym.fmt(c.parsed.y);}}}},
+          data:{
+            labels: labels,
+            datasets:[{
+              data:values, borderColor:color, borderWidth:2, fill:true,
+              backgroundColor:function(c){
+                var chart=c.chart, ca=chart.chartArea;
+                if(!ca) return color+'10';
+                var g=chart.ctx.createLinearGradient(0,ca.top,0,ca.bottom);
+                g.addColorStop(0,color+'28'); g.addColorStop(1,color+'00');
+                return g;
+              },
+              pointRadius:0, pointHoverRadius:4, tension:0.2
+            }]
+          },
+          options:{
+            responsive:true, maintainAspectRatio:false,
+            plugins:{
+              legend:{display:false},
+              tooltip:{mode:'index',intersect:false,callbacks:{
+                title:function(items){
+                  var d=labels[items[0].dataIndex]; if(!d) return '';
+                  var yr=d.getFullYear(),mo=d.getMonth()+1,dy=d.getDate();
+                  var hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');
+                  if(range==='1D') return yr+'년 '+mo+'/'+dy+' '+hh+':'+mm;
+                  if(range==='1W') return mo+'/'+dy+' '+hh+'시';
+                  if(range==='5Y'||range==='10Y') return yr+'년 '+mo+'월';
+                  return yr+'년 '+mo+'/'+dy;
+                },
+                label:function(c){return sym.fmt(c.parsed.y);}
+              }}
+            },
             scales:{
-              x:{grid:{display:false},ticks:{maxTicksLimit:8,font:{family:"'DM Mono',monospace",size:9},color:'#b0b0b8',maxRotation:0,
-              callback:function(val,idx){
-                var d=labels[idx]; if(!d) return '';
-                var yr=d.getFullYear(), mo=d.getMonth()+1, dy=d.getDate();
-                var prevD=idx>0?labels[idx-1]:null, prevYr=prevD?prevD.getFullYear():null;
-                var yearChanged=(prevYr!==null&&prevYr!==yr);
-                /* 1D/1W: 시:분 */
-                if(range==='1D'||range==='1W'){
-                  var hh=String(d.getHours()).padStart(2,'0'), mm=String(d.getMinutes()).padStart(2,'0');
-                  return hh+':'+mm;
-                }
-                /* 1M: 월/일 */
-                if(range==='1M') return mo+'/'+dy;
-                /* 6M: 년 바뀌면 'YY년' 표시, 아니면 'M월' */
-                if(range==='6M') return yearChanged ? "'"+String(yr).slice(2)+'년' : mo+'월';
-                /* 1Y/3Y: 년 바뀌면 YYYY년, 아니면 M월 */
-                if(range==='1Y'||range==='3Y') return yearChanged ? yr+'년' : mo+'월';
-                /* 5Y/10Y: 년도만 */
-                return yr+'년';
-              }},border:{display:false}},
-              y:{position:'right',grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:"'DM Mono',monospace",size:9},color:'#b0b0b8',callback:function(v){if(sym.id==='idx-vix')return v.toFixed(1);return v>=10000?(v/1000).toFixed(0)+'K':v.toFixed(0);}},border:{display:false}}
-            },animation:{duration:300}}
+              x:{
+                grid:{display:false},
+                ticks:{
+                  maxTicksLimit:8, maxRotation:0,
+                  font:{family:"'DM Mono',monospace",size:9}, color:'#b0b0b8',
+                  callback: tickCb
+                },
+                border:{display:false}
+              },
+              y:{
+                position:'right',
+                grid:{color:'rgba(0,0,0,0.04)'},
+                ticks:{
+                  font:{family:"'DM Mono',monospace",size:9}, color:'#b0b0b8',
+                  callback:function(v){
+                    if(sym.id==='idx-vix') return v.toFixed(1);
+                    return v>=10000?(v/1000).toFixed(0)+'K':v.toFixed(0);
+                  }
+                },
+                border:{display:false}
+              }
+            },
+            animation:{duration:300}
+          }
         });
       });
-    }).catch(function(){
+    })
+    .catch(function(e){
       wrap.innerHTML='<div class="chart-err">데이터를 불러올 수 없습니다<br><button onclick="fetchAndRenderChart(activeSym,activeRange)" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-family:var(--sans);font-weight:600;">↻ 다시 시도</button></div>';
     });
 }
 
-/* ════ F&G ════ */
-var TODAY_STR=new Date().toDateString();
-function loadCrypto(){
-  var cache=lsGet('fg_crypto_'+TODAY_STR);
-  if(cache){renderFG('crypto-body',cache.s,cache.p,cache.w1,cache.m1,cache.m6);return;}
-  fetch('https://api.alternative.me/fng/?limit=185&format=json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
-    var d=j.data,obj={s:parseInt(d[0].value),p:parseInt(d[1].value),w1:d[6]?parseInt(d[6].value):null,m1:d[29]?parseInt(d[29].value):null,m6:d[182]?parseInt(d[182].value):null};
-    lsSet('fg_crypto_'+TODAY_STR,obj);renderFG('crypto-body',obj.s,obj.p,obj.w1,obj.m1,obj.m6);
-  }).catch(function(){renderFGErr('crypto-body','loadCrypto');});
-}
-function loadStock(){
-  var cache=lsGet('fg_stock_'+TODAY_STR);
-  if(cache){renderFG('stock-body',cache.s,cache.p,cache.w1,cache.m1,cache.m6);return;}
-  fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata',{cache:'no-store',headers:{Accept:'application/json'}}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
-    var fg=j.fear_and_greed,s=Math.round(fg.score),p=Math.round(fg.previous_close);
-    var w1=fg.previous_1_week?Math.round(fg.previous_1_week):null,m1=fg.previous_1_month?Math.round(fg.previous_1_month):null,m6=null;
-    var hist=(j.fear_and_greed_historical&&j.fear_and_greed_historical.data)||[];
-    if(hist.length){var t=Date.now()-182*24*60*60*1000,best=null,bd=Infinity;for(var i=0;i<hist.length;i++){var ts=hist[i].x;if(ts<1e12)ts*=1000;var df=Math.abs(ts-t);if(df<bd&&typeof hist[i].y==='number'){bd=df;best=hist[i];}}if(best)m6=Math.round(best.y);}
-    var obj={s:s,p:p,w1:w1,m1:m1,m6:m6};lsSet('fg_stock_'+TODAY_STR,obj);renderFG('stock-body',obj.s,obj.p,obj.w1,obj.m1,obj.m6);
-  }).catch(function(){renderFGErr('stock-body','loadStock');});
-}
-
-/* ════ 초기화 ════ */
+/* ════ 타임스탬프 ════ */
 function tick(){
   var t=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   document.getElementById('updated-txt').textContent='업데이트 '+t;
 }
 
+/* ════ 초기 로드 & 인터벌 ════ */
 ensureChartInSlot();
 
-/* S&P500 기본 차트 자동 로드 */
-activeSym=SYMBOLS[0];
+/* S&P 500 기본 차트 */
+activeSym = SYMBOLS[0];
 document.getElementById(SYMBOLS[0].id).classList.add('active');
 document.getElementById('chart-area').style.display='block';
-fetchAndRenderChart(SYMBOLS[0],activeRange);
+fetchAndRenderChart(SYMBOLS[0], activeRange);
 
-loadStock(); loadCrypto();
-loadFX();      setInterval(loadFX,     10*60*1000);
-loadIndices(); setInterval(loadIndices, 5*1000);
-tick();        setInterval(tick, 1000);
+/* 데이터 로드 */
+loadFX();
+loadIndices();
+loadFearGreed();
+
+/* 갱신 인터벌 */
+setInterval(loadFX,       30*60*1000);   /* 30분 */
+setInterval(loadIndices,  10*1000);       /* 10초 (서버가 장중만 업데이트) */
+setInterval(loadFearGreed,12*60*60*1000); /* 12시간 */
+tick();
+setInterval(tick, 1000);
 </script>
 </body>
 </html>
