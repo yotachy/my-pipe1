@@ -396,7 +396,8 @@ function renderFGErr(id,fn){ document.getElementById(id).innerHTML='<div class="
 
 /* ════ 데이터 로더 ════ */
 function loadJSON(path, cb, errCb){
-  fetch(path, {cache:'no-store'})
+  var bust = path + (path.indexOf('?')>=0?'&':'?') + '_=' + Date.now();
+  fetch(bust, {cache:'no-store'})
     .then(function(r){
       if(r.status===404){
         /* 서버가 아직 초기 수집 중 — 조용히 대기 */
@@ -421,6 +422,7 @@ function renderFxCard(id, val, sub, prev, m6v, y1v, y3v){
 
 function loadFX(){
   loadJSON('data/fx.json', function(data){
+    if(!data || !data.current || !data.current.rates) return;
     var r   = data.current.rates;
     var pd  = data.prev_day && data.prev_day.rates;  /* 전 영업일 */
     var h6  = data.h6m && data.h6m.rates;
@@ -472,6 +474,7 @@ function applyQuote(sym, price, prev){
 
 function loadIndices(){
   loadJSON('data/indices.json', function(data){
+    if(!data) return;
     var quotes = data.quotes || {};
     SYMBOLS.forEach(function(sym){
       var q = quotes[sym.sym];
@@ -486,6 +489,7 @@ function loadIndices(){
 /* ════ 공포&탐욕 ════ */
 function loadFearGreed(){
   loadJSON('data/fear_greed.json', function(data){
+    if(!data) return;
     if(data.stock){
       var s=data.stock;
       renderFG('stock-body', s.score, s.prev, s.w1, s.m1, s.m6);
