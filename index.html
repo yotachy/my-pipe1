@@ -379,15 +379,50 @@ function renderFG(id,score,prev,w1,m1,m6){
 }
 function renderFGErr(id,fn){ document.getElementById(id).innerHTML='<div class="fg-err"><div class="fg-err-txt">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="'+fn+'()">다시 시도 ↻</button></div>'; }
 
-/* ════ 경쟁 fetch ════ */
+/* ════ fetch 유틸 ════ */
+function fetchWithTimeout(url, ms){
+  ms = ms || 8000;
+  var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timer = ctrl ? setTimeout(function(){ ctrl.abort(); }, ms) : null;
+  return fetch(url, {cache:'no-store', signal: ctrl ? ctrl.signal : undefined})
+    .then(function(r){
+      if(timer) clearTimeout(timer);
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.json();
+    });
+}
+
+function makeProxies(targetUrl){
+  var enc = encodeURIComponent(targetUrl);
+  return [
+    'https://api.allorigins.win/raw?url=' + enc,
+    'https://corsproxy.io/?' + enc,
+    'https://api.codetabs.com/v1/proxy?quest=' + enc,
+    'https://thingproxy.freeboard.io/fetch/' + enc,
+    targetUrl
+  ];
+}
+
 function raceFetch(urls){
-  return new Promise(function(resolve,reject){
-    var done=false,errs=0;
+  return new Promise(function(resolve, reject){
+    var done = false, errs = 0, total = urls.length;
     urls.forEach(function(url){
-      fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){if(!done){done=true;resolve(j);}}).catch(function(){errs++;if(errs===urls.length&&!done)reject();});
+      fetchWithTimeout(url, 9000)
+        .then(function(j){
+          if(!done){ done = true; resolve(j); }
+        })
+        .catch(function(){
+          errs++;
+          if(errs === total && !done) reject(new Error('all proxies failed'));
+        });
     });
   });
 }
+
+/* 짧은 캐시 (지수: 30초, 환율: 10분) */
+var _memCache = {};
+function memGet(key){ var e=_memCache[key]; return (e && Date.now()<e.exp) ? e.val : null; }
+function memSet(key, val, ttlMs){ _memCache[key]={val:val,exp:Date.now()+ttlMs}; }
 
 /* ════ API: 환율 ════ */
 function loadFX(){
@@ -443,15 +478,32 @@ function applyQuote(sym,price,prev){
     '<div class="chg-note">전일 종가 대비</div>';
 }
 function fetchSymbol(sym){
-  var enc=encodeURIComponent(sym.sym);
-  var yUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+enc+'?interval=1d&range=2d&includePrePost=false';
-  return raceFetch(['https://api.allorigins.win/raw?url='+encodeURIComponent(yUrl),'https://corsproxy.io/?'+encodeURIComponent(yUrl),yUrl])
+  var cacheKey = 'quote_'+sym.sym;
+  var cached = memGet(cacheKey);
+  if(cached){ applyQuote(sym, cached.price, cached.prev); return Promise.resolve(); }
+
+  var yUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym.sym)+'?interval=1d&range=2d&includePrePost=false';
+  return raceFetch(makeProxies(yUrl))
     .then(function(j){
-      var res=j.chart&&j.chart.result&&j.chart.result[0]; if(!res) throw 0;
-      var meta=res.meta,price=meta.regularMarketPrice,prev=meta.previousClose||meta.chartPreviousClose;
-      if(!price||!prev) throw 0;
+      var res=j.chart&&j.chart.result&&j.chart.result[0]; if(!res) throw new Error('no result');
+      var meta=res.meta, price=meta.regularMarketPrice, prev=meta.previousClose||meta.chartPreviousClose;
+      if(!price||!prev) throw new Error('no price');
+      memSet(cacheKey, {price:price,prev:prev}, 30000); /* 30초 캐시 */
       applyQuote(sym,price,prev);
-    }).catch(function(){ renderMcErr(sym.id,'loadIndices'); });
+    })
+    .catch(function(){
+      /* 스스로 재시도 1회 (query2 도메인) */
+      var yUrl2='https://query2.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym.sym)+'?interval=1d&range=2d';
+      return raceFetch(makeProxies(yUrl2))
+        .then(function(j){
+          var res=j.chart&&j.chart.result&&j.chart.result[0]; if(!res) throw new Error('no result');
+          var meta=res.meta, price=meta.regularMarketPrice, prev=meta.previousClose||meta.chartPreviousClose;
+          if(!price||!prev) throw new Error('no price');
+          memSet(cacheKey, {price:price,prev:prev}, 30000);
+          applyQuote(sym,price,prev);
+        })
+        .catch(function(){ renderMcErr(sym.id,'loadIndices'); });
+    });
 }
 function loadIndices(){ SYMBOLS.forEach(function(sym){ fetchSymbol(sym); }); }
 
@@ -505,12 +557,23 @@ function fetchAndRenderChart(sym,range){
   var iv=rMap[range][0],rg=rMap[range][1];
   var enc=encodeURIComponent(sym.sym);
   var yUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+enc+'?interval='+iv+'&range='+rg;
-  raceFetch(['https://api.allorigins.win/raw?url='+encodeURIComponent(yUrl),'https://corsproxy.io/?'+encodeURIComponent(yUrl),yUrl])
+  raceFetch(makeProxies(yUrl))
     .then(function(j){
       var res=j.chart&&j.chart.result&&j.chart.result[0]; if(!res) throw 0;
       var ts=res.timestamp||[],closes=res.indicators.quote[0].close||[];
       var labels=[],values=[];
-      for(var i=0;i<ts.length;i++){ if(closes[i]!=null){ var d=new Date(ts[i]*1000); labels.push(d); values.push(closes[i]); } }
+      for(var i=0;i<ts.length;i++){
+        if(closes[i]!=null){
+          var d=new Date(ts[i]*1000);
+          labels.push(d);
+          values.push(closes[i]);
+        }
+      }
+      /* 선택 범위만 표시 (1D=오늘, 1W=7일 이내) */
+      var cutoff=null;
+      if(range==='1D'){ var c=new Date(); c.setHours(0,0,0,0); cutoff=c; }
+      else if(range==='1W'){ cutoff=new Date(Date.now()-7*24*3600*1000); }
+      if(cutoff){ var fi=0; while(fi<labels.length&&labels[fi]<cutoff) fi++; labels=labels.slice(fi); values=values.slice(fi); }
       if(!values.length) throw 0;
       var first=values[0],last=values[values.length-1],perfDiff=last-first,perfPct=(perfDiff/Math.abs(first))*100;
       var isUp=perfDiff>=0,color=isUp?'#0a7a4b':'#cc2a20',arrow=isUp?'▲':'▼';
@@ -527,12 +590,33 @@ function fetchAndRenderChart(sym,range){
           options:{responsive:true,maintainAspectRatio:false,
             plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){return sym.fmt(c.parsed.y);}}}},
             scales:{
-              x:{grid:{display:false},ticks:{maxTicksLimit:7,font:{family:"'DM Mono',monospace",size:9},color:'#b0b0b8',callback:function(val,idx){var d=labels[idx];if(!d) return '';var yr=d.getFullYear(),mo=d.getMonth()+1,dy=d.getDate();if(range==='1D'||range==='1W') return mo+'월'+dy+'일'; if(range==='1M') return mo+'월'+dy+'일'; if(range==='6M') return yr+'년'+mo+'월'; if(range==='1Y'||range==='3Y') return yr+'년'+mo+'월'; return yr+'년';}},border:{display:false}},
+              x:{grid:{display:false},ticks:{maxTicksLimit:8,font:{family:"'DM Mono',monospace",size:9},color:'#b0b0b8',maxRotation:0,
+              callback:function(val,idx){
+                var d=labels[idx]; if(!d) return '';
+                var yr=d.getFullYear(), mo=d.getMonth()+1, dy=d.getDate();
+                var prevD=idx>0?labels[idx-1]:null, prevYr=prevD?prevD.getFullYear():null;
+                var yearChanged=(prevYr!==null&&prevYr!==yr);
+                /* 1D/1W: 시:분 */
+                if(range==='1D'||range==='1W'){
+                  var hh=String(d.getHours()).padStart(2,'0'), mm=String(d.getMinutes()).padStart(2,'0');
+                  return hh+':'+mm;
+                }
+                /* 1M: 월/일 */
+                if(range==='1M') return mo+'/'+dy;
+                /* 6M: 년 바뀌면 'YY년' 표시, 아니면 'M월' */
+                if(range==='6M') return yearChanged ? "'"+String(yr).slice(2)+'년' : mo+'월';
+                /* 1Y/3Y: 년 바뀌면 YYYY년, 아니면 M월 */
+                if(range==='1Y'||range==='3Y') return yearChanged ? yr+'년' : mo+'월';
+                /* 5Y/10Y: 년도만 */
+                return yr+'년';
+              }},border:{display:false}},
               y:{position:'right',grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:"'DM Mono',monospace",size:9},color:'#b0b0b8',callback:function(v){if(sym.id==='idx-vix')return v.toFixed(1);return v>=10000?(v/1000).toFixed(0)+'K':v.toFixed(0);}},border:{display:false}}
             },animation:{duration:300}}
         });
       });
-    }).catch(function(){ wrap.innerHTML='<div class="chart-err">데이터를 불러올 수 없습니다</div>'; });
+    }).catch(function(){
+      wrap.innerHTML='<div class="chart-err">데이터를 불러올 수 없습니다<br><button onclick="fetchAndRenderChart(activeSym,activeRange)" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-family:var(--sans);font-weight:600;">↻ 다시 시도</button></div>';
+    });
 }
 
 /* ════ F&G ════ */
