@@ -26,7 +26,7 @@
 
     .topbar{display:flex;align-items:baseline;padding:44px 0 24px;border-bottom:1.5px solid var(--txt-1);margin-bottom:36px}
     .topbar-title{font-size:24px;font-weight:700;letter-spacing:-1px;color:var(--txt-1);text-decoration:none;display:flex;align-items:center;gap:10px}
-    .logo-img{width:30px;height:30px;object-fit:contain;filter:contrast(0.7)}
+    .logo-img{width:26px;height:26px;object-fit:contain;opacity:0.8}
 
     .section{margin-bottom:40px}
     .sec-hd{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--rule);margin-bottom:20px}
@@ -37,7 +37,7 @@
 
     /* 환율 */
     .fx-row{display:grid;grid-template-columns:repeat(2,1fr);gap:0;align-items:start}
-    .fx-item{padding:10px 14px 12px;border-bottom:1px solid var(--rule)}
+    .fx-item{padding:10px 14px 12px;border-bottom:1px solid var(--rule);min-height:0}
     .fx-item:nth-child(odd){border-right:1px solid var(--rule);padding-right:20px}
     .fx-item:nth-child(even){padding-left:20px}
     .fx-item:last-child:nth-child(odd){grid-column:1/-1;border-right:none}
@@ -51,8 +51,8 @@
     .fx-item .chg-note{font-size:9px;color:var(--txt-4);margin-top:2px}
     .fx-item .mc-err{font-size:12px;color:var(--down);margin-top:7px}
     .fx-item .mc-retry{font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-family:var(--sans);padding:0;margin-left:4px;font-weight:600}
-    .fx-hist-line{display:flex;flex-direction:row;flex-wrap:wrap;gap:4px 10px;margin-top:6px}
-    .fx-hist-item{font-size:10px;color:var(--txt-4);white-space:nowrap}
+    .fx-hist-line{display:flex;flex-direction:row;flex-wrap:nowrap;gap:0 8px;margin-top:5px;overflow:hidden}
+    .fx-hist-item{font-size:9.5px;color:var(--txt-4);white-space:nowrap;flex-shrink:0}
     .fx-hist-item b{font-weight:700}
 
     /* 지수 */
@@ -151,14 +151,14 @@
     .desktop-grid{display:block;width:100%}
     .col-left{display:block;width:100%}
     .col-right{display:block;width:100%;overflow-x:hidden}
-    .fx-row{width:100%;overflow:hidden}
+    .fx-row{width:100%;overflow:hidden;align-items:start}
 
     @media(min-width:560px){
       .shell{max-width:680px}
       .fx-row{grid-template-columns:repeat(3,1fr)}
       .fx-item:nth-child(odd){border-right:none}
-      .fx-item:nth-child(n){border-right:1px solid var(--rule);padding-right:20px;padding-left:20px}
-      .fx-item:nth-child(3n){border-right:none}
+      .fx-item:nth-child(n){border-right:1px solid var(--rule);padding-right:12px;padding-left:12px}
+      .fx-item:nth-child(3n){border-right:none;padding-right:4px}
       .fx-item:last-child:nth-child(odd){grid-column:auto;border-right:none}
       .fx-item .mc-val{font-size:21px}
       .idx-row .mc-val{font-size:22px}
@@ -180,7 +180,7 @@
       .fx-item:nth-child(odd){border-right:1px solid var(--rule);padding-right:14px;padding-left:12px}
       .fx-item:nth-child(even){padding-left:14px}
       .fx-item:last-child:nth-child(odd){grid-column:1/-1;border-right:none}
-      .fx-item .mc-val{font-size:16px}
+      .fx-item .mc-val{font-size:15px}
       .idx-row .mc-lbl{flex:0 0 80px;font-size:13px}
       .idx-row .mc-val{font-size:21px}
       .idx-row .chg-pct{font-size:15px}
@@ -202,7 +202,7 @@
 <div class="shell">
   <div class="topbar">
     <a class="topbar-title" href="./index.html">
-      <img class="logo-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAEfklEQVR42n2Xy04dRxCGv6qe43MSyzEyWaGsYIfIAzgLL5y35R2MpXgTrxwpDsYOEpaMYi/iRQDDAaa7suievswMjHTEMF1dXVV/Xf6W4+Nj67oOgBACqoqZASAihBAQkfyuzmHBA4Kq4r1HVct+5wjeg4CKFp0YIRjOOSwEAJxzdF3XYRYmBw4Kh3ezkNdBAMN7j4iMDPaT/YN+FcmHg9H3PR35kfRHypfqfSSFjWQbCQGCVfvHcpbltPESa0RbA5Kn6ZsgiJC8jz8zQ0WSfkneZ3MBS9ujDqeKqtMkFJXWwkNoa4NKCMGCJfylgSCvW6icsOJEssF7j1qwO4I8YG9V4GwCUUgGWVIuopUTUsI9hthAVVEz7n1qGCTFCDOoEm84qojKrC7Dim3pRZ3T6WFChVnrccyDclq7XntPikhZ15noqfd+umGIWsbM8rqqNB6GOifMmjVRaZI0VJVhAwTRappDuCOAMTFbWRGJocUqY2rZCkCVRn8IAU2gtkdZxGoQrhVZCU8JbzJktVpVUZBm46BznF9qkxBWiZXacjknp2HOFTNjuVyxXq959+6wauVDiUaD6o6Zc0IVHfp4FhrMjF0mYU7q/aVPCEIIxoPlktPTT7x69Rtd1+W5gcT1Uoo20e+9p2v7fVXnVuMoTZKZGUbgweIBx39/4OjoiGfPnrGxsYH3gb6/xcxwrmu7aK6qCIeooOMyE+r2KnfXtBnL5ZIvX76wt7fH5uaPnJ2dc3Dwgv39fc7Pz+PkywdPZ4fE0hzVedWvC2YlbGZG1zm897x9+yfL5ZIQAiHE71+//ouKpGgMk1Fyo6/TOQSbQqDVABkSZwhb7P3C1dWaq6tLPn/+h+VyhXMdfX/Ly5cHPH36C0+ebKY6n1aQSpk9qoKcfPxomOVstzIpiSlRIhFC4PuHD/njzRtubq7zt42NDU5PP7G9vcP2zg7X1zeRA1T7Y3TLUJLcHSdteMoHVJXFYsFiseD90RHOxf9j1iuvX//O7u4u29s7XF1exSlYqZLkmdTzJD0VBEYpgtaI9XrNxcU5fd9zePgXjx79gAh8+3aBasfz57+ytfUTl5eXOOeqBG66znQ2qNI559IMl9E0s5RwHWdn//Hhw3sMePz4caZlq9V37O39zNbWFuv1Gte5gSpVQ00mk7OhbycnJzbf9yVHRFVxzk0omqpwe9vT97eIaGJUU09HRKyatFpzwmmdD0q893jv27JMUzN3vgmjmlWaMLZ6RI/7QGnLuTmlnzrNEVGN76XOa9IjjRMlmdshFkJAQ2gnlo45YFvIqLqE65SAxFdtkszMmqlaiKrgnGtICi1/pbCf8aie5ZBjDTRkZo5vJD4gM5saVja7PiYqc9i3DGl+piQ+IDM0msnFwiwgKney6Lk6n5DSeqcKGhtHTSq5m1SqMqXxNAypofFjhxiR1mDxZnTf02I2X99TKGzEA+r1eKkdLsR6TwrO3BG45/C7cR5fdIbGlu4Frgqxa0jlIDxeF5HRqJbsmVmBcrx/iF7f91xfXxNC4H+zXNeYADdo6gAAAABJRU5ErkJggg==" alt="logo" />
+      <img class="logo-img" src="img/logo.png" alt="logo" />
       MoneyScoop
     </a>
 
