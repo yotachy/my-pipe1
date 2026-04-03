@@ -2,9 +2,11 @@ name: Fetch Market Data
 
 on:
   schedule:
-    # 15분마다 실행 (GitHub Actions 무료 한도 내)
     - cron: '*/15 * * * *'
-  workflow_dispatch:  # 수동 실행 버튼
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
   contents: write
