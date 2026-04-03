@@ -51,8 +51,13 @@ def save(filename, data):
 def load(filename):
     path = os.path.join(DATA_DIR, filename)
     if os.path.exists(path):
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                content = f.read().strip()
+                if content:
+                    return json.loads(content)
+        except Exception:
+            pass
     return None
 
 def is_market_open():
