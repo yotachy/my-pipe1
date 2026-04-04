@@ -271,6 +271,15 @@
 function c(n,d){d=d||0;return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});}
 function getLbl(id){return document.getElementById(id).querySelector('.mc-lbl').outerHTML;}
 
+// 15분마다 서버 데이터 수집 트리거
+function triggerFetch() {
+  fetch('cron/fetch.php', {method:'GET', cache:'no-store'})
+    .catch(function(){});
+}
+triggerFetch();
+setInterval(triggerFetch, 15 * 60 * 1000);
+
+
 /* ── 데이터 로더 (캐시버스팅 포함) ── */
 function loadJSON(path,cb,fallback){
   var url=path+'?_='+Date.now();
