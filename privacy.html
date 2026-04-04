@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>개인정보처리방침 — MoneyScoop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f5f5f7;--txt-1:#0d0d0d;--txt-3:#505050;--txt-4:#828290;
+      --rule:rgba(0,0,0,.09);--accent:#1a6fd4;
+      --sans:'Noto Sans KR',-apple-system,sans-serif;
+    }
+    html,body{background:var(--bg);color:var(--txt-1);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.75}
+    .shell{max-width:720px;margin:0 auto;padding:48px 24px 80px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px}
+    .brand{font-size:18px;font-weight:700;color:var(--txt-1);text-decoration:none;letter-spacing:-0.5px}
+    .back-link{font-size:13px;color:var(--txt-4);text-decoration:none}
+    .back-link:hover{color:var(--txt-1)}
+    .app-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+    .app-tab{font-size:13px;font-weight:600;padding:6px 14px;border-radius:20px;border:1.5px solid var(--rule);background:#fff;cursor:pointer;color:var(--txt-3);transition:all .15s}
+    .app-tab.active{background:var(--txt-1);color:#fff;border-color:var(--txt-1)}
+    h1{font-size:24px;font-weight:700;letter-spacing:-0.5px;margin-bottom:6px}
+    .subtitle{font-size:13px;color:var(--txt-4);margin-bottom:4px}
+    .last-updated{font-size:12px;color:var(--txt-4);margin-bottom:36px}
+    .notice-box{background:#fff;border-radius:10px;padding:18px 20px;margin-bottom:32px;border:1px solid var(--rule);border-left:4px solid var(--accent)}
+    .notice-box p{font-size:14px;color:var(--txt-1);font-weight:500;margin:0}
+    h2{font-size:15px;font-weight:700;margin-top:36px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--rule);color:var(--txt-1)}
+    p{font-size:14px;color:var(--txt-3);margin-bottom:10px}
+    ul{font-size:14px;color:var(--txt-3);padding-left:18px;margin-bottom:10px}
+    li{margin-bottom:5px}
+    a{color:var(--accent)}
+    .app-section{display:none}
+    .app-section.active{display:block}
+    .source-card{background:#fff;border-radius:8px;padding:14px 16px;margin-bottom:8px;border:1px solid var(--rule)}
+    .source-card-name{font-size:13px;font-weight:700;color:var(--txt-1);margin-bottom:3px}
+    .source-card-desc{font-size:12px;color:var(--txt-4)}
+    .contact-box{margin-top:48px;padding:20px;background:#fff;border-radius:10px;border:1px solid var(--rule)}
+    .contact-box h3{font-size:14px;font-weight:700;margin-bottom:10px}
+    .contact-row{font-size:13px;color:var(--txt-3);margin-bottom:5px}
+    footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:11px;color:var(--txt-4);line-height:1.8}
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <a class="brand" href="./index.html">MoneyScoop</a>
+    <a class="back-link" href="./index.html">← 앱으로 돌아가기</a>
+  </div>
+
+  <h1>개인정보처리방침</h1>
+  <p class="subtitle">MoneyScoop 시리즈 전체 앱에 적용됩니다.</p>
+  <p class="last-updated">최종 업데이트: 2025년 12월 1일 &nbsp;|&nbsp; 버전 1.0</p>
+
+  <div class="notice-box">
+    <p>💡 MoneyScoop 시리즈의 모든 앱은 사용자의 개인 정보(이름, 연락처 등)를 직접 수집하지 않습니다. Google AdMob 광고 서비스에 의해 광고 식별자가 기술적으로 처리될 수 있습니다.</p>
+  </div>
+
+  <!-- 앱 탭: 향후 앱 추가 시 버튼과 섹션 함께 추가 -->
+  <div class="app-tabs">
+    <button class="app-tab active" onclick="switchApp(this,'moneyscoop1')">📊 금융 대시보드</button>
+    <!-- 예시: <button class="app-tab" onclick="switchApp(this,'app2')">📈 앱 이름2</button> -->
+  </div>
+
+  <!-- 앱별 섹션: MoneyScoop 금융 대시보드 -->
+  <div class="app-section active" id="section-moneyscoop1">
+    <h2>이 앱이 사용하는 외부 데이터 출처</h2>
+    <div class="source-card">
+      <div class="source-card-name">📈 Yahoo Finance</div>
+      <div class="source-card-desc">미국 주요 지수(S&amp;P 500, NASDAQ, DOW, VIX) 및 차트 데이터 · 개인 참고용 · 최소 15분 지연</div>
+    </div>
+    <div class="source-card">
+      <div class="source-card-name">💱 Frankfurter.app (European Central Bank)</div>
+      <div class="source-card-desc">주요 통화 환율 데이터 · 영업일 기준 갱신</div>
+    </div>
+    <div class="source-card">
+      <div class="source-card-name">😱 CNN Business — Fear &amp; Greed Index</div>
+      <div class="source-card-desc">미국 주식시장 공포&amp;탐욕 지수</div>
+    </div>
+    <div class="source-card">
+      <div class="source-card-name">🪙 Alternative.me</div>
+      <div class="source-card-desc">암호화폐 시장 공포&amp;탐욕 지수</div>
+    </div>
+    <h2>투자 면책 조항</h2>
+    <p>본 앱의 모든 금융 데이터는 <strong>참고용</strong>이며 투자 권유·조언·추천을 목적으로 하지 않습니다. 데이터는 실제 시세와 차이가 있을 수 있으며, 이를 근거로 한 투자 결정의 책임은 전적으로 사용자 본인에게 있습니다.</p>
+  </div>
+
+  <!-- 공통 섹션 (전체 앱 동일 적용) -->
+  <h2>수집하는 정보 (공통)</h2>
+  <p>MoneyScoop 시리즈의 모든 앱은 이름·이메일·전화번호 등 개인 식별 정보를 직접 수집하지 않습니다. 단, 아래 제3자 서비스가 기술적으로 다음 정보를 자동 처리할 수 있습니다.</p>
+  <ul>
+    <li><strong>광고 식별자 (Google Advertising ID)</strong>: Google AdMob이 맞춤 광고 제공에 사용</li>
+    <li><strong>기기 정보</strong>: OS 버전, 앱 버전 등 오류 분석 목적 (익명 처리)</li>
+    <li><strong>캐시 데이터</strong>: 콘텐츠가 기기 내 로컬 저장소에 임시 저장됨 (외부 전송 없음)</li>
+  </ul>
+
+  <h2>Google AdMob 광고</h2>
+  <p>모든 앱은 Google AdMob을 통한 광고를 포함합니다. AdMob은 관련 광고 제공을 위해 광고 ID를 사용할 수 있습니다.</p>
+  <ul>
+    <li>광고 개인화 해제: 기기 설정 → Google → 광고 → 광고 ID 삭제</li>
+    <li><a href="https://policies.google.com/privacy" target="_blank">Google 개인정보처리방침 보기 →</a></li>
+  </ul>
+
+  <h2>데이터 보관 및 보안</h2>
+  <p>앱 내 캐시 데이터는 기기 로컬에만 저장되며 외부로 전송되지 않습니다. 앱 삭제 시 모든 로컬 데이터가 함께 삭제됩니다. 개발자 서버에는 어떠한 개인 데이터도 저장되지 않습니다.</p>
+
+  <h2>미성년자 보호</h2>
+  <p>본 시리즈 앱은 만 14세 미만 아동을 대상으로 하지 않으며, 아동의 개인정보를 수집하지 않습니다.</p>
+
+  <h2>방침 변경 안내</h2>
+  <p>중요한 변경 사항 발생 시 앱 업데이트 노트 또는 이 페이지를 통해 사전 안내합니다. 최신 방침은 항상 이 URL에서 확인하실 수 있습니다: <a href="https://jschoi0223.mycafe24.com/privacy.html">https://jschoi0223.mycafe24.com/privacy.html</a></p>
+
+  <div class="contact-box">
+    <h3>개발자 연락처</h3>
+    <div class="contact-row">개발자: <strong>개인 개발자</strong></div>
+    <div class="contact-row">브랜드: <strong>MoneyScoop</strong></div>
+    <div class="contact-row">이메일: <strong>yotachy@gmail.com</strong></div>
+    <div class="contact-row" style="margin-top:8px;font-size:12px;color:var(--txt-4)">
+      개인정보 관련 문의는 이메일로 접수하며, 영업일 기준 5일 이내 답변드립니다.
+    </div>
+  </div>
+
+  <footer>
+    <span id="footer-copyright"></span><br>
+    본 방침은 Google Play 정책 및 「개인정보 보호법」에 따라 작성되었으며, MoneyScoop 시리즈 전체 앱에 공통 적용됩니다.
+  </footer>
+</div>
+
+<script>
+  document.getElementById('footer-copyright').textContent =
+    '\u00a9 2025\u2013' + new Date().getFullYear() + ' MoneyScoop (\uac1c\uc778 \uac1c\ubc1c\uc790). All rights reserved.';
+
+  function switchApp(btn, appId) {
+    document.querySelectorAll('.app-tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.app-section').forEach(function(s){ s.classList.remove('active'); });
+    btn.classList.add('active');
+    var sec = document.getElementById('section-' + appId);
+    if (sec) sec.classList.add('active');
+  }
+</script>
+</body>
+</html>

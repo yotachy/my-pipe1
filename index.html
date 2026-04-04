@@ -9,15 +9,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --bg:#f5f5f7;--txt-1:#0d0d0d;--txt-3:#707070;--txt-4:#b0b0b8;
+      --bg:#f5f5f7;--txt-1:#0d0d0d;--txt-3:#505050;--txt-4:#828290;
       --rule:rgba(0,0,0,.09);
       --up:#0a7a4b;--down:#cc2a20;--flat:#707070;
       --vix-ok:#0a7a4b;--vix-warn:#b87000;--vix-danger:#cc2a20;
-      --sans:'Pretendard',-apple-system,sans-serif;
+      --sans:'Noto Sans KR',-apple-system,sans-serif;
       --mono:'DM Mono',monospace;
       --pad:20px;
     }
@@ -31,9 +31,9 @@
     .section{margin-bottom:40px}
     .sec-hd{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--rule);margin-bottom:20px}
     .sec-hd-left{display:flex;align-items:baseline;gap:10px}
-    .sec-label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt-1)}
-    .sec-cycle{font-size:10px;color:var(--txt-4);font-family:var(--mono)}
-    .sec-src{font-size:10px;color:var(--txt-4)}
+    .sec-label{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt-1)}
+    .sec-cycle{font-size:12px;color:var(--txt-4);font-family:var(--mono)}
+    .sec-src{font-size:12px;color:var(--txt-4)}
 
     /* 환율 */
     .fx-row{display:grid;grid-template-columns:repeat(2,1fr);gap:0;align-items:start}
@@ -42,17 +42,17 @@
     .fx-item:nth-child(even){padding-left:20px}
     .fx-item:last-child:nth-child(odd){grid-column:1/-1;border-right:none}
     .fx-item .flag{width:18px;height:12px;vertical-align:-1px;margin-right:5px;border-radius:2px;object-fit:cover;display:inline-block}
-    .fx-item .mc-lbl{font-size:11px;font-weight:600;color:var(--txt-4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center}
+    .fx-item .mc-lbl{font-size:13px;font-weight:600;color:var(--txt-4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center}
     .fx-item .mc-val{font-family:var(--mono);font-size:17px;font-weight:500;color:var(--txt-1);letter-spacing:-.5px;line-height:1.1}
-    .fx-item .mc-sub{font-size:9px;color:var(--txt-4);margin-top:1px}
+    .fx-item .mc-sub{font-size:11px;color:var(--txt-4);margin-top:1px}
     .fx-item .chg-row{display:flex;align-items:baseline;gap:4px;margin-top:5px}
-    .fx-item .chg-pct{font-family:var(--mono);font-size:12px;font-weight:700}
-    .fx-item .chg-raw{font-family:var(--mono);font-size:10px;opacity:.5}
-    .fx-item .chg-note{font-size:9px;color:var(--txt-4);margin-top:2px}
+    .fx-item .chg-pct{font-family:var(--mono);font-size:13px;font-weight:700}
+    .fx-item .chg-raw{font-family:var(--mono);font-size:11px;opacity:.5}
+    .fx-item .chg-note{font-size:11px;color:var(--txt-4);margin-top:2px}
     .fx-item .mc-err{font-size:12px;color:var(--down);margin-top:7px}
     .fx-item .mc-retry{font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-family:var(--sans);padding:0;margin-left:4px;font-weight:600}
     .fx-hist-line{display:flex;flex-direction:row;flex-wrap:nowrap;gap:0 8px;margin-top:5px;overflow:hidden}
-    .fx-hist-item{font-size:9.5px;color:var(--txt-4);white-space:nowrap;flex-shrink:0}
+    .fx-hist-item{font-size:11px;color:var(--txt-4);white-space:nowrap;flex-shrink:0}
     .fx-hist-item b{font-weight:700}
 
     /* 지수 */
@@ -61,7 +61,7 @@
     .idx-row:hover{opacity:.72}
     .idx-row.active{border-left-color:var(--txt-1);padding-left:12px}
     .idx-row.active .mc-lbl{color:var(--txt-1)!important}
-    .idx-row .mc-lbl{flex:0 0 76px;font-size:13px;font-weight:700;color:var(--txt-3)}
+    .idx-row .mc-lbl{flex:0 0 76px;font-size:15px;font-weight:700;color:var(--txt-3)}
     .idx-row .mc-val{flex:1;text-align:right;font-family:var(--mono);font-size:20px;font-weight:500;color:var(--txt-1);letter-spacing:-.5px;line-height:1}
     .idx-row .chg-row{flex:0 0 auto;min-width:100px;display:flex;align-items:baseline;justify-content:flex-end;gap:5px;padding-left:12px}
     .idx-row .chg-pct{font-family:var(--mono);font-size:15px;font-weight:700}
@@ -69,7 +69,7 @@
     .idx-row .chg-note{display:none}
     .idx-row .mc-err{flex:1;font-size:12px;color:var(--down)}
     .idx-row .mc-retry{font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-family:var(--sans);padding:0;margin-left:5px;font-weight:600}
-    .idx-footnote{font-size:10px;color:var(--txt-4);text-align:right;margin-top:8px}
+    .idx-footnote{font-size:12px;color:var(--txt-4);text-align:right;margin-top:8px}
 
     .up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--flat)}
     .vix-low{color:var(--vix-ok)}.vix-mid{color:var(--vix-warn)}.vix-high{color:var(--vix-danger)}
@@ -92,8 +92,8 @@
     /* F&G */
     .fg-pair{display:flex;flex-direction:column;gap:40px}
     .fg-panel-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
-    .fg-panel-type{font-size:11px;font-weight:700;color:var(--txt-3);text-transform:uppercase;letter-spacing:.9px}
-    .fg-panel-src{font-size:10px;color:var(--txt-4)}
+    .fg-panel-type{font-size:13px;font-weight:700;color:var(--txt-3);text-transform:uppercase;letter-spacing:.9px}
+    .fg-panel-src{font-size:12px;color:var(--txt-4)}
     .gw{display:flex;flex-direction:column;align-items:center}
     .gsvg{width:100%;max-width:300px}
     .gends{display:flex;justify-content:space-between;width:100%;max-width:300px;margin-top:-6px;padding:0 8px}
@@ -108,7 +108,7 @@
     .hrow{display:flex;margin-top:18px;padding-top:14px;border-top:1px solid var(--rule)}
     .hcol{flex:1;text-align:center;position:relative}
     .hcol+.hcol::before{content:'';position:absolute;left:0;top:10%;height:80%;width:1px;background:var(--rule)}
-    .hlbl{font-size:10px;color:var(--txt-4);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+    .hlbl{font-size:12px;color:var(--txt-4);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
     .hval{font-family:var(--mono);font-size:17px;font-weight:500;margin-top:6px}
     .fg-err{padding:28px 0}
     .fg-err-txt{font-size:13px;color:var(--down);font-weight:500}
@@ -117,6 +117,16 @@
     .ad-txt{font-size:10px;color:var(--txt-4);text-align:center;margin-bottom:20px}
     .footer-row{display:flex;justify-content:space-between}
     .footer-txt{font-size:10px;color:var(--txt-4);font-family:var(--mono)}
+    .disclaimer-box{margin-top:48px;padding:20px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+    .disclaimer-title{font-size:11px;font-weight:700;color:var(--txt-3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+    .disclaimer-txt{font-size:11px;color:var(--txt-4);line-height:1.7}
+    .disclaimer-txt a{color:var(--txt-3);text-decoration:underline}
+    .sources-box{margin-top:20px;padding-bottom:16px}
+    .sources-title{font-size:11px;font-weight:700;color:var(--txt-3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+    .sources-list{font-size:11px;color:var(--txt-4);line-height:1.9}
+    .copyright-bar{margin-top:16px;padding-top:16px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+    .copyright-txt{font-size:10px;color:var(--txt-4);font-family:var(--mono)}
+    .privacy-link{font-size:10px;color:var(--txt-3);font-family:var(--mono);text-decoration:underline}
     #chart-slot{}
 
     }
@@ -176,7 +186,6 @@
 <div class="shell">
   <div class="topbar">
     <a class="topbar-title" href="./index.html">
-      <img class="logo-img" src="img/logo.png" alt="logo" />
       MoneyScoop
     </a>
 
@@ -188,7 +197,7 @@
         <div class="sec-hd">
           <div class="sec-hd-left">
             <span class="sec-label">미국 주요 지수</span>
-            <span class="sec-cycle">장중 15분</span>
+            <span class="sec-cycle" id="cycle-idx">1분마다 갱신</span>
           </div>
           <span class="sec-src">Yahoo Finance</span>
         </div>
@@ -211,7 +220,7 @@
         <div class="sec-hd">
           <div class="sec-hd-left">
             <span class="sec-label">환율</span>
-            <span class="sec-cycle">30분 갱신</span>
+            <span class="sec-cycle" id="cycle-fx">10분마다 갱신</span>
           </div>
           <span class="sec-src">frankfurter.app</span>
         </div>
@@ -228,7 +237,7 @@
         <div class="sec-hd">
           <div class="sec-hd-left">
             <span class="sec-label">공포 &amp; 탐욕</span>
-            <span class="sec-cycle">12시간 갱신</span>
+            <span class="sec-cycle" id="cycle-fg">12시간마다 갱신</span>
           </div>
         </div>
         <div class="fg-pair">
@@ -244,6 +253,33 @@
       </div>
 
       <div class="footer-row"><span class="footer-txt"></span></div>
+
+      <!-- 면책 조항 및 저작권 -->
+      <div class="disclaimer-box">
+        <div class="disclaimer-title">⚠ 투자 면책 조항</div>
+        <div class="disclaimer-txt">
+          본 앱에서 제공하는 모든 금융 정보(지수, 환율, 공포&탐욕 지수 등)는 참고용이며,
+          투자 권유·조언·추천을 목적으로 하지 않습니다. 데이터는 최소 15분 이상 지연될 수 있으며,
+          실제 시세와 차이가 있을 수 있습니다. 본 앱의 정보를 바탕으로 한 투자 결정에 대한
+          책임은 전적으로 사용자 본인에게 있으며, 앱 개발자는 이로 인한 손실에 대해
+          어떠한 법적 책임도 지지 않습니다.
+        </div>
+      </div>
+
+      <div class="sources-box">
+        <div class="sources-title">데이터 출처</div>
+        <div class="sources-list">
+          📈 미국 주요 지수 · 차트 — Yahoo Finance (지연 데이터, 개인 참고용)<br>
+          💱 환율 — Frankfurter.app (European Central Bank 기준)<br>
+          😱 주식시장 공포&탐욕 지수 — CNN Business Fear & Greed Index<br>
+          🪙 암호화폐 공포&탐욕 지수 — Alternative.me
+        </div>
+      </div>
+
+      <div class="copyright-bar">
+        <span class="copyright-txt" id="copyright-txt"></span>
+        <a class="privacy-link" href="https://jschoi0223.mycafe24.com/privacy.html" target="_blank">개인정보처리방침</a>
+      </div>
     </div>
   </div>
 </div>
@@ -270,11 +306,14 @@
 /* ── 유틸 ── */
 function c(n,d){d=d||0;return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});}
 function getLbl(id){return document.getElementById(id).querySelector('.mc-lbl').outerHTML;}
+function nowStr(){var d=new Date();return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+function setCycle(id,label){var el=document.getElementById(id);if(el)el.textContent=label+'마다 갱신, '+nowStr()+' 기준';}
+/* 저작권 연도 자동 */
+(function(){var el=document.getElementById('copyright-txt');if(el)el.textContent='© 2025–'+new Date().getFullYear()+' MoneyScoop by 개인 개발자. All rights reserved.';}());
 
-/* ── 데이터 로더 (캐시버스팅 포함) ── */
+/* ── 데이터 로더 (Cafe24 트래픽 최적화) ── */
 function loadJSON(path,cb,fallback){
-  var url=path+'?_='+Date.now();
-  fetch(url,{cache:'no-store'})
+  fetch(path)
     .then(function(r){
       if(r.status===404){
         if(fallback)fallback();else cb(null);
@@ -335,6 +374,7 @@ function loadFX(){
     renderFxCard('fx-jpy',jpy,'100엔',pj,hj(h6),hj(y1),hj(y3));
     renderFxCard('fx-gbp',gbp,'1파운드',pg,hv(h6,'GBP'),hv(y1,'GBP'),hv(y3,'GBP'));
     renderFxCard('fx-cny',cny,'1위안',pc,hv(h6,'CNY'),hv(y1,'CNY'),hv(y3,'CNY'));
+    setCycle('cycle-fx','10분');
   });
 }
 
@@ -350,6 +390,7 @@ function loadFXDirect(){
       renderFxCard('fx-jpy',jpy,'100엔',null,null,null,null);
       renderFxCard('fx-gbp',gbp,'1파운드',null,null,null,null);
       renderFxCard('fx-cny',cny,'1위안',null,null,null,null);
+      setCycle('cycle-fx','10분');
     }).catch(function(){console.warn('FX 직접 호출 실패');});
 }
 
@@ -379,6 +420,7 @@ function loadIndices(){
     var q=data.quotes||{};
     var hasAny=Object.keys(q).length>0;
     SYMS.forEach(function(s){var d=q[s.sym];if(d&&d.price&&d.prev)applyQuote(s,d.price,d.prev);});
+    if(hasAny)setCycle('cycle-idx','1분');
     if(!hasAny)loadIndicesDirect();
   });
 }
@@ -386,12 +428,12 @@ function loadIndicesDirect(){
   /* Cafe24 서버 경유 — CORS 없음 */
   SYMS.forEach(function(sym){
     var url='chart.php?sym='+encodeURIComponent(sym.sym)+'&iv=1d&rg=5d';
-    fetch(url,{cache:'no-store'})
+    fetch(url)
       .then(function(r){if(!r.ok)throw 0;return r.json();})
       .then(function(j){
         var res=j.chart&&j.chart.result&&j.chart.result[0];if(!res)return;
         var meta=res.meta,price=meta.regularMarketPrice,prev=meta.previousClose||meta.chartPreviousClose;
-        if(price&&prev)applyQuote(sym,price,prev);
+        if(price&&prev){applyQuote(sym,price,prev);setCycle('cycle-idx','1분');}
       }).catch(function(){});
   });
 }
@@ -445,6 +487,7 @@ function loadFearGreed(){
     var hasData=data.stock||data.crypto;
     if(data.stock){var s=data.stock;renderFG('stock-body',s.score,s.prev,s.w1,s.m1,s.m6);}
     if(data.crypto){var cr=data.crypto;renderFG('crypto-body',cr.score,cr.prev,cr.w1,cr.m1,cr.m6);}
+    if(hasData)setCycle('cycle-fg','12시간');
     if(!hasData)loadFGDirect();
   },function(){loadFGDirect();});
 }
@@ -457,6 +500,7 @@ function loadFGDirect(){
       renderFG('stock-body',Math.round(fg.score),Math.round(fg.previous_close),
         fg.previous_1_week?Math.round(fg.previous_1_week):null,
         fg.previous_1_month?Math.round(fg.previous_1_month):null,null);
+      setCycle('cycle-fg','12시간');
     }).catch(function(){renderFGErr('stock-body','loadFearGreed');});
   /* 암호화폐 F&G */
   fetch('https://api.alternative.me/fng/?limit=35&format=json',{cache:'no-store'})
@@ -497,22 +541,34 @@ function setRange(r){
   if(activeSym)fetchChart(activeSym,r);
 }
 var RM={'1D':['2m','1d'],'1W':['30m','5d'],'1M':['1d','1mo'],'6M':['1d','6mo'],'1Y':['1wk','1y'],'3Y':['1wk','3y'],'5Y':['1mo','5y'],'10Y':['1mo','10y']};
+var CHART_TTL={'1D':60,'1W':300,'1M':900,'6M':1800,'1Y':3600,'3Y':7200,'5Y':14400,'10Y':14400};
 function fetchChart(sym,range){
   document.getElementById('chart-name').textContent=sym.name;
   document.getElementById('chart-perf').textContent='';
   var wrap=document.querySelector('.chart-canvas-wrap');
+  /* localStorage 차트 캐시 확인 */
+  var cKey='ch_'+sym.sym+'_'+range;
+  try{var cc=localStorage.getItem(cKey);if(cc){var co=JSON.parse(cc);if(Date.now()-co.t<(CHART_TTL[range]||3600)*1000){renderChartData(sym,range,co.d,wrap);return;}}}catch(e){}
   wrap.innerHTML='<div class="chart-loading">불러오는 중...</div>';
   var rm  = RM[range] || RM['1Y'];
   var url = 'chart.php?sym='+encodeURIComponent(sym.sym)+'&iv='+rm[0]+'&rg='+rm[1];
 
-  fetch(url, {cache:'no-store'})
+  fetch(url)
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(j){
-    var res=j.chart&&j.chart.result&&j.chart.result[0];if(!res)throw 0;
+    /* 캐시 저장 */
+    try{localStorage.setItem(cKey,JSON.stringify({t:Date.now(),d:j}));}catch(e){}
+    renderChartData(sym,range,j,wrap);
+  }).catch(function(){
+    wrap.innerHTML='<div class="chart-err">데이터를 불러올 수 없습니다<br><button onclick="fetchChart(activeSym,activeRange)" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-family:var(--sans);font-weight:600;">↻ 다시 시도</button></div>';
+  });
+}
+function renderChartData(sym,range,j,wrap){
+    var res=j.chart&&j.chart.result&&j.chart.result[0];if(!res){wrap.innerHTML='<div class="chart-err">데이터 없음</div>';return;}
     var ts=res.timestamp||[],cl=res.indicators.quote[0].close||[];
     var labels=[],values=[];
     for(var i=0;i<ts.length;i++){if(cl[i]!=null){labels.push(new Date(ts[i]*1000));values.push(cl[i]);}}
-    if(!values.length)throw 0;
+    if(!values.length){wrap.innerHTML='<div class="chart-err">데이터 없음</div>';return;}
     var first=values[0],last=values[values.length-1],diff=last-first,pct=(diff/Math.abs(first))*100;
     var isUp=diff>=0,color=isUp?'#0a7a4b':'#cc2a20',arrow=isUp?'▲':'▼';
     document.getElementById('chart-perf').innerHTML='<span style="color:'+color+'">'+arrow+' '+Math.abs(pct).toFixed(2)+'%</span>';
@@ -535,7 +591,7 @@ function fetchChart(sym,range){
             label:function(ctx3){return sym.fmt(ctx3.parsed.y);}
           }}},
           scales:{
-            x:{grid:{display:false},ticks:{maxTicksLimit:8,maxRotation:0,font:{family:"'DM Mono',monospace",size:9},color:'#b0b0b8',
+            x:{grid:{display:false},ticks:{maxTicksLimit:8,maxRotation:0,font:{family:"'DM Mono',monospace",size:11},color:'#828290',
               callback:function(val,idx){var d=labels[idx];if(!d)return'';
                 var yr=d.getFullYear(),mo=d.getMonth()+1,dy=d.getDate(),hh=String(d.getHours()).padStart(2,'0');
                 var prev=idx>0?labels[idx-1]:null,yChg=prev&&prev.getFullYear()!==yr;
@@ -544,14 +600,11 @@ function fetchChart(sym,range){
                 if(range==='1M')return mo+'/'+dy;
                 if(range==='6M'||range==='1Y'||range==='3Y')return yChg?("'"+String(yr).slice(2)+'년'):mo+'월';
                 return yr+'년';}},border:{display:false}},
-            y:{position:'right',grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:"'DM Mono',monospace",size:9},color:'#b0b0b8',
+            y:{position:'right',grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:"'DM Mono',monospace",size:11},color:'#828290',
               callback:function(v){if(sym.id==='idx-vix')return v.toFixed(1);return v>=10000?(v/1000).toFixed(0)+'K':v.toFixed(0);}},border:{display:false}}
           },animation:{duration:300}}
       });
     });
-  }).catch(function(){
-    wrap.innerHTML='<div class="chart-err">데이터를 불러올 수 없습니다<br><button onclick="fetchChart(activeSym,activeRange)" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-family:var(--sans);font-weight:600;">↻ 다시 시도</button></div>';
-  });
 }
 
 /* ── 초기화 ── */
@@ -564,8 +617,8 @@ fetchChart(SYMS[0],activeRange);
 loadFX();
 loadIndices();
 loadFearGreed();
-setInterval(loadFX,30*60*1000);
-setInterval(loadIndices,3*60*1000);
+setInterval(loadFX,10*60*1000);
+setInterval(loadIndices,1*60*1000);
 setInterval(loadFearGreed,12*60*60*1000);
 </script>
 

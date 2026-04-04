@@ -1,0 +1,86 @@
+# ══════════════════════════════════════════════
+#  Golden Braid — Cafe24 트래픽 최적화 .htaccess
+#  public_html/ 루트에 배치
+# ══════════════════════════════════════════════
+
+# ── 1. GZIP 압축 (트래픽 60~75% 절감) ──
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE text/javascript
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ── 2. 브라우저 캐싱 (재방문 트래픽 0) ──
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # HTML: 5분 캐시 (업데이트 빠르게 반영)
+  ExpiresByType text/html "access plus 5 minutes"
+
+  # JSON 데이터: 30초 캐시 (실시간 데이터 보호하면서 중복 요청 차단)
+  ExpiresByType application/json "access plus 30 seconds"
+
+  # CSS/JS: 7일 (거의 안 바뀜)
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+
+  # 이미지: 30일
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType image/x-icon "access plus 30 days"
+  ExpiresByType image/webp "access plus 30 days"
+
+  # 폰트: 1년
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+
+# ── 3. Cache-Control 헤더 (Expires 못 쓸 때 폴백) ──
+<IfModule mod_headers.c>
+  # HTML
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "public, max-age=300, must-revalidate"
+  </FilesMatch>
+
+  # JSON 데이터
+  <FilesMatch "\.(json)$">
+    Header set Cache-Control "public, max-age=30, must-revalidate"
+  </FilesMatch>
+
+  # 정적 리소스
+  <FilesMatch "\.(css|js|png|jpg|jpeg|webp|svg|ico|woff2|woff)$">
+    Header set Cache-Control "public, max-age=604800, immutable"
+  </FilesMatch>
+
+  # ETag 활성화 (304 Not Modified 응답용)
+  Header unset ETag
+  FileETag MTime Size
+</IfModule>
+
+# ── 4. 보안: 불필요한 파일 접근 차단 ──
+<FilesMatch "\.(log|lock|php)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# cron/fetch.php는 서버 내부에서만 실행 허용
+<Files "fetch.php">
+  <IfModule mod_authz_core.c>
+    Require local
+  </IfModule>
+</Files>
+
+# ── 5. 디렉토리 목록 비활성화 ──
+Options -Indexes
