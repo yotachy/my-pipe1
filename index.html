@@ -271,15 +271,6 @@
 function c(n,d){d=d||0;return Number(n).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});}
 function getLbl(id){return document.getElementById(id).querySelector('.mc-lbl').outerHTML;}
 
-// 15분마다 서버 데이터 수집 트리거
-function triggerFetch() {
-  fetch('cron/fetch.php', {method:'GET', cache:'no-store'})
-    .catch(function(){});
-}
-triggerFetch();
-setInterval(triggerFetch, 15 * 60 * 1000);
-
-
 /* ── 데이터 로더 (캐시버스팅 포함) ── */
 function loadJSON(path,cb,fallback){
   var url=path+'?_='+Date.now();
@@ -392,25 +383,16 @@ function loadIndices(){
   });
 }
 function loadIndicesDirect(){
+  /* Cafe24 서버 경유 — CORS 없음 */
   SYMS.forEach(function(sym){
-    var enc=encodeURIComponent(sym.sym);
-    var yUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+enc+'?interval=1d&range=2d';
-    var proxies=[
-      'https://api.allorigins.win/raw?url='+encodeURIComponent(yUrl),
-      'https://corsproxy.io/?'+encodeURIComponent(yUrl),
-      yUrl
-    ];
-    var done=false;
-    proxies.forEach(function(url){
-      if(done)return;
-      fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();})
-        .then(function(j){
-          if(done)return; done=true;
-          var res=j.chart&&j.chart.result&&j.chart.result[0];if(!res)return;
-          var meta=res.meta,price=meta.regularMarketPrice,prev=meta.previousClose||meta.chartPreviousClose;
-          if(price&&prev)applyQuote(sym,price,prev);
-        }).catch(function(){});
-    });
+    var url='chart.php?sym='+encodeURIComponent(sym.sym)+'&iv=1d&rg=5d';
+    fetch(url,{cache:'no-store'})
+      .then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(j){
+        var res=j.chart&&j.chart.result&&j.chart.result[0];if(!res)return;
+        var meta=res.meta,price=meta.regularMarketPrice,prev=meta.previousClose||meta.chartPreviousClose;
+        if(price&&prev)applyQuote(sym,price,prev);
+      }).catch(function(){});
   });
 }
 
@@ -522,24 +504,12 @@ function fetchChart(sym,range){
   wrap.innerHTML='<div class="chart-loading">불러오는 중...</div>';
   var rm=RM[range]||RM['1Y'];
   var yUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym.sym)+'?interval='+rm[0]+'&range='+rm[1];
-  var cKey='ch_'+sym.sym+'_'+range;
-  var cached=null;
-  try{var ce=JSON.parse(localStorage.getItem(cKey)||'null');if(ce&&Date.now()-ce.ts<6*3600*1000)cached=ce.d;}catch(e){}
-  var proxies=[
-    'https://api.allorigins.win/raw?url='+encodeURIComponent(yUrl),
-    'https://corsproxy.io/?'+encodeURIComponent(yUrl),
-    'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(yUrl),
-    yUrl
-  ];
-  var p=cached?Promise.resolve(cached):new Promise(function(resolve,reject){
-    var done=false,errs=0;
-    proxies.forEach(function(url){
-      fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();})
-        .then(function(j){if(!done){done=true;try{localStorage.setItem(cKey,JSON.stringify({ts:Date.now(),d:j}));}catch(e){}resolve(j);}})
-        .catch(function(){errs++;if(errs===proxies.length&&!done)reject();});
-    });
-  });
-  p.then(function(j){
+  var rm  = RANGE_MAP[range] || RANGE_MAP['1Y'];
+  var url = 'chart.php?sym='+encodeURIComponent(sym.sym)+'&iv='+rm[0]+'&rg='+rm[1];
+
+  fetch(url, {cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(j){
     var res=j.chart&&j.chart.result&&j.chart.result[0];if(!res)throw 0;
     var ts=res.timestamp||[],cl=res.indicators.quote[0].close||[];
     var labels=[],values=[];
