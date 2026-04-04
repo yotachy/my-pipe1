@@ -502,9 +502,7 @@ function fetchChart(sym,range){
   document.getElementById('chart-perf').textContent='';
   var wrap=document.querySelector('.chart-canvas-wrap');
   wrap.innerHTML='<div class="chart-loading">불러오는 중...</div>';
-  var rm=RM[range]||RM['1Y'];
-  var yUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym.sym)+'?interval='+rm[0]+'&range='+rm[1];
-  var rm  = RANGE_MAP[range] || RANGE_MAP['1Y'];
+  var rm  = RM[range] || RM['1Y'];
   var url = 'chart.php?sym='+encodeURIComponent(sym.sym)+'&iv='+rm[0]+'&rg='+rm[1];
 
   fetch(url, {cache:'no-store'})
