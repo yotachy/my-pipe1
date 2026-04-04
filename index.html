@@ -119,34 +119,8 @@
     .footer-txt{font-size:10px;color:var(--txt-4);font-family:var(--mono)}
     #chart-slot{}
 
-    /* ── AdMob 광고 슬롯 ── */
-    .ad-slot{width:100%;overflow:hidden;text-align:center;background:#f0f0f2}
-    /* 상단 배너: 320x50 (모바일) / 728x90 (데스크탑) */
-    .ad-slot-top{height:50px;margin-bottom:12px}
-    /* 콘텐츠 중간 배너: 320x100 (Large Banner) */
-    .ad-slot-mid{height:100px;margin:16px 0}
-    /* 하단 고정 배너: 320x50 */
-    .ad-slot-bottom-fixed{
-      position:fixed;bottom:0;left:0;right:0;
-      height:50px;background:#f0f0f2;
-      z-index:999;border-top:1px solid var(--rule);
-      display:flex;align-items:center;justify-content:center;
     }
-    /* 하단 고정 광고로 인한 body 여백 */
-    body{padding-bottom:50px}
-    @media(min-width:820px){
-      .ad-slot-top{height:90px}
-      .ad-slot-bottom-fixed{height:60px}
-      body{padding-bottom:60px}
-    }
-    /* 광고 레이블 */
-    .ad-label{font-size:9px;color:var(--txt-4);display:block;margin-bottom:2px;letter-spacing:0.5px}
-    /* 광고 없을 때 placeholder */
-    .ad-placeholder{
-      width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-      font-size:10px;color:var(--txt-4);font-family:var(--mono);
-      border:1px dashed var(--rule);border-radius:4px;
-    }
+
     /* 기본 레이아웃 — 단일 컬럼 */
     .desktop-grid{display:block;width:100%}
     .col-left{display:block;width:100%}
@@ -207,17 +181,6 @@
     </a>
 
   </div>
-
-  <!-- AdMob 상단 배너 (320x50 / 728x90) -->
-  <div class="ad-slot ad-slot-top">
-    <!-- 여기에 AdMob 광고 코드 삽입
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="banner"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    -->
-    <div class="ad-placeholder">광고 영역 (상단 배너 320×50)</div>
-  </div>
-
   <div class="desktop-grid">
     <!-- 왼쪽: 지수 + 차트 -->
     <div class="col-left">
@@ -238,10 +201,6 @@
         <div class="idx-footnote">클릭하면 차트 보기 · 전일 종가 대비</div>
       </div>
       <div id="chart-slot"></div>
-      <!-- AdMob 중간 배너 (Large Banner 320x100) -->
-      <div class="ad-slot ad-slot-mid">
-        <!-- 여기에 AdMob 광고 코드 삽입 -->
-        <div class="ad-placeholder">광고 영역 (중간 320×100)</div>
       </div>
 
     </div>
@@ -633,15 +592,6 @@ setInterval(loadIndices,3*60*1000);
 setInterval(loadFearGreed,12*60*60*1000);
 </script>
 
-<!-- AdMob 하단 고정 배너 (320x50) — 항상 노출, 최고 수익 위치 -->
-<div class="ad-slot-bottom-fixed">
-  <!-- 여기에 AdMob 고정 배너 코드 삽입
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="banner" data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  -->
-  <span class="ad-label">광고</span>
-  <div class="ad-placeholder" style="height:50px;width:320px">하단 고정 배너 (320×50)</div>
 </div>
 </body>
 </html>
