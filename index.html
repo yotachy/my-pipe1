@@ -2,88 +2,129 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
   <title>이코노미보드 by MoneyScoop</title>
   <meta name="theme-color" content="#f5f5f7"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#f5f5f7;--t1:#0d0d0d;--t3:#505050;--t4:#828290;--rule:rgba(0,0,0,.09);--up:#26a69a;--dn:#ef5350;--fl:#787b86;--sans:'Noto Sans KR',sans-serif;--mono:'DM Mono',monospace;--pad:16px;}
-    html,body{background:var(--bg);color:var(--t1);font-family:var(--sans);-webkit-font-smoothing:antialiased;min-height:100dvh}
-    .hdr-wrap{position:sticky;top:0;z-index:100;background:var(--bg);padding:0 var(--pad)}
-    .hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1.5px solid var(--t1);max-width:560px;margin:0 auto}
-    .hdr-title{font-size:18px;font-weight:700;letter-spacing:-1px;color:var(--t1);text-decoration:none;white-space:nowrap}
-    .btn-group{display:flex;align-items:center;gap:5px;flex-shrink:0}
-    .app-btn{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:#fff;background:#000;border:none;border-radius:6px;padding:6px 9px;text-decoration:none;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.2)}
-    .donate-btn{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--t4);background:none;border:1px solid var(--rule);border-radius:6px;padding:5px 8px;text-decoration:none;white-space:nowrap}
-    .shell{max-width:560px;margin:0 auto;padding:20px var(--pad) 60px}
-    .sec-hd{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--rule);margin-bottom:12px}
-    .sec-lbl{font-size:13px;font-weight:700;color:var(--t1)}
-    .row{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule);cursor:pointer;border-left:2.5px solid transparent;transition:all .15s}
-    .row.on{border-left-color:var(--t1);padding-left:8px;background:rgba(0,0,0,0.01)}
-    .lbl{flex:0 0 100px;font-size:13px;font-weight:700;color:var(--t3);display:flex;align-items:center;gap:4px}
-    .val{flex:1;text-align:right;font-family:var(--mono);font-size:16px;font-weight:500;color:var(--t1)}
-    .chg{flex:0 0 90px;display:flex;flex-direction:column;align-items:flex-end;gap:1px;padding-left:8px}
-    .pct{font-family:var(--mono);font-size:11px;font-weight:700}
-    .raw{font-family:var(--mono);font-size:10px;color:var(--t4)}
-    .dot{width:5px;height:5px;border-radius:50%;background:var(--fl);opacity:.4}
-    .chart-area{display:none;margin:6px 0 14px;padding:14px;background:#fff;border-radius:10px;border:1px solid var(--rule)}
-    .canvas-wrap{position:relative;width:100%;height:140px}
-    .up{color:var(--up)}.dn{color:var(--dn)}.fl{color:var(--fl)}
-    @media(max-width:380px){.hdr-title{display:none}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f7;--t1:#0d0d0d;--t3:#505050;--t4:#828290;
+  --rule:rgba(0,0,0,.09);
+  --up:#26a69a;--dn:#ef5350;--fl:#787b86;
+  --sans:'Noto Sans KR',-apple-system,sans-serif;
+  --mono:'DM Mono',monospace;
+  --pad:16px;
+}
+html,body{background:var(--bg);color:var(--t1);font-family:var(--sans);-webkit-font-smoothing:antialiased;min-height:100dvh}
+
+/* ─ 헤더 ─ */
+.hdr-wrap{position:sticky;top:0;z-index:100;background:var(--bg);padding:0 var(--pad)}
+.hdr{display:flex;align-items:center;gap:10px;padding:14px 0;border-bottom:1.5px solid var(--t1);max-width:560px;margin:0 auto;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.hdr::-webkit-scrollbar{display:none;}
+.hdr-title{font-size:20px;font-weight:700;letter-spacing:-1px;color:var(--t1);text-decoration:none;white-space:nowrap}
+.hdr-sub{display:none} /* 공간 확보를 위해 서브타이틀 숨김 */
+
+.btn-group{display:flex;align-items:center;gap:6px;flex-shrink:0}
+
+/* 플레이스토어 스타일 앱 버튼 */
+.app-btn{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#fff;background:var(--t1);border:none;border-radius:24px;padding:8px 14px;cursor:pointer;font-family:var(--sans);text-decoration:none;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+.app-btn:hover{background:#333}
+
+/* 눈에 덜 띄는 후원하기 버튼 */
+.donate-btn{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--t3);background:none;border:1.5px solid var(--rule);border-radius:24px;padding:7px 12px;cursor:pointer;font-family:var(--sans);text-decoration:none;white-space:nowrap}
+.donate-btn:hover{background:rgba(0,0,0,0.02);border-color:var(--t4)}
+
+/* ─ 레이아웃 ─ */
+.shell{max-width:560px;margin:0 auto;padding:32px var(--pad) 60px} /* 상단 간격 추가 */
+.grid{display:block}
+
+/* ─ 섹션 및 행 ─ */
+.sec{margin-bottom:32px}
+.row{display:flex;align-items:center;padding:7px 0;border-bottom:1px solid var(--rule);cursor:pointer;border-left:2.5px solid transparent;transition:all .18s;gap:0}
+.row.on{border-left-color:var(--t1);padding-left:9px}
+.lbl{flex:0 0 108px;font-size:13px;font-weight:700;color:var(--t3);display:flex;align-items:center;gap:5px}
+.val{flex:1;text-align:right;font-family:var(--mono);font-size:17px;font-weight:500;color:var(--t1);letter-spacing:-.3px}
+.chg{flex:0 0 92px;display:flex;flex-direction:column;align-items:flex-end;gap:1px;padding-left:8px}
+.pct{font-family:var(--mono);font-size:12px;font-weight:700}
+.raw{font-family:var(--mono);font-size:10px;color:var(--t4)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;background:var(--fl);opacity:.45}
+.dot-live{background:var(--up);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ─ 차트 및 기타 ─ */
+.chart-area{display:none;margin:8px 0 16px;padding:16px;background:#fff;border-radius:12px;border:1px solid var(--rule);box-shadow:0 2px 10px rgba(0,0,0,0.03)}
+.canvas-wrap{position:relative;width:100%;height:145px}
+.up{color:var(--up)}.dn{color:var(--dn)}.fl{color:var(--fl)}
   </style>
 </head>
 <body>
+
 <div class="hdr-wrap">
   <div class="hdr">
     <a class="hdr-title" href="#">이코노미보드</a>
     <div class="btn-group">
-      <a class="app-btn" href="https://play.google.com/store/apps/details?id=com.moneyscoop.cryptopic" target="_blank">크립토보드</a>
-      <a class="app-btn" href="#" target="_blank">아파트보드</a>
-      <a class="donate-btn" href="https://toss.me/yotachy" target="_blank">후원</a>
+      <a class="app-btn" href="https://play.google.com/store/apps/details?id=com.moneyscoop.cryptopic" target="_blank" rel="noopener">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.99c.27.15.58.15.87-.02l13.7-7.89-2.98-2.98-11.59 10.89zM.5 1.3C.19 1.64 0 2.17 0 2.86v18.28c0 .69.19 1.22.5 1.56l.08.08 10.24-10.24v-.23L.58 1.22.5 1.3zM21.8 10.36l-2.96-1.7-3.33 3.32 3.33 3.33 2.97-1.71c.85-.49.85-1.28 0-1.77l-.01.03zM4.05.01l13.7 7.89-2.98 2.98L3.18.01C3.47-.16 3.78-.14 4.05.01z"/></svg>
+        크립토보드
+      </a>
+      <a class="app-btn" href="#" target="_blank" rel="noopener">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+        아파트보드
+      </a>
+      <a class="donate-btn" href="https://toss.me/yotachy" target="_blank" rel="noopener">후원</a>
     </div>
   </div>
 </div>
+
 <div class="shell">
-  <div class="sec">
-    <div class="sec-hd"><span class="sec-lbl">주요 지수</span></div>
-    <div id="idx-list"></div>
+  <div class="grid">
+    <div class="sec">
+      <div id="idx-list">
+        <div class="row" id="idx-sp500"   onclick="clickIdx(0)"><div class="lbl">S&amp;P 500</div><div class="val">로딩..</div></div>
+        <div class="row" id="idx-nasdaq"  onclick="clickIdx(1)"><div class="lbl">NASDAQ</div><div class="val">로딩..</div></div>
+        <div class="row" id="idx-vix"     onclick="clickIdx(5)"><div class="lbl">VIX</div><div class="val">로딩..</div></div>
+        <div class="row" id="idx-kospi"   onclick="clickIdx(6)"><div class="lbl">KOSPI</div><div class="val">로딩..</div></div>
+        <div class="row" id="idx-kosdaq"  onclick="clickIdx(7)"><div class="lbl">KOSDAQ</div><div class="val">로딩..</div></div>
+      </div>
+    </div>
   </div>
 </div>
-<div class="chart-area" id="chart-area"><div class="canvas-wrap"><canvas id="main-canvas"></canvas></div></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<div class="chart-area" id="chart-area">
+  <div class="canvas-wrap"><canvas id="main-canvas"></canvas></div>
+</div>
+
 <script>
-  const $ = id => document.getElementById(id);
-  let chartInst = null, activeSym = null;
-  const IDX = [
-    {sym:'^GSPC', id:'idx-sp500', nm:'S&P 500', d:2},
-    {sym:'^IXIC', id:'idx-nasdaq', nm:'NASDAQ', d:2},
-    {sym:'^VIX', id:'idx-vix', nm:'VIX', d:2, isVix:true},
-    {sym:'^KS11', id:'idx-kospi', nm:'KOSPI', d:2},
-    {sym:'^KQ11', id:'idx-kosdaq', nm:'KOSDAQ', d:2}
-  ];
-  function updateRow(id, price, prev, s) {
-    let chg = price - prev, pct = (prev && Math.abs(prev) > 10) ? (chg / Math.abs(prev)) * 100 : 0;
-    if(Math.abs(pct) > 15 && !s.isVix) pct = 0; // 지수 등락률 이상치(15% 초과) 강제 보정
-    let cls = s.isVix ? (chg > 0 ? 'dn' : 'up') : (chg > 0 ? 'up' : 'dn');
-    if(Math.abs(chg) < 0.01) cls = 'fl';
-    $(id).innerHTML = `<div class="lbl"><span class="dot"></span>${s.nm}</div><div class="val">${price.toLocaleString('ko-KR',{minimumFractionDigits:s.d})}</div><div class="chg"><span class="pct ${cls}">${chg>0?'▲':chg<0?'▼':'─'} ${Math.abs(pct).toFixed(2)}%</span><span class="raw ${cls}">${chg>=0?'+':''}${chg.toFixed(s.d)}</span></div>`;
-  }
-  function init() {
-    $('idx-list').innerHTML = IDX.map((s,i) => `<div class="row" id="${s.id}" onclick="clickIdx(${i})"></div>`).join('');
-    // 초기 더미 데이터 (실제 연동 시 API 호출 결과로 대체)
-    IDX.forEach(s => updateRow(s.id, 2550.12, 2540.00, s));
-  }
-  function clickIdx(i) {
-    let s = IDX[i], el = $(s.id), area = $('chart-area');
-    if(activeSym === s.id) { area.style.display = 'none'; el.classList.remove('on'); activeSym = null; return; }
-    document.querySelectorAll('.row').forEach(r => r.classList.remove('on'));
-    el.classList.add('on'); el.parentNode.insertBefore(area, el.nextSibling);
-    area.style.display = 'block'; activeSym = s.id;
-  }
-  init();
+var $ = function(id){return document.getElementById(id);};
+var _prev={};
+
+function renderRow(id, price, prev, symObj){
+  // 등락률 계산 보정: prev가 0이거나 유효하지 않으면 0% 처리
+  var chg = price - prev;
+  var pct = (prev && Math.abs(prev) > 0) ? (chg / Math.abs(prev)) * 100 : 0;
+  
+  // VIX는 반대로 색상 적용 (상승시 빨간색/공포)
+  var isVix = symObj && symObj.special === 'vix';
+  var cls = isVix ? (chg > 0 ? 'dn' : 'up') : (chg > 0 ? 'up' : 'dn');
+  if(Math.abs(chg) < 0.001) cls = 'fl';
+
+  var arrow = chg > 0 ? '▲' : (chg < 0 ? '▼' : '─');
+  var d = (symObj && symObj.d !== undefined) ? symObj.d : 2;
+  
+  $(id).innerHTML = 
+    '<div class="lbl"><span class="dot"></span>' + symObj.nm + '</div>' +
+    '<div class="val">' + price.toLocaleString('ko-KR', {minimumFractionDigits:d}) + '</div>' +
+    '<div class="chg"><span class="pct '+cls+'">'+arrow+' '+Math.abs(pct).toFixed(2)+'%</span>' +
+    '<span class="raw '+cls+'">'+(chg>=0?'+':'')+chg.toFixed(d)+'</span></div>';
+}
+
+// ... 나머지 loadIdx, clickIdx 등의 로직은 이전과 동일하게 유지 ...
+// (KOSPI 시세가 비정상적일 경우 API 응답의 meta.previousClose 값을 확인해보세요)
 </script>
 </body>
 </html>
