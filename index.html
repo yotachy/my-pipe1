@@ -423,7 +423,7 @@
       .vix-md { color: #f0b429; }
       .vix-hi { color: var(--dn); }
 
-      /* ─ 상태 점멸 도트 (로딩/라이브/슬립) ─ */
+      /* ─ 상태 점멸 도트 (로딩/기본라이브/부스트라이브/슬립) ─ */
       .dot {
         display: inline-block;
         width: 8px;
@@ -434,18 +434,25 @@
         vertical-align: middle;
       }
       
-      /* 초기 로딩: 노란색 */
+      /* 초기 로딩: 옅은 회청색 */
       .dot-load {
-        background: #fbbf24;
-        box-shadow: 0 0 6px rgba(251, 191, 36, 0.8), inset 0 1px 1px rgba(255,255,255,0.8);
+        background: #94a3b8;
+        box-shadow: 0 0 6px rgba(148, 163, 184, 0.8), inset 0 1px 1px rgba(255,255,255,0.8);
         animation: pulse 1.5s ease-in-out infinite;
       }
       
-      /* 라이브 갱신: 진한 녹색, 빠른 깜빡임 */
+      /* 기본 라이브 (10초): 노란색 */
       .dot-live { 
-        background: #059669; 
-        box-shadow: 0 0 6px rgba(5, 150, 105, 0.8), inset 0 1px 1px rgba(255,255,255,0.8); 
+        background: #fbbf24; 
+        box-shadow: 0 0 6px rgba(251, 191, 36, 0.8), inset 0 1px 1px rgba(255,255,255,0.8); 
         animation: pulse 0.8s ease-in-out infinite; 
+      }
+
+      /* 부스트 라이브 (광고 보상 5초): 초록색 */
+      .dot-boost { 
+        background: #10b981; 
+        box-shadow: 0 0 6px rgba(16, 185, 129, 0.8), inset 0 1px 1px rgba(255,255,255,0.8); 
+        animation: pulse 0.6s ease-in-out infinite; 
       }
       
       /* 미갱신/장마감: 회색 */
@@ -509,7 +516,7 @@
       .fg-er-t { font-size: 13px; color: var(--dn); font-weight: 500; }
       .fg-retry { margin-top: 8px; font-size: 13px; color: #1a6fd4; background: none; border: none; cursor: pointer; font-family: var(--sans); font-weight: 600; display: inline-block; }
 
-      /* ─ 히트맵 ─ */
+      /* ─ 히트맵 및 잠금 오버레이 ─ */
       .hm-ld { font-size: 12px; color: var(--t4); text-align: center; padding: 48px 0; font-family: var(--sans); }
       .hm-er { font-size: 12px; color: var(--dn); text-align: center; padding: 32px 0; }
       #hm-wrap { width: 100%; overflow: hidden; margin-top: 4px; }
@@ -517,6 +524,29 @@
       .hm-bar { width: 80px; height: 6px; border-radius: 3px; background: linear-gradient(to right, #ef4444, #f5f5f7, #10b981); }
       [data-theme="dark"] .hm-bar { background: linear-gradient(to right, #ef4444, #1e293b, #10b981); }
       .hm-lt { font-size: 11px; color: var(--t4); font-family: var(--sans); font-weight: 600; }
+
+      .hm-container { position: relative; border-radius: 8px; overflow: hidden; min-height: 240px; margin-top: 10px; }
+      .hm-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: rgba(245, 245, 247, 0.7); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+      }
+      [data-theme="dark"] .hm-overlay { background: rgba(17, 34, 64, 0.75); }
+      
+      .hm-lock-icon { font-size: 32px; margin-bottom: 8px; }
+      .hm-lock-text { font-size: 15px; font-weight: 800; color: var(--t1); margin-bottom: 18px; letter-spacing: -0.5px; }
+      .hm-unlock-btn {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff;
+        border: none; border-radius: 24px; padding: 12px 22px;
+        font-size: 13px; font-weight: 700; cursor: pointer;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex; align-items: center; gap: 8px; font-family: var(--sans);
+      }
+      .hm-unlock-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5); }
+      .hm-unlock-btn span {
+        background: #fff; color: #1d4ed8; font-size: 10px; padding: 2px 6px; border-radius: 5px; font-weight: 900;
+      }
 
       /* ─ 하단 면책조항 및 출처 ─ */
       .footer-wrap { clear: both; padding-top: 10px; }
@@ -616,7 +646,7 @@
             <div class="sec-hd">
               <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">글로벌 | 주요 지표 지수</span>
-                <span class="sec-cyc" id="cy-idx">10초마다 갱신</span>
+                <span class="sec-cyc" id="cy-idx">10초마다 갱신 중</span>
                 <button class="boost-btn" id="idx-boost-btn" onclick="boostSpeed('idx')">AD ⚡ 5초 갱신</button>
               </div>
               <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
@@ -662,7 +692,7 @@
             <div class="sec-hd">
               <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">글로벌 | 공포 &amp; 탐욕 지수 (증시)</span>
-                <span class="sec-cyc" id="cy-fg">12시간마다 갱신</span>
+                <span class="sec-cyc" id="cy-fg">12시간마다 갱신 중</span>
               </div>
               <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
                 <span class="sec-time" id="cy-fg-time"></span>
@@ -682,7 +712,7 @@
             <div class="sec-hd">
               <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">글로벌 | 환율 (원, 24시간)</span>
-                <span class="sec-cyc" id="cy-fx">1분마다 갱신</span>
+                <span class="sec-cyc" id="cy-fx">10초마다 갱신 중</span>
               </div>
               <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
                 <span class="sec-time" id="cy-fx-time"></span>
@@ -724,7 +754,7 @@
             <div class="sec-hd">
               <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">미국 | 주요 지수 및 시총 Top 10</span>
-                <span class="sec-cyc" id="cy-us-top">10초마다 갱신</span>
+                <span class="sec-cyc" id="cy-us-top">10초마다 갱신 중</span>
                 <button class="boost-btn" id="us-top-boost-btn" onclick="boostSpeed('us-top')">AD ⚡ 5초 갱신</button>
               </div>
               <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
@@ -770,16 +800,27 @@
             <div class="sec-hd">
               <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">미국 | 섹터 별 히트맵</span>
-                <span class="sec-cyc" id="cy-hm">1분마다 갱신</span>
+                <span class="sec-cyc" id="cy-hm">대기 중</span>
               </div>
               <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
                 <span class="sec-time" id="cy-hm-time"></span>
                 <span class="sec-src">Yahoo Finance</span>
               </div>
             </div>
-            <div id="hm-wrap">
-              <div class="hm-ld" id="hm-st">데이터 로딩 중...</div>
+            
+            <div class="hm-container">
+              <div id="hm-overlay" class="hm-overlay">
+                <div class="hm-lock-icon">🔒</div>
+                <div class="hm-lock-text">미국 섹터별 히트맵</div>
+                <button class="hm-unlock-btn" onclick="unlockHeatmap()">
+                  <span>AD</span> 광고 시청하고 잠금 해제
+                </button>
+              </div>
+              <div id="hm-wrap" style="filter: blur(5px); opacity: 0.4; pointer-events: none; transition: all 0.5s;">
+                <div class="hm-ld" id="hm-st" style="padding: 96px 0;">잠금 해제 대기 중...</div>
+              </div>
             </div>
+
             <div class="hm-legend">
               <span class="hm-lt">-5%</span>
               <div class="hm-bar"></div>
@@ -791,7 +832,7 @@
             <div class="sec-hd">
               <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">한국 | 주요 지수 및 시총 Top 10</span>
-                <span class="sec-cyc" id="cy-kr-top">10초마다 갱신</span>
+                <span class="sec-cyc" id="cy-kr-top">10초마다 갱신 중</span>
               </div>
               <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
                 <span class="sec-time" id="cy-kr-top-time"></span>
@@ -904,10 +945,10 @@
         return ((d.getMonth() + 1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"));
       }
       
-      /* 💡 수정됨: 스탬프 로직 분리 (시간 표시 우측 이동) */
+      /* 💡 수정됨: 스탬프 로직 분리 (시간 표시 우측 이동 및 갱신 중 텍스트) */
       function stamp(id, label) {
         var el = $(id);
-        if (el) el.textContent = label + "마다 갱신";
+        if (el) el.textContent = label + "마다 갱신 중";
         var tEl = $(id + "-time");
         if (tEl) tEl.textContent = nowStr() + " 기준";
       }
@@ -990,6 +1031,7 @@
       /* ── 이전 값 기억 (점멸/도트 제어) ── */
       var _prev = {};
       var _lastUpdated = {}; 
+      var isBoosted = { 'idx': false, 'us-top': false, 'kr-top': false, 'fx': false };
       
       function dotHtml(cls) {
         return '<span class="dot ' + cls + '"></span>';
@@ -1016,19 +1058,24 @@
         var raw = (chg >= 0 ? "+" : "") + fmt(chg, d); 
         var valStr = symObj ? symObj.fmt(price) : fmt(price, 1);
         
-        // 💡 수정됨: 노란색(초기 로딩), 진한 초록색(라이브), 회색(대기) 도트 전환 로직
+        // 💡 수정됨: 부스트(초록), 라이브(노랑), 대기(회색) 도트 상태 계산
         var isInitial = _prev[id] === undefined;
         var changed = !isInitial && _prev[id] !== price;
-        var dotClass = "dot-sleep"; // 기본값
+        var dotClass = "dot-sleep"; 
         
+        var sectionKey = 'idx';
+        if (id.startsWith('us-top')) sectionKey = 'us-top';
+        else if (id.startsWith('kr-top')) sectionKey = 'kr-top';
+        else if (id.startsWith('fx')) sectionKey = 'fx';
+
         if (isInitial) {
             _lastUpdated[id] = 0;
             dotClass = "dot-load";
         } else if (changed) {
             _lastUpdated[id] = Date.now();
-            dotClass = "dot-live";
+            dotClass = isBoosted[sectionKey] ? "dot-boost" : "dot-live";
         } else if ((Date.now() - _lastUpdated[id]) < 15000 && _lastUpdated[id] !== 0) {
-            dotClass = "dot-live";
+            dotClass = isBoosted[sectionKey] ? "dot-boost" : "dot-live";
         }
 
         var lblEl = el.querySelector(".lbl");
@@ -1069,7 +1116,6 @@
       /* ── 스케줄러 & 광고 갱신 로직 ── */
       var intervals = {};
       
-      // 💡 수정됨: 스케줄링 관리 함수 통합 (광고 보상 대응)
       function runSchedule(taskId, idList, idCyc, type, fn, interval, label) {
           var exec = function() {
               if (isMarketOpen(type)) { 
@@ -1085,7 +1131,7 @@
               }
           };
           
-          exec(); // 즉시 실행
+          exec(); 
           
           if(intervals[taskId]) clearInterval(intervals[taskId]);
           intervals[taskId] = setInterval(function() {
@@ -1094,24 +1140,39 @@
           }, interval);
       }
       
-      // 💡 수정됨: 광고 버튼 클릭 시 보상 로직
+      // 💡 수정됨: 광고 버튼 클릭 시 보상 로직 적용 및 상태 업데이트
       function boostSpeed(taskId) {
           var btn = $(taskId + "-boost-btn");
           
-          // 가상의 광고 스폰서 링크 새 창 띄우기 (실제 운영 시 링크 변경)
-          window.open("https://google.com/search?q=sponsor", "_blank");
+          alert("광고 시청 완료!\n해당 섹션의 갱신 주기가 5초로 단축되며 초록불이 켜집니다 🚀");
           
-          setTimeout(function() {
-              alert("광고 스폰서를 확인했습니다!\n보상으로 갱신 주기가 5초로 단축됩니다 🚀");
-              if (taskId === 'idx') {
-                  runSchedule("idx", "idx-list", "cy-idx", "global", doLoadIdx, 5000, "5초");
-              } else if (taskId === 'us-top') {
-                  // us-top의 fetch 로직은 kr-top도 동시에 가져오므로 두 스케줄을 함께 조율
-                  runSchedule("us-top", "us-top-list", "cy-us-top", "us", doLoadBatchedTop10, 5000, "5초");
-                  runSchedule("kr-top", "kr-top-list", "cy-kr-top", "kr", function(){}, 5000, "5초");
-              }
-              if (btn) btn.style.display = "none";
-          }, 500);
+          if (taskId === 'idx') {
+              isBoosted['idx'] = true;
+              runSchedule("idx", "idx-list", "cy-idx", "global", doLoadIdx, 5000, "5초");
+          } else if (taskId === 'us-top') {
+              isBoosted['us-top'] = true;
+              isBoosted['kr-top'] = true;
+              runSchedule("us-top", "us-top-list", "cy-us-top", "us", doLoadBatchedTop10, 5000, "5초");
+              runSchedule("kr-top", "kr-top-list", "cy-kr-top", "kr", function(){}, 5000, "5초");
+          }
+          if (btn) btn.style.display = "none";
+      }
+
+      // 💡 수정됨: 히트맵 잠금 해제 기능
+      function unlockHeatmap() {
+          alert("광고 시청 완료!\n히트맵 잠금이 해제되었습니다 🔓");
+          var overlay = $("hm-overlay");
+          var wrap = $("hm-wrap");
+          if(overlay) overlay.style.display = "none";
+          if(wrap) {
+              wrap.style.filter = "none";
+              wrap.style.opacity = "1";
+              wrap.style.pointerEvents = "auto";
+          }
+          $("hm-st").textContent = "데이터 로딩 중...";
+          
+          doLoadHM(); // 잠금 해제 시 즉시 로드
+          runSchedule("hm", "hm-wrap", "cy-hm", "us", doLoadHM, 30000, "30초"); // 30초 스케줄러 등록
       }
       
       document.addEventListener("visibilitychange", function() {
@@ -1459,7 +1520,7 @@
       }
       function renderFGErr() { $("fg-body").innerHTML = '<div class="fg-er"><div class="fg-er-t">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="doLoadFG()">다시 시도 ↻</button></div>'; }
 
-      /* ── 히트맵 대비 대폭 강화 로직 ── */
+      /* ── 히트맵 데이터 ── */
       var HM = [
         { name: "Technology", cap: 16000, stocks: [{ s: "AAPL", cap: 3000 }, { s: "MSFT", cap: 3000 }, { s: "NVDA", cap: 2800 }, { s: "AVGO", cap: 600 }, { s: "ORCL", cap: 350 }, { s: "ADBE", cap: 250 }, { s: "CRM", cap: 280 }, { s: "AMD", cap: 260 }, { s: "QCOM", cap: 180 }, { s: "TXN", cap: 160 }, { s: "INTC", cap: 130 }, { s: "IBM", cap: 160 }, { s: "NOW", cap: 150 }, { s: "INTU", cap: 170 }, { s: "AMAT", cap: 160 }, { s: "MU", cap: 130 }, { s: "PANW", cap: 100 }] },
         { name: "Communication", cap: 7000, stocks: [{ s: "GOOGL", cap: 2000 }, { s: "META", cap: 1200 }, { s: "NFLX", cap: 250 }, { s: "TMUS", cap: 190 }, { s: "DIS", cap: 200 }, { s: "VZ", cap: 160 }, { s: "T", cap: 120 }, { s: "EA", cap: 40 }, { s: "CMCSA", cap: 170 }, { s: "WBD", cap: 30 }, { s: "SIRI", cap: 20 }, { s: "FOXA", cap: 20 }, { s: "CHTR", cap: 50 }, { s: "LYV", cap: 25 }, { s: "TTWO", cap: 25 }] },
@@ -1548,7 +1609,7 @@
       }
 
       function doLoadHM() {
-        fetch("quotes.php?syms=" + encodeURIComponent(HM_SYMS)).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (!j) { showHMErr(); return; } var res = (j.quoteResponse && j.quoteResponse.result) || []; var map = {}, nz = 0; res.forEach(function (q) { var p = q.regularMarketChangePercent || 0; if (Math.abs(p) > 0.001) nz++; map[q.symbol] = { pct: p, price: q.regularMarketPrice || null }; }); var closed = res.length > 0 && nz === 0; drawHM(map, closed); stamp("cy-hm", closed ? "종가 기준" : "1분"); }).catch(function () { showHMErr(); });
+        fetch("quotes.php?syms=" + encodeURIComponent(HM_SYMS)).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (!j) { showHMErr(); return; } var res = (j.quoteResponse && j.quoteResponse.result) || []; var map = {}, nz = 0; res.forEach(function (q) { var p = q.regularMarketChangePercent || 0; if (Math.abs(p) > 0.001) nz++; map[q.symbol] = { pct: p, price: q.regularMarketPrice || null }; }); var closed = res.length > 0 && nz === 0; drawHM(map, closed); stamp("cy-hm", closed ? "종가 기준" : "30초"); }).catch(function () { showHMErr(); });
       }
       function showHMErr() { var s = $("hm-st"); if (s) { s.textContent = "⚠ quotes.php 를 Cafe24에 업로드해 주세요"; s.className = "hm-er"; } }
 
@@ -1557,8 +1618,10 @@
       runSchedule("us-top", "us-top-list", "cy-us-top", "us", doLoadBatchedTop10, 10000, "10초");
       runSchedule("kr-top", "kr-top-list", "cy-kr-top", "kr", function(){}, 10000, "10초"); 
       
-      runSchedule("fx", "fx-list", "cy-fx", "global", doLoadFX, 60000, "1분");
-      runSchedule("hm", "hm-wrap", "cy-hm", "us", doLoadHM, 60000, "1분");
+      // 💡 환율 갱신 주기 10초로 변경 적용 완료
+      runSchedule("fx", "fx-list", "cy-fx", "global", doLoadFX, 10000, "10초");
+      
+      // 히트맵은 초기 로드 시 대기하며, unlockHeatmap() 실행 후 30초 스케줄러가 등록됩니다.
       
       doLoadFG();
       setInterval(doLoadFG, 12 * 60 * 60 * 1000);
