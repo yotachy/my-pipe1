@@ -18,7 +18,7 @@ if (!is_dir($cacheDir)) @mkdir($cacheDir, 0755, true);
 // --- 1. CNN 공포탐욕 지수 ---
 if (isset($_GET['fg'])) {
     $cacheFile = $cacheDir . '/fg_cache.json';
-    if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < 43200) {
+    if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < 3600) {
         readfile($cacheFile); exit;
     }
     
