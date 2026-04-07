@@ -440,17 +440,21 @@
       [data-theme="dark"] .hm-bar { background: linear-gradient(to right, #ef5350, #334155, #26a69a); }
       .hm-lt { font-size: 10px; color: var(--t4); font-family: var(--mono); }
 
-      /* ─ 하단 면책조항 ─ */
+      /* ─ 하단 면책조항 및 출처 (디자인 개선) ─ */
       .footer-wrap { clear: both; padding-top: 20px; }
-      .disc { margin-top: 20px; padding: 16px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); transition: border-color 0.3s; }
-      .disc-t { font-size: 10px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; }
-      .disc-b { font-size: 11px; color: var(--t4); line-height: 1.7; }
-      .src-box { margin-top: 16px; padding-bottom: 12px; }
-      .src-t { font-size: 10px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-      .src-b { font-size: 11px; color: var(--t4); line-height: 1.9; }
-      .copy-bar { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; transition: border-color 0.3s; }
+      .disc { margin-top: 20px; padding: 18px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); transition: border-color 0.3s; }
+      .disc-t { font-size: 11px; font-weight: 700; color: var(--t1); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+      .disc-b { font-size: 11px; color: var(--t4); line-height: 1.6; }
+      
+      .src-box { margin-top: 18px; padding-bottom: 14px; }
+      .src-t { font-size: 11px; font-weight: 700; color: var(--t1); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+      .src-b { font-size: 11px; color: var(--t4); line-height: 1.7; }
+      .src-highlight { color: var(--t3); font-weight: 600; }
+      
+      .copy-bar { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; transition: border-color 0.3s; }
       .copy-t { font-size: 10px; color: var(--t4); font-family: var(--mono); }
       .priv-a { font-size: 10px; color: var(--t3); font-family: var(--mono); text-decoration: underline; transition: color 0.3s; }
+      [data-theme="dark"] .priv-a:hover { color: var(--t1); }
 
       /* ─ 반응형 ─ */
       @media (max-width: 440px) {
@@ -726,22 +730,25 @@
 
       <div class="footer-wrap">
         <div class="disc">
-          <div class="disc-t">⚠ 투자 면책 조항</div>
+          <div class="disc-t">⚠ 투자 면책 조항 (Disclaimer)</div>
           <div class="disc-b">
-            본 앱의 모든 금융 정보는 참고용이며 투자 권유·조언·추천을 목적으로
-            하지 않습니다. 데이터는 최소 15분 이상 지연될 수 있으며, 이를 근거로
-            한 투자 결정의 책임은 전적으로 사용자 본인에게 있습니다.
+            본 사이트에서 제공하는 모든 금융 정보 및 지표는 투자 참고용이며, 어떠한 경우에도 투자 권유, 조언 또는 추천을 목적으로 하지 않습니다.<br>
+            제공되는 데이터는 시스템 및 정보 제공자(Yahoo Finance, CNN 등)의 사정에 따라 실제 시장 가격과 차이가 있거나 최소 15분 이상 지연될 수 있습니다. 본 사이트는 제공된 정보의 정확성, 완전성, 신뢰성을 보장하지 않으며, 이를 근거로 한 투자 결정 및 결과(손실 포함)에 대해 어떠한 법적 책임도 지지 않습니다. 모든 투자의 최종 판단과 책임은 전적으로 사용자 본인에게 있습니다.
           </div>
         </div>
         <div class="src-box">
-          <div class="src-t">데이터 출처</div>
+          <div class="src-t">데이터 출처 및 참고사항 (Data Sources)</div>
           <div class="src-b">
-            📈 주식 지수·환율·개별주 차트 — Yahoo Finance<br />
-            &nbsp;&nbsp;&nbsp;S&amp;P 500 · NASDAQ · DOW · Russell 2000 · DXY · 금 · 은 · VIX · KOSPI 등<br />
-            &nbsp;&nbsp;&nbsp;※ DXY·VIX 1D 장중 데이터 미지원, 1W 기준 표시<br />
-            💱 환율 현재값 — Yahoo Finance Real-time<br />
-            😱 공포&amp;탐욕 — CNN Business Fear &amp; Greed Index<br />
-            📊 섹터 히트맵 및 개별 주식 — Yahoo Finance / quotes.php
+            <span class="src-highlight">📊 지수·주식·환율 및 차트 (현재가/시가총액)</span> : Yahoo Finance<br>
+            &nbsp;&nbsp;&nbsp;· 주요 지표 (S&P 500, NASDAQ, DOW, Russell 2000, KOSPI, KOSDAQ 등)<br>
+            &nbsp;&nbsp;&nbsp;· 원자재 및 변동성 (Gold, Silver, DXY, VIX)<br>
+            &nbsp;&nbsp;&nbsp;· 미국/한국 주식 시가총액 TOP 10 및 미국 섹터 히트맵 (상위 160개 종목)<br>
+            &nbsp;&nbsp;&nbsp;· 주요 환율 (USD, EUR, JPY, GBP, CNY)<br>
+            <span class="src-highlight">😱 공포 &amp; 탐욕 지수</span> : CNN Business Fear &amp; Greed Index<br>
+            <br>
+            <span class="src-highlight">💡 참고 및 제한사항</span><br>
+            &nbsp;&nbsp;&nbsp;· DXY, VIX 지수의 1D(1일) 차트는 제공사 제한으로 1W(1주) 데이터로 대체 표기됩니다.<br>
+            &nbsp;&nbsp;&nbsp;· 트래픽 및 서버 자원 최적화를 위해 한국 및 글로벌 시장 장 마감 시간대, 그리고 브라우저 백그라운드 전환 시 데이터 갱신이 일시 정지됩니다.
           </div>
         </div>
         <div class="copy-bar">
@@ -1128,7 +1135,7 @@
       var CTTL = { "1D": 60, "1W": 300, "1M": 900, "6M": 1800, "1Y": 3600, "3Y": 7200, "5Y": 14400, "10Y": 14400 };
       function effRange(s, r) { return s.no1D && r === "1D" ? "1W" : r; }
 
-      /* ── 차트 그리기 (X축 트레이딩뷰 스타일 반영) ── */
+      /* 차트 그리기 */
       function doChart(s, range, type) {
         var er = effRange(s, range);
         $(type + "-chart-nm").textContent = s.nm;
@@ -1239,7 +1246,6 @@
                           if (!prevD || prevD.getFullYear() !== yr) return "'" + String(yr).slice(2) + "년 " + mo + "월";
                           return mo + "월";
                       }
-                      // 3Y, 5Y, 10Y (중복 연도 제거 로직 완벽 반영)
                       if (prevD && prevD.getFullYear() === yr) return null;
                       return yr + "년"; 
                     } 
@@ -1347,7 +1353,6 @@
         loadD3(function () {
           var wrap = $("hm-wrap"); var W = wrap.clientWidth || 320; var H = Math.max(240, Math.round(W * 0.75));
           
-          // d3 hierarchy 생성 시, 부모 노드의 cap은 참조하지 않고 오직 자식들의 cap만 합산하도록 최적화 (회색 빈 공간 원천 차단)
           var root = d3.hierarchy({ name: "root", children: HM.map(function (sec) { return { name: sec.name, children: sec.stocks.map(function (st) { var q = qmap[st.s]; return { name: st.s, cap: st.cap, pct: q ? q.pct : 0, price: q ? q.price : null, ok: !!q }; }) }; }) })
             .sum(function (d) { return d.children ? 0 : (d.cap ? d.cap : 0); })
             .sort(function (a, b) { return b.value - a.value; });
@@ -1391,12 +1396,11 @@
       /* ── 스케줄링 실행 ── */
       scheduleTask("idx-list", "cy-idx", "global", doLoadIdx, 10000, "10초");
       scheduleTask("us-top-list", "cy-us-top", "us", doLoadBatchedTop10, 10000, "10초");
-      scheduleTask("kr-top-list", "cy-kr-top", "kr", function(){}, 10000, "10초"); // BATCED 호출
+      scheduleTask("kr-top-list", "cy-kr-top", "kr", function(){}, 10000, "10초"); 
       
       scheduleTask("fx-list", "cy-fx", "global", doLoadFX, 60000, "1분");
       scheduleTask("hm-wrap", "cy-hm", "us", doLoadHM, 60000, "1분");
       
-      // 공포탐욕지수 (12시간 고정)
       doLoadFG();
       setInterval(doLoadFG, 12 * 60 * 60 * 1000);
     </script>
