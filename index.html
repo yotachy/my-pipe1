@@ -35,6 +35,12 @@
         padding: 0;
       }
 
+      /* ─ 전체 스크롤 부드럽게 (상단 여백 포함) ─ */
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 120px; /* 헤더 높이에 가려지지 않도록 패딩 설정 */
+      }
+
       /* ─ 라이트모드 (기본) ─ */
       :root {
         --bg: #f5f5f7;
@@ -67,7 +73,6 @@
         --chart-grid: rgba(255, 255, 255, 0.05); 
       }
 
-      html,
       body {
         background: var(--bg);
         color: var(--t1);
@@ -90,18 +95,19 @@
       .hdr {
         display: flex;
         align-items: center;
-        gap: 8px;
+        justify-content: space-between;
         padding: 13px 0;
         border-bottom: 1.5px solid var(--t1);
-        max-width: 560px;
+        max-width: 1160px;
         margin: 0 auto;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+        flex-wrap: wrap;
       }
-      .hdr::-webkit-scrollbar {
-        display: none;
+
+      .hdr-left {
+        display: flex;
+        align-items: baseline;
+        flex: 1 1 0%;
+        min-width: max-content;
       }
       .hdr-title {
         font-size: 22px;
@@ -116,17 +122,48 @@
       .hdr-sub {
         font-size: 12px;
         color: var(--t4);
-        flex: 1;
+        margin-left: 8px;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        min-width: 0;
       }
-      .btn-group {
+
+      .hdr-center {
         display: flex;
         align-items: center;
+        justify-content: center;
+        gap: 28px;
+        flex: 1 1 0%;
+      }
+      .nav-link {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--t4);
+        text-decoration: none;
+        transition: color 0.2s;
+        letter-spacing: -0.3px;
+      }
+      .nav-link:hover, .nav-link.active {
+        color: var(--t1);
+      }
+      .nav-link.active {
+        position: relative;
+      }
+      .nav-link.active::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--t1);
+        border-radius: 1px;
+      }
+
+      .hdr-right {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
         gap: 6px;
-        flex-shrink: 0;
+        flex: 1 1 0%;
       }
 
       /* ─ 테마 버튼 ─ */
@@ -440,7 +477,7 @@
       [data-theme="dark"] .hm-bar { background: linear-gradient(to right, #ef5350, #334155, #26a69a); }
       .hm-lt { font-size: 10px; color: var(--t4); font-family: var(--mono); }
 
-      /* ─ 하단 면책조항 및 출처 (디자인 개선) ─ */
+      /* ─ 하단 면책조항 및 출처 ─ */
       .footer-wrap { clear: both; padding-top: 20px; }
       .disc { margin-top: 20px; padding: 18px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); transition: border-color 0.3s; }
       .disc-t { font-size: 11px; font-weight: 700; color: var(--t1); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
@@ -457,13 +494,17 @@
       [data-theme="dark"] .priv-a:hover { color: var(--t1); }
 
       /* ─ 반응형 ─ */
-      @media (max-width: 440px) {
+      @media (max-width: 680px) {
+        .hdr { padding: 12px 0 0 0; }
+        .hdr-left { flex: none; }
+        .hdr-right { flex: none; margin-left: auto; }
+        .hdr-center { order: 3; flex: 1 1 100%; margin-top: 12px; padding-bottom: 10px; gap: 15%; }
         .hdr-sub { display: none; }
         .hdr-title { font-size: 20px; }
-        .app-btn, .donate-btn { padding: 5px 9px; font-size: 11px; }
       }
+      
       @media (min-width: 580px) {
-        .hdr, .shell { max-width: 640px; }
+        .shell { max-width: 640px; }
         .val { font-size: 19px; flex: 0 0 100px; }
         .lbl { font-size: 14px; }
         .pct { font-size: 13px; }
@@ -472,7 +513,7 @@
       @media (min-width: 820px) {
         body { padding: 0 36px; }
         .hdr-wrap { padding: 0 36px; }
-        .hdr, .shell { max-width: 1160px; padding-right: 0; padding-left: 0; }
+        .shell { max-width: 1160px; padding-right: 0; padding-left: 0; }
         .shell { padding-bottom: 80px; }
         .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 44px; align-items: start; }
         .col { display: flex; flex-direction: column; }
@@ -496,10 +537,18 @@
   <body>
     <div class="hdr-wrap">
       <div class="hdr">
-        <a class="hdr-title" href="./index.html">이코노미보드</a>
-        <span class="hdr-sub">by MoneyScoop</span>
-        <div class="btn-group">
-          
+        <div class="hdr-left">
+          <a class="hdr-title" href="./index.html">이코노미보드</a>
+          <span class="hdr-sub">by MoneyScoop</span>
+        </div>
+
+        <nav class="hdr-center">
+          <a href="#sec-global" class="nav-link active">글로벌</a>
+          <a href="#sec-us" class="nav-link">미국</a>
+          <a href="#sec-kr" class="nav-link">한국</a>
+        </nav>
+
+        <div class="hdr-right">
           <button class="theme-btn" id="theme-toggle" aria-label="테마 변경" onclick="toggleTheme()">
             <svg id="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -513,7 +562,7 @@
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
             </svg>
-            MoneyScoop 앱 소개
+            앱 소개
           </a>
 
           <a class="donate-btn" href="https://toss.me/yotachy" target="_blank" rel="noopener">
@@ -526,7 +575,7 @@
     <div class="shell">
       <div class="grid">
         <div class="col">
-          <div class="sec">
+          <div class="sec" id="sec-global">
             <div class="sec-hd">
               <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">주요 지표·지수</span>
@@ -568,7 +617,7 @@
             <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
           </div>
 
-          <div class="sec">
+          <div class="sec" id="sec-us">
             <div class="sec-hd">
               <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">미국 주식 시총 TOP 10</span>
@@ -610,7 +659,7 @@
             <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
           </div>
 
-          <div class="sec">
+          <div class="sec" id="sec-kr">
             <div class="sec-hd">
               <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">한국 주식 시총 TOP 10</span>
@@ -1403,6 +1452,29 @@
       
       doLoadFG();
       setInterval(doLoadFG, 12 * 60 * 60 * 1000);
+
+      /* ── 스크롤 스파이 (네비게이션 활성화) ── */
+      document.addEventListener("DOMContentLoaded", function () {
+        const sections = document.querySelectorAll('.sec[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+          let current = '';
+          sections.forEach(sec => {
+            const sectionTop = sec.offsetTop;
+            if (scrollY >= sectionTop - 130) {
+              current = sec.getAttribute('id');
+            }
+          });
+
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+              link.classList.add('active');
+            }
+          });
+        });
+      });
     </script>
   </body>
 </html>
