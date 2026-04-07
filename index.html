@@ -38,7 +38,7 @@
       /* ─ 전체 스크롤 부드럽게 (상단 여백 포함) ─ */
       html {
         scroll-behavior: smooth;
-        scroll-padding-top: 120px; /* 헤더 높이에 가려지지 않도록 패딩 설정 */
+        scroll-padding-top: 120px;
       }
 
       /* ─ 라이트모드 (기본) ─ */
@@ -396,18 +396,17 @@
       /* ─ 라이브/슬립 표식 ─ */
       .dot {
         display: inline-block;
-        width: 7px;
-        height: 7px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        margin-right: 6px;
+        margin-right: 7px;
         flex-shrink: 0;
         vertical-align: middle;
-        box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
       }
       .dot-live { 
-        background: #00e676; 
-        box-shadow: 0 0 6px rgba(0, 230, 118, 0.8), inset 0 1px 1px rgba(255,255,255,0.5); 
-        animation: pulse 2s ease-in-out infinite; 
+        background: #10b981; 
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.9), inset 0 1px 1px rgba(255,255,255,0.8); 
+        animation: pulse 1.5s ease-in-out infinite; 
       }
       .dot-sleep { 
         background: #bbbbbb; 
@@ -420,8 +419,8 @@
       }
       
       @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.5; transform: scale(0.85); }
+        0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px rgba(16, 185, 129, 0.9); }
+        50% { opacity: 0.6; transform: scale(0.85); box-shadow: 0 0 3px rgba(16, 185, 129, 0.4); }
       }
       @keyframes flash {
         0%, 100% { opacity: 1; }
@@ -473,20 +472,16 @@
       .hm-er { font-size: 12px; color: var(--dn); text-align: center; padding: 32px 0; }
       #hm-wrap { width: 100%; overflow: hidden; margin-top: 4px; }
       .hm-legend { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 8px; }
-      .hm-bar { width: 80px; height: 6px; border-radius: 3px; background: linear-gradient(to right, #ef5350, #e2e2e6, #26a69a); }
-      [data-theme="dark"] .hm-bar { background: linear-gradient(to right, #ef5350, #334155, #26a69a); }
+      .hm-bar { width: 80px; height: 6px; border-radius: 3px; background: linear-gradient(to right, #ef4444, #e2e2e6, #10b981); }
+      [data-theme="dark"] .hm-bar { background: linear-gradient(to right, #ef4444, #1e293b, #10b981); }
       .hm-lt { font-size: 10px; color: var(--t4); font-family: var(--mono); }
 
-      /* ─ 하단 면책조항 및 출처 ─ */
-      .footer-wrap { clear: both; padding-top: 20px; }
-      .disc { margin-top: 20px; padding: 18px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); transition: border-color 0.3s; }
-      .disc-t { font-size: 11px; font-weight: 700; color: var(--t1); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-      .disc-b { font-size: 11px; color: var(--t4); line-height: 1.6; }
-      
-      .src-box { margin-top: 18px; padding-bottom: 14px; }
-      .src-t { font-size: 11px; font-weight: 700; color: var(--t1); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-      .src-b { font-size: 11px; color: var(--t4); line-height: 1.7; }
-      .src-highlight { color: var(--t3); font-weight: 600; }
+      /* ─ 하단 면책조항 및 출처 최적화 ─ */
+      .footer-wrap { clear: both; padding-top: 10px; }
+      .src-box { margin-top: 20px; padding: 18px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); transition: border-color 0.3s; }
+      .src-t { font-size: 12px; font-weight: 700; color: var(--t1); letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+      .src-b { font-size: 11px; color: var(--t4); line-height: 1.7; word-break: keep-all; }
+      .src-highlight { color: var(--t3); font-weight: 700; }
       
       .copy-bar { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; transition: border-color 0.3s; }
       .copy-t { font-size: 10px; color: var(--t4); font-family: var(--mono); }
@@ -778,26 +773,12 @@
       </div>
 
       <div class="footer-wrap">
-        <div class="disc">
-          <div class="disc-t">⚠ 투자 면책 조항 (Disclaimer)</div>
-          <div class="disc-b">
-            본 사이트에서 제공하는 모든 금융 정보 및 지표는 투자 참고용이며, 어떠한 경우에도 투자 권유, 조언 또는 추천을 목적으로 하지 않습니다.<br>
-            제공되는 데이터는 시스템 및 정보 제공자(Yahoo Finance, CNN 등)의 사정에 따라 실제 시장 가격과 차이가 있거나 최소 15분 이상 지연될 수 있습니다. 본 사이트는 제공된 정보의 정확성, 완전성, 신뢰성을 보장하지 않으며, 이를 근거로 한 투자 결정 및 결과(손실 포함)에 대해 어떠한 법적 책임도 지지 않습니다. 모든 투자의 최종 판단과 책임은 전적으로 사용자 본인에게 있습니다.
-          </div>
-        </div>
         <div class="src-box">
-          <div class="src-t">데이터 출처 및 참고사항 (Data Sources)</div>
+          <div class="src-t">ℹ️ 데이터 출처 및 면책 조항 (Disclaimer)</div>
           <div class="src-b">
-            <span class="src-highlight">📊 지수·주식·환율 및 차트 (현재가/시가총액)</span> : Yahoo Finance<br>
-            &nbsp;&nbsp;&nbsp;· 주요 지표 (S&P 500, NASDAQ, DOW, Russell 2000, KOSPI, KOSDAQ 등)<br>
-            &nbsp;&nbsp;&nbsp;· 원자재 및 변동성 (Gold, Silver, DXY, VIX)<br>
-            &nbsp;&nbsp;&nbsp;· 미국/한국 주식 시가총액 TOP 10 및 미국 섹터 히트맵 (상위 160개 종목)<br>
-            &nbsp;&nbsp;&nbsp;· 주요 환율 (USD, EUR, JPY, GBP, CNY)<br>
-            <span class="src-highlight">😱 공포 &amp; 탐욕 지수</span> : CNN Business Fear &amp; Greed Index<br>
-            <br>
-            <span class="src-highlight">💡 참고 및 제한사항</span><br>
-            &nbsp;&nbsp;&nbsp;· DXY, VIX 지수의 1D(1일) 차트는 제공사 제한으로 1W(1주) 데이터로 대체 표기됩니다.<br>
-            &nbsp;&nbsp;&nbsp;· 트래픽 및 서버 자원 최적화를 위해 한국 및 글로벌 시장 장 마감 시간대, 그리고 브라우저 백그라운드 전환 시 데이터 갱신이 일시 정지됩니다.
+            <span class="src-highlight">출처</span> : Yahoo Finance (지수·주식·환율·히트맵), CNN Business (공포 &amp; 탐욕 지수)<br>
+            <span class="src-highlight">참고</span> : DXY, VIX 1일(1D) 차트는 제공사 제한으로 1주(1W) 기준으로 대체 표기됩니다. 서버 자원 최적화를 위해 장 마감 또는 브라우저 백그라운드 전환 시 데이터 갱신이 일시 정지됩니다.<br>
+            <span class="src-highlight">면책</span> : 본 사이트의 모든 금융 정보는 투자 참고용이며 최대 15분 이상 지연될 수 있습니다. 제공된 정보의 정확성을 보장하지 않으며, 이를 근거로 한 투자 결과에 대해 어떠한 법적 책임도 지지 않습니다.
           </div>
         </div>
         <div class="copy-bar">
@@ -1363,7 +1344,7 @@
       }
       function renderFGErr() { $("fg-body").innerHTML = '<div class="fg-er"><div class="fg-er-t">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="doLoadFG()">다시 시도 ↻</button></div>'; }
 
-      /* ── 히트맵 (종목 160개 확장, 빈 여백 및 회색 문제 해결) ── */
+      /* ── 히트맵 ── */
       var HM = [
         { name: "Technology", cap: 16000, stocks: [{ s: "AAPL", cap: 3000 }, { s: "MSFT", cap: 3000 }, { s: "NVDA", cap: 2800 }, { s: "AVGO", cap: 600 }, { s: "ORCL", cap: 350 }, { s: "ADBE", cap: 250 }, { s: "CRM", cap: 280 }, { s: "AMD", cap: 260 }, { s: "QCOM", cap: 180 }, { s: "TXN", cap: 160 }, { s: "INTC", cap: 130 }, { s: "IBM", cap: 160 }, { s: "NOW", cap: 150 }, { s: "INTU", cap: 170 }, { s: "AMAT", cap: 160 }, { s: "MU", cap: 130 }, { s: "PANW", cap: 100 }] },
         { name: "Communication", cap: 7000, stocks: [{ s: "GOOGL", cap: 2000 }, { s: "META", cap: 1200 }, { s: "NFLX", cap: 250 }, { s: "TMUS", cap: 190 }, { s: "DIS", cap: 200 }, { s: "VZ", cap: 160 }, { s: "T", cap: 120 }, { s: "EA", cap: 40 }, { s: "CMCSA", cap: 170 }, { s: "WBD", cap: 30 }, { s: "SIRI", cap: 20 }, { s: "FOXA", cap: 20 }, { s: "CHTR", cap: 50 }, { s: "LYV", cap: 25 }, { s: "TTWO", cap: 25 }] },
@@ -1378,17 +1359,34 @@
         { name: "Basic Materials", cap: 1500, stocks: [{ s: "LIN", cap: 200 }, { s: "SHW", cap: 80 }, { s: "FCX", cap: 70 }, { s: "APD", cap: 60 }, { s: "ECL", cap: 65 }, { s: "NEM", cap: 45 }, { s: "CTVA", cap: 40 }, { s: "NUE", cap: 45 }, { s: "DOW", cap: 40 }, { s: "DD", cap: 35 }] }
       ];
       var HM_SYMS = (function () { var a = []; HM.forEach(function (s) { s.stocks.forEach(function (t) { a.push(t.s); }); }); return a.join(","); })();
+      
       function hmCol(pct, ok) {
         var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         if (!ok) return isDark ? "#334155" : "#dcdce0"; 
-        if (Math.abs(pct) < 0.001) return isDark ? "#1e293b" : "#3a3a4a";
-        var t = Math.max(-1, Math.min(1, pct / 5)), r, g, b;
-        if (t > 0) { r = Math.round(255 * (1 - t) + 38 * t); g = Math.round(255 * (1 - t) + 166 * t); b = Math.round(255 * (1 - t) + 154 * t); } else { var a = Math.abs(t); r = Math.round(255 * (1 - a) + 239 * a); g = Math.round(255 * (1 - a) + 83 * a); b = Math.round(255 * (1 - a) + 80 * a); }
-        return "rgb(" + r + "," + g + "," + b + ")";
+        if (Math.abs(pct) < 0.05) return isDark ? "#1e293b" : "#e2e2e6";
+        
+        // 3.5% 도달 시 최대 색상이 되도록 설정하여 더 뚜렷하게 변경
+        var t = Math.max(-1, Math.min(1, pct / 3.5));
+        var a = Math.abs(t);
+        
+        // Base Colors (배경색)
+        var br = isDark ? 30 : 226, bg = isDark ? 41 : 226, bb = isDark ? 59 : 230;
+        
+        if (t > 0) { // Green (Strong: #10b981)
+           var r = Math.round(br*(1-a) + 16*a);
+           var g = Math.round(bg*(1-a) + 185*a);
+           var b = Math.round(bb*(1-a) + 129*a);
+           return "rgb(" + r + "," + g + "," + b + ")";
+        } else {     // Red (Strong: #ef4444)
+           var r = Math.round(br*(1-a) + 239*a);
+           var g = Math.round(bg*(1-a) + 68*a);
+           var b = Math.round(bb*(1-a) + 68*a);
+           return "rgb(" + r + "," + g + "," + b + ")";
+        }
       }
       function hmTxt(pct, ok) { 
         if (!ok) return "var(--t4)";
-        return Math.abs(pct) > 1.5 ? "#fff" : "#1a1a1a"; 
+        return Math.abs(pct) > 1.2 ? "#fff" : (document.documentElement.getAttribute('data-theme') === 'dark' ? "#cbd5e1" : "#1a1a1a"); 
       }
       
       var D3 = false, D3cbs = [];
@@ -1431,7 +1429,7 @@
           if (closed) { svg.append("rect").attr("x", 0).attr("y", 0).attr("width", W).attr("height", 20).attr("fill", "rgba(245,245,247,0.88)"); svg.append("text").attr("x", 8).attr("y", 14).attr("font-size", 10).attr("font-weight", "700").attr("fill", "#828290").text("전일 종가 기준 (미국 장 마감)"); }
           
           var tip = d3.select("body").selectAll(".hm-tip").data([0]).join("div").attr("class", "hm-tip").style("position", "fixed").style("background", "var(--t1)").style("color", "var(--bg)").style("font-size", "12px").style("padding", "7px 11px").style("border-radius", "7px").style("pointer-events", "none").style("display", "none").style("z-index", "9999").style("font-family", "'DM Mono',monospace").style("white-space", "nowrap").style("line-height", "1.7");
-          stG.on("mousemove touchstart", function (ev, d) { var pct = d.data.pct, sign = pct > 0 ? "▲" : pct < 0 ? "▼" : "─", col = pct > 0 ? "#4ecf8a" : pct < 0 ? "#e06054" : "var(--t4)"; var str = d.data.ok ? sign + " " + Math.abs(pct).toFixed(2) + "%" : closed ? "종가 기준" : "─"; tip.style("display", "block").html("<b>" + d.data.name + '</b>&ensp;<span style="color:' + col + '">' + str + "</span>" + (d.data.price ? "<br>$" + d.data.price.toFixed(2) : "")); var ex = ev.touches ? ev.touches[0].clientX : ev.clientX, ey = ev.touches ? ev.touches[0].clientY : ev.clientY; tip.style("left", ex + 14 + "px").style("top", ey - 48 + "px"); }).on("mouseleave touchend", function () { tip.style("display", "none"); });
+          stG.on("mousemove touchstart", function (ev, d) { var pct = d.data.pct, sign = pct > 0 ? "▲" : pct < 0 ? "▼" : "─", col = pct > 0 ? "#10b981" : pct < 0 ? "#ef4444" : "var(--t4)"; var str = d.data.ok ? sign + " " + Math.abs(pct).toFixed(2) + "%" : closed ? "종가 기준" : "─"; tip.style("display", "block").html("<b>" + d.data.name + '</b>&ensp;<span style="color:' + col + '">' + str + "</span>" + (d.data.price ? "<br>$" + d.data.price.toFixed(2) : "")); var ex = ev.touches ? ev.touches[0].clientX : ev.clientX, ey = ev.touches ? ev.touches[0].clientY : ev.clientY; tip.style("left", ex + 14 + "px").style("top", ey - 48 + "px"); }).on("mouseleave touchend", function () { tip.style("display", "none"); });
           
           var old = wrap.querySelector("svg"); if (old) old.remove(); var st = $("hm-st"); if (st) st.remove(); wrap.appendChild(svg.node());
         });
