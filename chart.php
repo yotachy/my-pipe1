@@ -1,56 +1,75 @@
 <?php
 /**
- * MoneyScoop — 차트 데이터 프록시
- * 경로: /public_html/chart.php
- * 호출: /chart.php?sym=^GSPC&iv=1wk&rg=1y
+ * chart.php — Yahoo Finance 차트 프록시 (Crumb 인증 우회 탑재)
  */
+
+declare(strict_types=1);
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('Access-Control-Allow-Origin: *');
 
-$sym = isset($_GET['sym']) ? $_GET['sym'] : '^GSPC';
-$iv  = isset($_GET['iv'])  ? $_GET['iv']  : '1wk';
-$rg  = isset($_GET['rg'])  ? $_GET['rg']  : '1y';
-
-// 기본값 검증
-$allowed_iv = ['2m','5m','15m','30m','1h','1d','1wk','1mo'];
-$allowed_rg = ['1d','5d','1mo','3mo','6mo','1y','2y','3y','5y','10y'];
-if (!in_array($iv, $allowed_iv)) $iv = '1wk';
-if (!in_array($rg, $allowed_rg)) $rg = '1y';
-
-$enc  = rawurlencode($sym);
-$path = "/v8/finance/chart/{$enc}?interval={$iv}&range={$rg}&includePrePost=false";
-
-$result = null;
-foreach (['query1', 'query2'] as $domain) {
-    $url = "https://{$domain}.finance.yahoo.com{$path}";
-    $ch  = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 12,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_USERAGENT      => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        CURLOPT_HTTPHEADER     => [
-            'Accept: application/json',
-            'Accept-Language: en-US,en;q=0.9',
-            'Referer: https://finance.yahoo.com/',
-        ],
-    ]);
-    $body = curl_exec($ch);
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    if ($body && $code >= 200 && $code < 300) {
-        $result = $body;
-        break;
-    }
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
+    echo json_encode(['error' => 'method not allowed'], JSON_UNESCAPED_UNICODE); exit;
 }
 
-if ($result) {
-    echo $result;
+$sym = isset($_GET['sym']) ? trim($_GET['sym']) : '^GSPC';
+$iv  = isset($_GET['iv']) ? trim($_GET['iv']) : '1wk';
+$rg  = isset($_GET['rg']) ? trim($_GET['rg']) : '1y';
+
+if (!preg_match('/^[A-Za-z0-9.^=_-]{1,20}$/', $sym)) $sym = '^GSPC';
+
+$cacheDir = __DIR__ . '/cache';
+if (!is_dir($cacheDir)) @mkdir($cacheDir, 0755, true);
+
+$cacheFile = $cacheDir . '/c_' . md5($sym . '_' . $iv . '_' . $rg) . '.json';
+$ttl = ($rg === '1d') ? 60 : (($rg === '5d') ? 300 : 1800);
+
+if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $ttl) {
+    readfile($cacheFile); exit;
+}
+
+function getYahooAuthChart() {
+    global $cacheDir;
+    $authFile = $cacheDir . '/yahoo_auth.json';
+    if (file_exists($authFile) && time() - filemtime($authFile) < 3600) return json_decode(file_get_contents($authFile), true);
+    
+    $ch = curl_init('https://fc.yahoo.com');
+    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_HEADER => true, CURLOPT_TIMEOUT => 5, CURLOPT_SSL_VERIFYPEER => false]);
+    $res = curl_exec($ch); curl_close($ch);
+    preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $res, $matches);
+    $cookie = implode('; ', $matches[1]);
+    
+    $ch2 = curl_init('https://query1.finance.yahoo.com/v1/test/getcrumb');
+    curl_setopt_array($ch2, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 5, CURLOPT_SSL_VERIFYPEER => false, CURLOPT_HTTPHEADER => ["Cookie: $cookie"]]);
+    $crumb = curl_exec($ch2); curl_close($ch2);
+    
+    if ($crumb && strlen($crumb) < 20) {
+        $auth = ['cookie' => $cookie, 'crumb' => trim($crumb)];
+        @file_put_contents($authFile, json_encode($auth)); return $auth;
+    }
+    return null;
+}
+
+$auth = getYahooAuthChart();
+$query = http_build_query(['interval' => $iv, 'range' => $rg, 'includePrePost' => 'false']);
+if ($auth) $query .= '&crumb=' . $auth['crumb'];
+$url = 'https://query1.finance.yahoo.com/v8/finance/chart/' . rawurlencode($sym) . '?' . $query;
+
+$ch3 = curl_init($url);
+$headers = ['Accept: application/json', 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)'];
+if ($auth && $auth['cookie']) $headers[] = "Cookie: " . $auth['cookie'];
+
+curl_setopt_array($ch3, [
+    CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10, CURLOPT_SSL_VERIFYPEER => false, CURLOPT_HTTPHEADER => $headers
+]);
+
+$data = curl_exec($ch3); curl_close($ch3);
+
+if ($data && strpos($data, '"chart"') !== false) {
+    @file_put_contents($cacheFile, $data);
+    echo $data;
 } else {
-    http_response_code(502);
-    echo json_encode(['error' => 'upstream failed']);
+    if (file_exists($cacheFile)) readfile($cacheFile);
+    else echo json_encode(['error' => 'upstream failed']);
 }
