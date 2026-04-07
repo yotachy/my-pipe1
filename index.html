@@ -642,6 +642,7 @@
     <div class="shell">
       <div class="grid">
         <div class="col">
+          
           <div class="sec" id="sec-global">
             <div class="sec-hd">
               <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
@@ -655,16 +656,10 @@
               </div>
             </div>
             <div class="lst" id="idx-list">
-              <div class="row" id="idx-sp500" onclick="clickIdx(0)"><div class="lbl">S&amp;P 500</div><div class="sk" style="height: 17px; width: 100px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row" id="idx-nasdaq" onclick="clickIdx(1)"><div class="lbl">NASDAQ</div><div class="sk" style="height: 17px; width: 110px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row" id="idx-dow" onclick="clickIdx(2)"><div class="lbl">DOW</div><div class="sk" style="height: 17px; width: 100px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row" id="idx-russell" onclick="clickIdx(3)"><div class="lbl">Russell 2000</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
               <div class="row" id="idx-dxy" onclick="clickIdx(4)"><div class="lbl">DXY</div><div class="sk" style="height: 17px; width: 70px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
               <div class="row" id="idx-gold" onclick="clickIdx(5)"><div class="lbl">Gold</div><div class="sk" style="height: 17px; width: 70px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
               <div class="row" id="idx-silver" onclick="clickIdx(6)"><div class="lbl">Silver</div><div class="sk" style="height: 17px; width: 70px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
               <div class="row" id="idx-vix" onclick="clickIdx(7)"><div class="lbl">VIX</div><div class="sk" style="height: 17px; width: 62px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row" id="idx-kospi" onclick="clickIdx(8)"><div class="lbl">KOSPI</div><div class="sk" style="height: 17px; width: 92px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row" id="idx-kosdaq" onclick="clickIdx(9)"><div class="lbl">KOSDAQ</div><div class="sk" style="height: 17px; width: 80px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
             </div>
             
             <div class="chart-area" id="idx-chart-area">
@@ -686,26 +681,6 @@
               <div class="canvas-wrap"><canvas id="idx-canvas"></canvas></div>
             </div>
             <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
-          </div>
-
-          <div class="sec">
-            <div class="sec-hd">
-              <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
-                <span class="sec-lbl">글로벌 | 공포 &amp; 탐욕 지수 [미국 증시]</span>
-                <span class="sec-cyc" id="cy-fg">1시간마다 갱신 중</span>
-              </div>
-              <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
-                <span class="sec-time" id="cy-fg-time"></span>
-                <span class="sec-src">CNN</span>
-              </div>
-            </div>
-            <div id="fg-body">
-              <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 12px 0;">
-                <div class="sk" style="width: 100%; max-width: 280px; height: 88px; border-radius: 6px;"></div>
-                <div class="sk" style="width: 60px; height: 40px; border-radius: 4px"></div>
-                <div class="sk" style="width: 200px; height: 100px; border-radius: 4px; margin-top: 4px;"></div>
-              </div>
-            </div>
           </div>
 
           <div class="sec">
@@ -747,13 +722,101 @@
             </div>
             <div class="fn">클릭하면 차트 보기 · 전일 종가 대비 (24시간 글로벌 시장 기준)</div>
           </div>
+
+          <div class="sec" id="sec-kr">
+            <div class="sec-hd">
+              <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
+                <span class="sec-lbl">한국 | 주요 지표·지수</span>
+                <span class="sec-cyc" id="cy-kr-idx">10초마다 갱신 중</span>
+                <button class="boost-btn" id="kr-idx-boost-btn" onclick="boostSpeed('idx')">AD ⚡ 5초 갱신</button>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
+                <span class="sec-time" id="cy-kr-idx-time"></span>
+                <span class="sec-src">Yahoo Finance</span>
+              </div>
+            </div>
+            <div class="lst" id="idx-kr-list">
+              <div class="row" id="idx-kospi" onclick="clickIdx(8)"><div class="lbl">KOSPI</div><div class="sk" style="height: 17px; width: 92px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row" id="idx-kosdaq" onclick="clickIdx(9)"><div class="lbl">KOSDAQ</div><div class="sk" style="height: 17px; width: 80px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+            </div>
+            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
+          </div>
+
+          <div class="sec">
+            <div class="sec-hd">
+              <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
+                <span class="sec-lbl">한국 | 시가총액 상위 10개 기업</span>
+                <span class="sec-cyc" id="cy-kr-top">10초마다 갱신 중</span>
+                <button class="boost-btn" id="kr-top-boost-btn" onclick="boostSpeed('us-top')">AD ⚡ 5초 갱신</button>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
+                <span class="sec-time" id="cy-kr-top-time"></span>
+                <span class="sec-src">Yahoo Finance</span>
+              </div>
+            </div>
+            <div class="lst" id="kr-top-list">
+              <div class="row has-mc" id="kr-top-005930" onclick="clickKrTop(0)"><div class="lbl">삼성전자</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row has-mc" id="kr-top-000660" onclick="clickKrTop(1)"><div class="lbl">SK하이닉스</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row has-mc" id="kr-top-373220" onclick="clickKrTop(2)"><div class="lbl">LG에너지솔루션</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row has-mc" id="kr-top-207940" onclick="clickKrTop(3)"><div class="lbl">삼성바이오로직스</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row has-mc" id="kr-top-005380" onclick="clickKrTop(4)"><div class="lbl">현대차</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row has-mc" id="kr-top-000270" onclick="clickKrTop(5)"><div class="lbl">기아</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row has-mc" id="kr-top-068270" onclick="clickKrTop(6)"><div class="lbl">셀트리온</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row has-mc" id="kr-top-105560" onclick="clickKrTop(7)"><div class="lbl">KB금융</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row has-mc" id="kr-top-005490" onclick="clickKrTop(8)"><div class="lbl">POSCO홀딩스</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row has-mc" id="kr-top-035420" onclick="clickKrTop(9)"><div class="lbl">NAVER</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+            </div>
+
+            <div class="chart-area" id="kr-top-chart-area">
+              <div class="chart-hd">
+                <span class="chart-nm" id="kr-top-chart-nm">—</span>
+                <div class="chart-ranges">
+                  <button class="rbtn on" data-r="1D" onclick="setKrTopRange('1D')">1D</button>
+                  <button class="rbtn" data-r="1W" onclick="setKrTopRange('1W')">1W</button>
+                  <button class="rbtn" data-r="1M" onclick="setKrTopRange('1M')">1M</button>
+                  <button class="rbtn" data-r="6M" onclick="setKrTopRange('6M')">6M</button>
+                  <button class="rbtn" data-r="1Y" onclick="setKrTopRange('1Y')">1Y</button>
+                  <button class="rbtn" data-r="3Y" onclick="setKrTopRange('3Y')">3Y</button>
+                  <button class="rbtn" data-r="5Y" onclick="setKrTopRange('5Y')">5Y</button>
+                  <button class="rbtn" data-r="10Y" onclick="setKrTopRange('10Y')">10Y</button>
+                </div>
+              </div>
+              <div class="chart-note" id="kr-top-chart-note"></div>
+              <div class="chart-perf" id="kr-top-chart-perf"></div>
+              <div class="canvas-wrap"><canvas id="kr-top-canvas"></canvas></div>
+            </div>
+            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
+          </div>
+
         </div>
 
         <div class="col">
+          
           <div class="sec" id="sec-us">
             <div class="sec-hd">
               <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
-                <span class="sec-lbl">미국 | 주요 지수 및 시총 Top 10</span>
+                <span class="sec-lbl">미국 | 주요 지표·지수</span>
+                <span class="sec-cyc" id="cy-us-idx">10초마다 갱신 중</span>
+                <button class="boost-btn" id="us-idx-boost-btn" onclick="boostSpeed('idx')">AD ⚡ 5초 갱신</button>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
+                <span class="sec-time" id="cy-us-idx-time"></span>
+                <span class="sec-src">Yahoo Finance</span>
+              </div>
+            </div>
+            <div class="lst" id="idx-us-list">
+              <div class="row" id="idx-sp500" onclick="clickIdx(0)"><div class="lbl">S&amp;P 500</div><div class="sk" style="height: 17px; width: 100px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row" id="idx-nasdaq" onclick="clickIdx(1)"><div class="lbl">NASDAQ</div><div class="sk" style="height: 17px; width: 110px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row" id="idx-dow" onclick="clickIdx(2)"><div class="lbl">DOW</div><div class="sk" style="height: 17px; width: 100px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row" id="idx-russell" onclick="clickIdx(3)"><div class="lbl">Russell 2000</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+            </div>
+            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
+          </div>
+
+          <div class="sec">
+            <div class="sec-hd">
+              <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
+                <span class="sec-lbl">미국 | 시가총액 상위 10개 기업</span>
                 <span class="sec-cyc" id="cy-us-top">10초마다 갱신 중</span>
                 <button class="boost-btn" id="us-top-boost-btn" onclick="boostSpeed('us-top')">AD ⚡ 5초 갱신</button>
               </div>
@@ -828,50 +891,26 @@
             </div>
           </div>
 
-          <div class="sec" id="sec-kr">
+          <div class="sec">
             <div class="sec-hd">
               <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
-                <span class="sec-lbl">한국 | 주요 지수 및 시총 Top 10</span>
-                <span class="sec-cyc" id="cy-kr-top">10초마다 갱신 중</span>
+                <span class="sec-lbl">미국 | 공포 &amp; 탐욕 지수</span>
+                <span class="sec-cyc" id="cy-fg">12시간마다 갱신 중</span>
               </div>
               <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
-                <span class="sec-time" id="cy-kr-top-time"></span>
-                <span class="sec-src">Yahoo Finance</span>
+                <span class="sec-time" id="cy-fg-time"></span>
+                <span class="sec-src">CNN</span>
               </div>
             </div>
-            <div class="lst" id="kr-top-list">
-              <div class="row has-mc" id="kr-top-005930" onclick="clickKrTop(0)"><div class="lbl">삼성전자</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row has-mc" id="kr-top-000660" onclick="clickKrTop(1)"><div class="lbl">SK하이닉스</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row has-mc" id="kr-top-373220" onclick="clickKrTop(2)"><div class="lbl">LG에너지솔루션</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row has-mc" id="kr-top-207940" onclick="clickKrTop(3)"><div class="lbl">삼성바이오로직스</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row has-mc" id="kr-top-005380" onclick="clickKrTop(4)"><div class="lbl">현대차</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row has-mc" id="kr-top-000270" onclick="clickKrTop(5)"><div class="lbl">기아</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row has-mc" id="kr-top-068270" onclick="clickKrTop(6)"><div class="lbl">셀트리온</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row has-mc" id="kr-top-105560" onclick="clickKrTop(7)"><div class="lbl">KB금융</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row has-mc" id="kr-top-005490" onclick="clickKrTop(8)"><div class="lbl">POSCO홀딩스</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row has-mc" id="kr-top-035420" onclick="clickKrTop(9)"><div class="lbl">NAVER</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-            </div>
-
-            <div class="chart-area" id="kr-top-chart-area">
-              <div class="chart-hd">
-                <span class="chart-nm" id="kr-top-chart-nm">—</span>
-                <div class="chart-ranges">
-                  <button class="rbtn on" data-r="1D" onclick="setKrTopRange('1D')">1D</button>
-                  <button class="rbtn" data-r="1W" onclick="setKrTopRange('1W')">1W</button>
-                  <button class="rbtn" data-r="1M" onclick="setKrTopRange('1M')">1M</button>
-                  <button class="rbtn" data-r="6M" onclick="setKrTopRange('6M')">6M</button>
-                  <button class="rbtn" data-r="1Y" onclick="setKrTopRange('1Y')">1Y</button>
-                  <button class="rbtn" data-r="3Y" onclick="setKrTopRange('3Y')">3Y</button>
-                  <button class="rbtn" data-r="5Y" onclick="setKrTopRange('5Y')">5Y</button>
-                  <button class="rbtn" data-r="10Y" onclick="setKrTopRange('10Y')">10Y</button>
-                </div>
+            <div id="fg-body">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 12px 0;">
+                <div class="sk" style="width: 100%; max-width: 280px; height: 88px; border-radius: 6px;"></div>
+                <div class="sk" style="width: 60px; height: 40px; border-radius: 4px"></div>
+                <div class="sk" style="width: 200px; height: 100px; border-radius: 4px; margin-top: 4px;"></div>
               </div>
-              <div class="chart-note" id="kr-top-chart-note"></div>
-              <div class="chart-perf" id="kr-top-chart-perf"></div>
-              <div class="canvas-wrap"><canvas id="kr-top-canvas"></canvas></div>
             </div>
-            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
           </div>
+
         </div>
       </div>
 
@@ -945,12 +984,15 @@
         return ((d.getMonth() + 1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"));
       }
       
-      /* 💡 수정됨: 스탬프 로직 분리 (시간 표시 우측 이동 및 갱신 중 텍스트) */
-      function stamp(id, label) {
-        var el = $(id);
-        if (el) el.textContent = label + "마다 갱신 중";
-        var tEl = $(id + "-time");
-        if (tEl) tEl.textContent = nowStr() + " 기준";
+      /* 💡 수정됨: 스탬프 배열 동시 처리 */
+      function stamp(idCycs, label) {
+        if (!Array.isArray(idCycs)) idCycs = [idCycs];
+        idCycs.forEach(function(id) {
+          var el = $(id);
+          if (el) el.textContent = label + "마다 갱신 중";
+          var tEl = $(id + "-time");
+          if (tEl) tEl.textContent = nowStr() + " 기준";
+        });
       }
       
       (function () {
@@ -1036,10 +1078,15 @@
       function dotHtml(cls) {
         return '<span class="dot ' + cls + '"></span>';
       }
-      function forceSleepDots(listId) {
-        var el = $(listId);
-        if(!el) return;
-        el.querySelectorAll(".dot").forEach(function(dot) { dot.className = "dot dot-sleep"; });
+      
+      /* 💡 수정됨: 복수 배열 처리 지원 */
+      function forceSleepDots(listIds) {
+        if (!Array.isArray(listIds)) listIds = [listIds];
+        listIds.forEach(function(listId) {
+          var el = $(listId);
+          if(!el) return;
+          el.querySelectorAll(".dot").forEach(function(dot) { dot.className = "dot dot-sleep"; });
+        });
       }
 
       /* ── 공통 행 렌더 ── */
@@ -1058,7 +1105,6 @@
         var raw = (chg >= 0 ? "+" : "") + fmt(chg, d); 
         var valStr = symObj ? symObj.fmt(price) : fmt(price, 1);
         
-        // 💡 수정됨: 부스트(초록), 라이브(노랑), 대기(회색) 도트 상태 계산
         var isInitial = _prev[id] === undefined;
         var changed = !isInitial && _prev[id] !== price;
         var dotClass = "dot-sleep"; 
@@ -1116,18 +1162,22 @@
       /* ── 스케줄러 & 광고 갱신 로직 ── */
       var intervals = {};
       
-      function runSchedule(taskId, idList, idCyc, type, fn, interval, label) {
+      /* 💡 수정됨: 다중 섹션 통합 스케줄러 지원 */
+      function runSchedule(taskId, idLists, idCycs, type, fn, interval, label) {
           var exec = function() {
               if (isMarketOpen(type)) { 
                   fn(); 
-                  stamp(idCyc, label); 
+                  stamp(idCycs, label); 
               } else { 
                   fn(); 
-                  var el = $(idCyc); 
-                  if(el) el.textContent = "장마감"; 
-                  var tEl = $(idCyc + "-time"); 
-                  if (tEl) tEl.textContent = nowStr() + " 기준"; 
-                  forceSleepDots(idList); 
+                  if (!Array.isArray(idCycs)) idCycs = [idCycs];
+                  idCycs.forEach(function(cyc) {
+                      var el = $(cyc); 
+                      if(el) el.textContent = "장마감"; 
+                      var tEl = $(cyc + "-time"); 
+                      if (tEl) tEl.textContent = nowStr() + " 기준"; 
+                  });
+                  forceSleepDots(idLists); 
               }
           };
           
@@ -1140,25 +1190,25 @@
           }, interval);
       }
       
-      // 💡 수정됨: 광고 버튼 클릭 시 보상 로직 적용 및 상태 업데이트
       function boostSpeed(taskId) {
-          var btn = $(taskId + "-boost-btn");
-          
           alert("광고 시청 완료!\n해당 섹션의 갱신 주기가 5초로 단축되며 초록불이 켜집니다 🚀");
           
           if (taskId === 'idx') {
               isBoosted['idx'] = true;
-              runSchedule("idx", "idx-list", "cy-idx", "global", doLoadIdx, 5000, "5초");
+              runSchedule("idx", ["idx-list", "idx-us-list", "idx-kr-list"], ["cy-idx", "cy-us-idx", "cy-kr-idx"], "global", doLoadIdx, 5000, "5초");
+              var b1 = $("idx-boost-btn"); if (b1) b1.style.display = "none";
+              var b2 = $("us-idx-boost-btn"); if (b2) b2.style.display = "none";
+              var b3 = $("kr-idx-boost-btn"); if (b3) b3.style.display = "none";
           } else if (taskId === 'us-top') {
               isBoosted['us-top'] = true;
-              isBoosted['kr-top'] = true;
+              isBoosted['kr-top'] = true; 
               runSchedule("us-top", "us-top-list", "cy-us-top", "us", doLoadBatchedTop10, 5000, "5초");
               runSchedule("kr-top", "kr-top-list", "cy-kr-top", "kr", function(){}, 5000, "5초");
+              var uBtn = $("us-top-boost-btn"); if (uBtn) uBtn.style.display = "none";
+              var kBtn = $("kr-top-boost-btn"); if (kBtn) kBtn.style.display = "none";
           }
-          if (btn) btn.style.display = "none";
       }
 
-      // 💡 수정됨: 히트맵 잠금 해제 기능
       function unlockHeatmap() {
           alert("광고 시청 완료!\n히트맵 잠금이 해제되었습니다 🔓");
           var overlay = $("hm-overlay");
@@ -1171,8 +1221,8 @@
           }
           $("hm-st").textContent = "데이터 로딩 중...";
           
-          doLoadHM(); // 잠금 해제 시 즉시 로드
-          runSchedule("hm", "hm-wrap", "cy-hm", "us", doLoadHM, 30000, "30초"); // 30초 스케줄러 등록
+          doLoadHM(); 
+          runSchedule("hm", "hm-wrap", "cy-hm", "us", doLoadHM, 30000, "30초"); 
       }
       
       document.addEventListener("visibilitychange", function() {
@@ -1309,9 +1359,10 @@
       }
       function insertChart(rowId, areaId) { var el = $(areaId), row = $(rowId); if (row && row.parentNode) row.parentNode.insertBefore(el, row.nextSibling); }
 
-      /* 클릭 이벤트 */
+      /* 💡 클릭 이벤트 분리 대응 */
       function clickIdx(i) {
-        var s = IDX[i]; document.querySelectorAll("#idx-list .row").forEach(function (r) { r.classList.remove("on"); });
+        var s = IDX[i]; 
+        document.querySelectorAll("#idx-list .row, #idx-us-list .row, #idx-kr-list .row").forEach(function (r) { r.classList.remove("on"); });
         if (activeIdxSym && activeIdxSym.id === s.id) { activeIdxSym = null; $("idx-chart-area").style.display = "none"; return; }
         activeIdxSym = s; $(s.id).classList.add("on"); insertChart(s.id, "idx-chart-area"); $("idx-chart-area").style.display = "block"; doChart(s, activeIdxRange, "idx");
       }
@@ -1613,12 +1664,10 @@
       }
       function showHMErr() { var s = $("hm-st"); if (s) { s.textContent = "⚠ quotes.php 를 Cafe24에 업로드해 주세요"; s.className = "hm-er"; } }
 
-      /* ── 스케줄링 실행 (통합 함수 사용) ── */
-      runSchedule("idx", "idx-list", "cy-idx", "global", doLoadIdx, 10000, "10초");
+      /* ── 스케줄링 실행 (통합 스케줄러) ── */
+      runSchedule("idx", ["idx-list", "idx-us-list", "idx-kr-list"], ["cy-idx", "cy-us-idx", "cy-kr-idx"], "global", doLoadIdx, 10000, "10초");
       runSchedule("us-top", "us-top-list", "cy-us-top", "us", doLoadBatchedTop10, 10000, "10초");
       runSchedule("kr-top", "kr-top-list", "cy-kr-top", "kr", function(){}, 10000, "10초"); 
-      
-      // 💡 환율 갱신 주기 10초로 변경 적용 완료
       runSchedule("fx", "fx-list", "cy-fx", "global", doLoadFX, 10000, "10초");
       
       // 히트맵은 초기 로드 시 대기하며, unlockHeatmap() 실행 후 30초 스케줄러가 등록됩니다.
