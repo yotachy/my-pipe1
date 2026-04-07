@@ -1128,7 +1128,7 @@
       var CTTL = { "1D": 60, "1W": 300, "1M": 900, "6M": 1800, "1Y": 3600, "3Y": 7200, "5Y": 14400, "10Y": 14400 };
       function effRange(s, r) { return s.no1D && r === "1D" ? "1W" : r; }
 
-      /* 차트 그리기 */
+      /* ── 차트 그리기 (X축 트레이딩뷰 스타일 반영) ── */
       function doChart(s, range, type) {
         var er = effRange(s, range);
         $(type + "-chart-nm").textContent = s.nm;
@@ -1186,7 +1186,6 @@
           var chartTextColor = getCssVar('--t4');
           var isFx = !!s.mult;
 
-          /* --- 개선된 X축 시간/날짜 표시 로직 적용 --- */
           var newInst = new Chart($(type + "-canvas").getContext("2d"), {
             type: "line", plugins: [hLinePlugin],
             data: {
@@ -1207,7 +1206,7 @@
                       var d = labels[it[0].dataIndex]; if (!d) return ""; 
                       var yr = d.getFullYear(), mo = d.getMonth() + 1, dy = d.getDate();
                       var hh = String(d.getHours()).padStart(2, "0"), mm = String(d.getMinutes()).padStart(2, "0"); 
-                      if (range === "1D") return yr + "년 " + mo + "/" + dy + " " + hh + ":" + mm; 
+                      if (range === "1D") return hh + ":" + mm; 
                       if (range === "1W") return mo + "/" + dy + " " + hh + ":" + mm; 
                       return yr + "년 " + mo + "월 " + dy + "일"; 
                     },
@@ -1219,18 +1218,30 @@
                 x: {
                   grid: { display: false },
                   ticks: { 
-                    maxTicksLimit: 8, maxRotation: 0, font: { family: "'DM Mono',monospace", size: 10 }, color: chartTextColor, 
-                    callback: function (v, i) { 
-                      var d = labels[i]; if (!d) return ""; 
+                    maxTicksLimit: 6, maxRotation: 0, autoSkip: true, align: 'inner',
+                    font: { family: "'DM Mono',monospace", size: 10 }, color: chartTextColor, 
+                    callback: function (val, i, ticks) { 
+                      var d = labels[val]; if (!d) return ""; 
                       var yr = d.getFullYear(), mo = d.getMonth() + 1, dy = d.getDate();
                       var hh = String(d.getHours()).padStart(2, "0"), mm = String(d.getMinutes()).padStart(2, "0"); 
-                      var pv = i > 0 ? labels[i - 1] : null; 
+                      
+                      var prevD = null;
+                      if (i > 0 && ticks[i - 1]) prevD = labels[ticks[i - 1].value];
                       
                       if (range === "1D") return hh + ":" + mm; 
                       if (range === "1W") return mo + "/" + dy + " " + hh + ":" + mm; 
-                      if (range === "1M" || range === "6M") return mo + "/" + dy; 
-                      if (range === "1Y") return (!pv || pv.getFullYear() !== yr) ? yr + "년 " + mo + "월" : mo + "월";
-                      return (!pv || pv.getFullYear() !== yr) ? yr + "년" : ""; 
+                      if (range === "1M") {
+                          if (prevD && prevD.getDate() === dy) return null;
+                          return mo + "/" + dy; 
+                      }
+                      if (range === "6M" || range === "1Y") {
+                          if (prevD && prevD.getFullYear() === yr && prevD.getMonth() === d.getMonth()) return null;
+                          if (!prevD || prevD.getFullYear() !== yr) return "'" + String(yr).slice(2) + "년 " + mo + "월";
+                          return mo + "월";
+                      }
+                      // 3Y, 5Y, 10Y (중복 연도 제거 로직 완벽 반영)
+                      if (prevD && prevD.getFullYear() === yr) return null;
+                      return yr + "년"; 
                     } 
                   }, border: { display: false },
                 },
@@ -1297,7 +1308,7 @@
       }
       function renderFGErr() { $("fg-body").innerHTML = '<div class="fg-er"><div class="fg-er-t">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="doLoadFG()">다시 시도 ↻</button></div>'; }
 
-      /* ── 미국 섹터 히트맵 (종목수 대폭 확장, 160개) ── */
+      /* ── 히트맵 (종목 160개 확장, 빈 여백 및 회색 문제 해결) ── */
       var HM = [
         { name: "Technology", cap: 16000, stocks: [{ s: "AAPL", cap: 3000 }, { s: "MSFT", cap: 3000 }, { s: "NVDA", cap: 2800 }, { s: "AVGO", cap: 600 }, { s: "ORCL", cap: 350 }, { s: "ADBE", cap: 250 }, { s: "CRM", cap: 280 }, { s: "AMD", cap: 260 }, { s: "QCOM", cap: 180 }, { s: "TXN", cap: 160 }, { s: "INTC", cap: 130 }, { s: "IBM", cap: 160 }, { s: "NOW", cap: 150 }, { s: "INTU", cap: 170 }, { s: "AMAT", cap: 160 }, { s: "MU", cap: 130 }, { s: "PANW", cap: 100 }] },
         { name: "Communication", cap: 7000, stocks: [{ s: "GOOGL", cap: 2000 }, { s: "META", cap: 1200 }, { s: "NFLX", cap: 250 }, { s: "TMUS", cap: 190 }, { s: "DIS", cap: 200 }, { s: "VZ", cap: 160 }, { s: "T", cap: 120 }, { s: "EA", cap: 40 }, { s: "CMCSA", cap: 170 }, { s: "WBD", cap: 30 }, { s: "SIRI", cap: 20 }, { s: "FOXA", cap: 20 }, { s: "CHTR", cap: 50 }, { s: "LYV", cap: 25 }, { s: "TTWO", cap: 25 }] },
@@ -1335,7 +1346,11 @@
         lastHmMap = qmap; lastHmClosed = closed;
         loadD3(function () {
           var wrap = $("hm-wrap"); var W = wrap.clientWidth || 320; var H = Math.max(240, Math.round(W * 0.75));
-          var root = d3.hierarchy({ name: "root", children: HM.map(function (sec) { return { name: sec.name, cap: sec.cap, children: sec.stocks.map(function (st) { var q = qmap[st.s]; return { name: st.s, cap: st.cap, pct: q ? q.pct : 0, price: q ? q.price : null, ok: !!q }; }) }; }) }).sum(function (d) { return d.cap ? d.cap : 0; }).sort(function (a, b) { return b.value - a.value; });
+          
+          // d3 hierarchy 생성 시, 부모 노드의 cap은 참조하지 않고 오직 자식들의 cap만 합산하도록 최적화 (회색 빈 공간 원천 차단)
+          var root = d3.hierarchy({ name: "root", children: HM.map(function (sec) { return { name: sec.name, children: sec.stocks.map(function (st) { var q = qmap[st.s]; return { name: st.s, cap: st.cap, pct: q ? q.pct : 0, price: q ? q.price : null, ok: !!q }; }) }; }) })
+            .sum(function (d) { return d.children ? 0 : (d.cap ? d.cap : 0); })
+            .sort(function (a, b) { return b.value - a.value; });
           
           d3.treemap().size([W, H]).paddingOuter(1).paddingTop(14).paddingInner(1).round(false)(root);
           
