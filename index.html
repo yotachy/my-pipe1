@@ -57,7 +57,6 @@
         --up: #26a69a;
         --dn: #ef5350;
         --fl: #787b86;
-        /* 본문 폰트를 Pretendard로 변경 */
         --sans: "Pretendard", -apple-system, sans-serif;
         --mono: "DM Mono", monospace;
         --pad: 16px;
@@ -114,7 +113,7 @@
       }
       .hdr-title {
         font-size: 22px;
-        font-weight: 800; /* 조금 더 굵게 조정 */
+        font-weight: 800; 
         letter-spacing: -1px;
         color: var(--t1);
         text-decoration: none;
@@ -252,23 +251,23 @@
         display: block;
       }
 
-      /* ─ 섹션 ─ */
+      /* ─ 섹션 및 갱신 버튼 ─ */
       .sec {
         margin-bottom: 32px;
       }
       .sec-hd {
         display: flex;
-        align-items: baseline;
+        align-items: center;
         justify-content: space-between;
         padding-bottom: 9px;
-        border-bottom: 2px solid var(--t1); /* 섹션 구분선 더 굵고 명확하게 */
+        border-bottom: 2px solid var(--t1);
         margin-bottom: 14px;
         gap: 8px;
         transition: border-color 0.3s;
       }
       .sec-lbl {
-        font-size: 16px; /* 영역 제목 크기 키움 */
-        font-weight: 800; /* 영역 제목 훨씬 굵게 */
+        font-size: 16px; 
+        font-weight: 800; 
         letter-spacing: -0.5px;
         color: var(--t1);
         white-space: nowrap;
@@ -280,9 +279,33 @@
         color: var(--t4);
         font-family: var(--sans);
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
         flex-shrink: 1;
+      }
+      
+      .boost-btn {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        transition: transform 0.1s;
+        font-family: var(--sans);
+        letter-spacing: -0.2px;
+        white-space: nowrap;
+      }
+      .boost-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .sec-time {
+        font-size: 11px;
+        color: var(--t4);
+        font-family: var(--sans);
+        white-space: nowrap;
       }
       .sec-src {
         font-size: 11px;
@@ -341,11 +364,10 @@
         color: var(--t4);
         text-align: right;
         padding-right: 8px;
-        font-family: var(--sans); /* 통일성을 위해 DM Mono 제거 */
+        font-family: var(--sans);
         white-space: nowrap; 
       }
       
-      /* 모든 숫자 영역 고정폭(tabular-nums) 처리로 가독성 및 정렬 최적화 */
       .val, .pct, .raw, .sb-n, .chart-perf {
         font-variant-numeric: tabular-nums;
         letter-spacing: -0.5px;
@@ -401,7 +423,7 @@
       .vix-md { color: #f0b429; }
       .vix-hi { color: var(--dn); }
 
-      /* ─ 라이브/슬립 표식 ─ */
+      /* ─ 상태 점멸 도트 (로딩/라이브/슬립) ─ */
       .dot {
         display: inline-block;
         width: 8px;
@@ -411,11 +433,22 @@
         flex-shrink: 0;
         vertical-align: middle;
       }
-      .dot-live { 
-        background: #10b981; 
-        box-shadow: 0 0 8px rgba(16, 185, 129, 0.9), inset 0 1px 1px rgba(255,255,255,0.8); 
-        animation: pulse 1.5s ease-in-out infinite; 
+      
+      /* 초기 로딩: 노란색 */
+      .dot-load {
+        background: #fbbf24;
+        box-shadow: 0 0 6px rgba(251, 191, 36, 0.8), inset 0 1px 1px rgba(255,255,255,0.8);
+        animation: pulse 1.5s ease-in-out infinite;
       }
+      
+      /* 라이브 갱신: 진한 녹색, 빠른 깜빡임 */
+      .dot-live { 
+        background: #059669; 
+        box-shadow: 0 0 6px rgba(5, 150, 105, 0.8), inset 0 1px 1px rgba(255,255,255,0.8); 
+        animation: pulse 0.8s ease-in-out infinite; 
+      }
+      
+      /* 미갱신/장마감: 회색 */
       .dot-sleep { 
         background: #bbbbbb; 
         box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
@@ -427,9 +460,10 @@
       }
       
       @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px rgba(16, 185, 129, 0.9); }
-        50% { opacity: 0.6; transform: scale(0.85); box-shadow: 0 0 3px rgba(16, 185, 129, 0.4); }
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.85); }
       }
+      
       @keyframes flash {
         0%, 100% { opacity: 1; }
         25%, 75% { opacity: 0.1; }
@@ -484,7 +518,7 @@
       [data-theme="dark"] .hm-bar { background: linear-gradient(to right, #ef4444, #1e293b, #10b981); }
       .hm-lt { font-size: 11px; color: var(--t4); font-family: var(--sans); font-weight: 600; }
 
-      /* ─ 하단 면책조항 및 출처 최적화 ─ */
+      /* ─ 하단 면책조항 및 출처 ─ */
       .footer-wrap { clear: both; padding-top: 10px; }
       .src-box { margin-top: 20px; padding: 18px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); transition: border-color 0.3s; }
       .src-t { font-size: 13px; font-weight: 800; color: var(--t1); letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
@@ -580,11 +614,15 @@
         <div class="col">
           <div class="sec" id="sec-global">
             <div class="sec-hd">
-              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">글로벌 | 주요 지표 지수</span>
                 <span class="sec-cyc" id="cy-idx">10초마다 갱신</span>
+                <button class="boost-btn" id="idx-boost-btn" onclick="boostSpeed('idx')">AD ⚡ 5초 갱신</button>
               </div>
-              <span class="sec-src">Yahoo Finance</span>
+              <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
+                <span class="sec-time" id="cy-idx-time"></span>
+                <span class="sec-src">Yahoo Finance</span>
+              </div>
             </div>
             <div class="lst" id="idx-list">
               <div class="row" id="idx-sp500" onclick="clickIdx(0)"><div class="lbl">S&amp;P 500</div><div class="sk" style="height: 17px; width: 100px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
@@ -622,11 +660,14 @@
 
           <div class="sec">
             <div class="sec-hd">
-              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">글로벌 | 공포 &amp; 탐욕 지수 (증시)</span>
                 <span class="sec-cyc" id="cy-fg">12시간마다 갱신</span>
               </div>
-              <span class="sec-src">CNN</span>
+              <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
+                <span class="sec-time" id="cy-fg-time"></span>
+                <span class="sec-src">CNN</span>
+              </div>
             </div>
             <div id="fg-body">
               <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 12px 0;">
@@ -639,11 +680,14 @@
 
           <div class="sec">
             <div class="sec-hd">
-              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">글로벌 | 환율 (원, 24시간)</span>
                 <span class="sec-cyc" id="cy-fx">1분마다 갱신</span>
               </div>
-              <span class="sec-src">Yahoo Finance</span>
+              <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
+                <span class="sec-time" id="cy-fx-time"></span>
+                <span class="sec-src">Yahoo Finance</span>
+              </div>
             </div>
             <div class="lst" id="fx-list">
               <div class="row" id="fx-usd" onclick="clickFx(0)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/us.png" alt=""/>USD/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
@@ -678,11 +722,15 @@
         <div class="col">
           <div class="sec" id="sec-us">
             <div class="sec-hd">
-              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">미국 | 주요 지수 및 시총 Top 10</span>
                 <span class="sec-cyc" id="cy-us-top">10초마다 갱신</span>
+                <button class="boost-btn" id="us-top-boost-btn" onclick="boostSpeed('us-top')">AD ⚡ 5초 갱신</button>
               </div>
-              <span class="sec-src">Yahoo Finance</span>
+              <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
+                <span class="sec-time" id="cy-us-top-time"></span>
+                <span class="sec-src">Yahoo Finance</span>
+              </div>
             </div>
             <div class="lst" id="us-top-list">
               <div class="row has-mc" id="us-top-aapl" onclick="clickUsTop(0)"><div class="lbl">Apple</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
@@ -720,11 +768,14 @@
 
           <div class="sec">
             <div class="sec-hd">
-              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">미국 | 섹터 별 히트맵</span>
                 <span class="sec-cyc" id="cy-hm">1분마다 갱신</span>
               </div>
-              <span class="sec-src">Yahoo Finance</span>
+              <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
+                <span class="sec-time" id="cy-hm-time"></span>
+                <span class="sec-src">Yahoo Finance</span>
+              </div>
             </div>
             <div id="hm-wrap">
               <div class="hm-ld" id="hm-st">데이터 로딩 중...</div>
@@ -738,11 +789,14 @@
 
           <div class="sec" id="sec-kr">
             <div class="sec-hd">
-              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
                 <span class="sec-lbl">한국 | 주요 지수 및 시총 Top 10</span>
                 <span class="sec-cyc" id="cy-kr-top">10초마다 갱신</span>
               </div>
-              <span class="sec-src">Yahoo Finance</span>
+              <div style="display: flex; align-items: baseline; gap: 6px; flex-shrink: 0;">
+                <span class="sec-time" id="cy-kr-top-time"></span>
+                <span class="sec-src">Yahoo Finance</span>
+              </div>
             </div>
             <div class="lst" id="kr-top-list">
               <div class="row has-mc" id="kr-top-005930" onclick="clickKrTop(0)"><div class="lbl">삼성전자</div><div class="mc"></div><div class="sk" style="height: 17px; width: 60px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
@@ -849,16 +903,21 @@
         var d = new Date();
         return ((d.getMonth() + 1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"));
       }
+      
+      /* 💡 수정됨: 스탬프 로직 분리 (시간 표시 우측 이동) */
       function stamp(id, label) {
         var el = $(id);
-        if (el) el.textContent = label + "마다 갱신, " + nowStr() + " 기준";
+        if (el) el.textContent = label + "마다 갱신";
+        var tEl = $(id + "-time");
+        if (tEl) tEl.textContent = nowStr() + " 기준";
       }
+      
       (function () {
         var el = $("copy-t");
         if (el) el.textContent = "© 2025–" + new Date().getFullYear() + " MoneyScoop 제작. All rights reserved.";
       })();
 
-      /* ── 심볼 정의 (fmt 함수 전부 연결) ── */
+      /* ── 심볼 정의 ── */
       var IDX = [
         { sym: "^GSPC", id: "idx-sp500", nm: "S&P 500", special: "", d: 2, fmt: function (p) { return fmt(p, 2); } },
         { sym: "^IXIC", id: "idx-nasdaq", nm: "NASDAQ", special: "", d: 2, fmt: function (p) { return fmt(p, 2); } },
@@ -932,8 +991,8 @@
       var _prev = {};
       var _lastUpdated = {}; 
       
-      function dotHtml(isLive) {
-        return '<span class="dot ' + (isLive ? "dot-live" : "dot-sleep") + '"></span>';
+      function dotHtml(cls) {
+        return '<span class="dot ' + cls + '"></span>';
       }
       function forceSleepDots(listId) {
         var el = $(listId);
@@ -954,25 +1013,30 @@
         var arrow = chg > 0 ? "▲" : chg < 0 ? "▼" : "─";
         var vc = isVix ? (price < 15 ? "vix-lo" : price < 25 ? "vix-md" : "vix-hi") : "";
         var d = symObj && symObj.d !== undefined ? symObj.d : 2;
-        var raw = (chg >= 0 ? "+" : "") + fmt(chg, d); // 콤마 적용
+        var raw = (chg >= 0 ? "+" : "") + fmt(chg, d); 
         var valStr = symObj ? symObj.fmt(price) : fmt(price, 1);
         
-        var changed = _prev[id] !== undefined && _prev[id] !== price;
+        // 💡 수정됨: 노란색(초기 로딩), 진한 초록색(라이브), 회색(대기) 도트 전환 로직
+        var isInitial = _prev[id] === undefined;
+        var changed = !isInitial && _prev[id] !== price;
+        var dotClass = "dot-sleep"; // 기본값
         
-        // 💡 수정됨: 초기 로딩 시 과거 시간(0)으로 세팅하여 초록불 점등 방지
-        if (changed) {
+        if (isInitial) {
+            _lastUpdated[id] = 0;
+            dotClass = "dot-load";
+        } else if (changed) {
             _lastUpdated[id] = Date.now();
-        } else if (_prev[id] === undefined) {
-            _lastUpdated[id] = 0; 
+            dotClass = "dot-live";
+        } else if ((Date.now() - _lastUpdated[id]) < 15000 && _lastUpdated[id] !== 0) {
+            dotClass = "dot-live";
         }
-        var isLive = (Date.now() - _lastUpdated[id]) < 15000; 
 
         var lblEl = el.querySelector(".lbl");
         var cleanInner = lblEl ? lblEl.innerHTML.replace(/<span class="dot.*?<\/span>/g, '') : "";
         var mcHtml = mcStr ? '<div class="mc">' + mcStr + '</div>' : '';
 
         el.innerHTML =
-          '<div class="lbl">' + dotHtml(isLive) + cleanInner + "</div>" +
+          '<div class="lbl">' + dotHtml(dotClass) + cleanInner + "</div>" +
           mcHtml +
           '<div class="val ' + vc + '">' + valStr + "</div>" +
           '<div class="chg"><span class="pct ' + cls + '">' + arrow + " " + fmt(Math.abs(pct), 2) + "%</span>" +
@@ -1002,24 +1066,52 @@
         rows.forEach(function(r) { container.appendChild(r); });
       }
 
-      /* ── 스케줄러 ── */
-      function scheduleTask(idList, idCyc, type, fn, interval, label) {
-        // 💡 수정됨: 최초 로드 시에도 장마감 여부를 즉각 체크하여 텍스트 반영
-        if (isMarketOpen(type)) {
-            fn();
-            stamp(idCyc, label);
-        } else {
-            fn(); // 장마감이어도 최초 1회 데이터는 그려야 함
-            var el = $(idCyc); 
-            if(el) el.textContent = "장마감 (갱신 일시정지)";
-        }
-
-        setInterval(function() {
-            if (document.hidden) return; 
-            
-            if (isMarketOpen(type)) { fn(); stamp(idCyc, label); } 
-            else { var el = $(idCyc); if(el) el.textContent = "장마감 (갱신 일시정지)"; forceSleepDots(idList); }
-        }, interval);
+      /* ── 스케줄러 & 광고 갱신 로직 ── */
+      var intervals = {};
+      
+      // 💡 수정됨: 스케줄링 관리 함수 통합 (광고 보상 대응)
+      function runSchedule(taskId, idList, idCyc, type, fn, interval, label) {
+          var exec = function() {
+              if (isMarketOpen(type)) { 
+                  fn(); 
+                  stamp(idCyc, label); 
+              } else { 
+                  fn(); 
+                  var el = $(idCyc); 
+                  if(el) el.textContent = "장마감"; 
+                  var tEl = $(idCyc + "-time"); 
+                  if (tEl) tEl.textContent = nowStr() + " 기준"; 
+                  forceSleepDots(idList); 
+              }
+          };
+          
+          exec(); // 즉시 실행
+          
+          if(intervals[taskId]) clearInterval(intervals[taskId]);
+          intervals[taskId] = setInterval(function() {
+              if (document.hidden) return; 
+              exec();
+          }, interval);
+      }
+      
+      // 💡 수정됨: 광고 버튼 클릭 시 보상 로직
+      function boostSpeed(taskId) {
+          var btn = $(taskId + "-boost-btn");
+          
+          // 가상의 광고 스폰서 링크 새 창 띄우기 (실제 운영 시 링크 변경)
+          window.open("https://google.com/search?q=sponsor", "_blank");
+          
+          setTimeout(function() {
+              alert("광고 스폰서를 확인했습니다!\n보상으로 갱신 주기가 5초로 단축됩니다 🚀");
+              if (taskId === 'idx') {
+                  runSchedule("idx", "idx-list", "cy-idx", "global", doLoadIdx, 5000, "5초");
+              } else if (taskId === 'us-top') {
+                  // us-top의 fetch 로직은 kr-top도 동시에 가져오므로 두 스케줄을 함께 조율
+                  runSchedule("us-top", "us-top-list", "cy-us-top", "us", doLoadBatchedTop10, 5000, "5초");
+                  runSchedule("kr-top", "kr-top-list", "cy-kr-top", "kr", function(){}, 5000, "5초");
+              }
+              if (btn) btn.style.display = "none";
+          }, 500);
       }
       
       document.addEventListener("visibilitychange", function() {
@@ -1231,7 +1323,7 @@
         var diff = last - pC, pct = pC > 0 ? (diff / Math.abs(pC)) * 100 : 0;
         var isUp = diff >= 0, isVix = s.special === "vix";
         var col = isVix ? (isUp ? "#ef5350" : "#26a69a") : (isUp ? "#26a69a" : "#ef5350");
-        var absStr = fmt(Math.abs(diff), s.d !== undefined ? s.d : 2); // 콤마 적용
+        var absStr = fmt(Math.abs(diff), s.d !== undefined ? s.d : 2); 
         $(type + "-chart-perf").innerHTML = '<span style="color:' + col + '">' + (isUp ? "▲" : "▼") + " " + fmt(Math.abs(pct), 2) + "% (" + (isUp ? "+" : "-") + absStr + ")</span>";
 
         var allV = vals.slice(); if (is1D && pC) allV.push(pC);
@@ -1388,7 +1480,6 @@
         if (!ok) return isDark ? "#334155" : "#cbd5e1"; 
         if (Math.abs(pct) < 0.05) return isDark ? "#1e293b" : "#f1f5f9";
         
-        // 3.0% 도달 시 최대 색상이 되도록 설정 (기존 3.5보다 색상이 더 빠르게 진해짐)
         var t = Math.max(-1, Math.min(1, pct / 3.0));
         var a = Math.abs(t);
         
@@ -1397,11 +1488,10 @@
             if (t > 0) return "rgb(" + Math.round(br*(1-a) + 16*a) + "," + Math.round(bg*(1-a) + 185*a) + "," + Math.round(bb*(1-a) + 129*a) + ")";
             else return "rgb(" + Math.round(br*(1-a) + 239*a) + "," + Math.round(bg*(1-a) + 68*a) + "," + Math.round(bb*(1-a) + 68*a) + ")";
         } else {
-            // 라이트 모드에서도 강렬한 원색(빨강, 초록)이 배경색(아주 밝은 회청색) 대비 명확하게 나타나도록 최적화
             var br = 241, bg = 245, bb = 249; 
-            if (t > 0) { // Green (Strong: #10b981)
+            if (t > 0) { 
                return "rgb(" + Math.round(br*(1-a) + 16*a) + "," + Math.round(bg*(1-a) + 185*a) + "," + Math.round(bb*(1-a) + 129*a) + ")";
-            } else {     // Red (Strong: #ef4444)
+            } else {     
                return "rgb(" + Math.round(br*(1-a) + 239*a) + "," + Math.round(bg*(1-a) + 68*a) + "," + Math.round(bb*(1-a) + 68*a) + ")";
             }
         }
@@ -1462,13 +1552,13 @@
       }
       function showHMErr() { var s = $("hm-st"); if (s) { s.textContent = "⚠ quotes.php 를 Cafe24에 업로드해 주세요"; s.className = "hm-er"; } }
 
-      /* ── 스케줄링 실행 ── */
-      scheduleTask("idx-list", "cy-idx", "global", doLoadIdx, 10000, "10초");
-      scheduleTask("us-top-list", "cy-us-top", "us", doLoadBatchedTop10, 10000, "10초");
-      scheduleTask("kr-top-list", "cy-kr-top", "kr", function(){}, 10000, "10초"); 
+      /* ── 스케줄링 실행 (통합 함수 사용) ── */
+      runSchedule("idx", "idx-list", "cy-idx", "global", doLoadIdx, 10000, "10초");
+      runSchedule("us-top", "us-top-list", "cy-us-top", "us", doLoadBatchedTop10, 10000, "10초");
+      runSchedule("kr-top", "kr-top-list", "cy-kr-top", "kr", function(){}, 10000, "10초"); 
       
-      scheduleTask("fx-list", "cy-fx", "global", doLoadFX, 60000, "1분");
-      scheduleTask("hm-wrap", "cy-hm", "us", doLoadHM, 60000, "1분");
+      runSchedule("fx", "fx-list", "cy-fx", "global", doLoadFX, 60000, "1분");
+      runSchedule("hm", "hm-wrap", "cy-hm", "us", doLoadHM, 60000, "1분");
       
       doLoadFG();
       setInterval(doLoadFG, 12 * 60 * 60 * 1000);
