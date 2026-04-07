@@ -959,8 +959,11 @@
         
         var changed = _prev[id] !== undefined && _prev[id] !== price;
         
-        if (changed || _prev[id] === undefined) {
+        // 💡 수정됨: 초기 로딩 시 과거 시간(0)으로 세팅하여 초록불 점등 방지
+        if (changed) {
             _lastUpdated[id] = Date.now();
+        } else if (_prev[id] === undefined) {
+            _lastUpdated[id] = 0; 
         }
         var isLive = (Date.now() - _lastUpdated[id]) < 15000; 
 
@@ -1001,7 +1004,16 @@
 
       /* ── 스케줄러 ── */
       function scheduleTask(idList, idCyc, type, fn, interval, label) {
-        fn();
+        // 💡 수정됨: 최초 로드 시에도 장마감 여부를 즉각 체크하여 텍스트 반영
+        if (isMarketOpen(type)) {
+            fn();
+            stamp(idCyc, label);
+        } else {
+            fn(); // 장마감이어도 최초 1회 데이터는 그려야 함
+            var el = $(idCyc); 
+            if(el) el.textContent = "장마감 (갱신 일시정지)";
+        }
+
         setInterval(function() {
             if (document.hidden) return; 
             
