@@ -2309,7 +2309,7 @@
           <span class="copy-t" id="copy-t"></span>
           <a
             class="priv-a"
-            href="https://jschoi0223.mycafe24.com/privacy.html"
+            href="./privacy.html"
             target="_blank"
             >개인정보처리방침</a
           >
@@ -2397,6 +2397,47 @@
           ":" +
           String(d.getMinutes()).padStart(2, "0")
         );
+      }
+
+      var APP_BASE_URL = new URL("./", window.location.href);
+      var FG_REFRESH_MS = 60 * 60 * 1000;
+
+      function buildUrl(file, params) {
+        var url = new URL(file, APP_BASE_URL);
+        if (params) {
+          Object.keys(params).forEach(function (key) {
+            if (params[key] !== undefined && params[key] !== null) {
+              url.searchParams.set(key, params[key]);
+            }
+          });
+        }
+        url.searchParams.set("_t", Date.now());
+        return url.toString();
+      }
+
+      function fetchJson(file, params) {
+        return fetch(buildUrl(file, params), { cache: "no-store" }).then(
+          function (r) {
+            return r.text().then(function (text) {
+              if (!r.ok) {
+                throw new Error(file + " HTTP " + r.status);
+              }
+              try {
+                return JSON.parse(text);
+              } catch (e) {
+                throw new Error(
+                  file +
+                    " JSON 파싱 실패: " +
+                    (text || "").slice(0, 180).replace(/\s+/g, " "),
+                );
+              }
+            });
+          },
+        );
+      }
+
+      function logFetchError(scope, err) {
+        console.error("[" + scope + "]", err);
       }
 
       /* 💡 다이나믹 롤링 숫자 애니메이션 */
@@ -2768,14 +2809,12 @@
       var IDX_SYMS = IDX.map(function (s) {
         return s.sym;
       }).join(",");
-      var BATCH_TOP_SYMS =
-        US_TOP10.map(function (s) {
-          return s.sym;
-        }).join(",") +
-        "," +
-        KR_TOP10.map(function (s) {
-          return s.sym;
-        }).join(",");
+      var US_TOP_SYMS = US_TOP10.map(function (s) {
+        return s.sym;
+      }).join(",");
+      var KR_TOP_SYMS = KR_TOP10.map(function (s) {
+        return s.sym;
+      }).join(",");
       var FX_SYMS = FX.map(function (s) {
         return s.sym;
       }).join(",");
@@ -3055,7 +3094,7 @@
         }
 
         // 💡 1단계 표기 5초/실제 6초, 2단계 표기 2.5초/실제 3초
-        var newInterval = globalBoostLevel === 1 ? 6000 : 3000;
+        var newInterval = globalBoostLevel === 1 ? 5000 : 3000;
 
         runSchedule(
           "idx",
@@ -3070,7 +3109,7 @@
           "us-top-list",
           "cy-us-top-time",
           "us",
-          doLoadBatchedTop10,
+          doLoadUsTop10,
           newInterval,
         );
         runSchedule(
@@ -3078,7 +3117,7 @@
           "kr-top-list",
           "cy-kr-top-time",
           "kr",
-          function () {},
+          doLoadKrTop10,
           newInterval,
         );
         runSchedule(
@@ -3126,22 +3165,16 @@
       document.addEventListener("visibilitychange", function () {
         if (!document.hidden) {
           if (isMarketOpen("global")) doLoadIdx();
-          if (isMarketOpen("us") || isMarketOpen("kr")) doLoadBatchedTop10();
+          if (isMarketOpen("us")) doLoadUsTop10();
+          if (isMarketOpen("kr")) doLoadKrTop10();
           if (isMarketOpen("global")) doLoadFX();
+          doLoadFG();
         }
       });
 
       /* ── 지표 데이터 로드 ── */
       function doLoadIdx() {
-        fetch(
-          "quotes.php?syms=" +
-            encodeURIComponent(IDX_SYMS) +
-            "&_t=" +
-            Date.now(),
-        )
-          .then(function (r) {
-            return r.ok ? r.json() : null;
-          })
+        fetchJson("quotes.php", { syms: IDX_SYMS })
           .then(function (j) {
             if (j && j.quoteResponse && j.quoteResponse.result) {
               var map = {};
@@ -3156,69 +3189,78 @@
                   var chg = q.regularMarketChange;
                   var pct = q.regularMarketChangePercent;
                   renderRow(s.id, p, pv, s, null, null, chg, pct);
-                } else fetchFallbackDirect(s);
+                } else {
+                  fetchFallbackDirect(s);
+                }
               });
-            } else IDX.forEach(fetchFallbackDirect);
+            } else {
+              IDX.forEach(fetchFallbackDirect);
+            }
           })
-          .catch(function () {
+          .catch(function (err) {
+            logFetchError("IDX", err);
             IDX.forEach(fetchFallbackDirect);
           });
       }
 
-      function doLoadBatchedTop10() {
-        fetch(
-          "quotes.php?syms=" +
-            encodeURIComponent(BATCH_TOP_SYMS) +
-            "&_t=" +
-            Date.now(),
-        )
-          .then(function (r) {
-            return r.json();
-          })
+      function processTopList(arr, listId, map) {
+        arr.forEach(function (s) {
+          var q = map[s.sym];
+          if (q && q.regularMarketPrice) {
+            var p = q.regularMarketPrice;
+            var pv = q.regularMarketPreviousClose || p;
+            var chg = q.regularMarketChange;
+            var pct = q.regularMarketChangePercent;
+            var mc = q.marketCap || 0;
+            var cur = s.sym.indexOf(".KS") > -1 ? "KRW" : "USD";
+            renderRow(s.id, p, pv, s, fmtMC(mc, cur), mc, chg, pct);
+          } else {
+            fetchFallbackDirect(s);
+          }
+        });
+        sortListDesc(listId);
+      }
+
+      function doLoadUsTop10() {
+        fetchJson("quotes.php", { syms: US_TOP_SYMS })
           .then(function (j) {
             if (j && j.quoteResponse && j.quoteResponse.result) {
               var map = {};
               j.quoteResponse.result.forEach(function (q) {
                 map[q.symbol] = q;
               });
-              var processArr = function (arr, listId) {
-                arr.forEach(function (s) {
-                  var q = map[s.sym];
-                  if (q && q.regularMarketPrice) {
-                    var p = q.regularMarketPrice;
-                    var pv = q.regularMarketPreviousClose || p;
-                    var chg = q.regularMarketChange;
-                    var pct = q.regularMarketChangePercent;
-                    var mc = q.marketCap || 0;
-                    var cur = s.sym.indexOf(".KS") > -1 ? "KRW" : "USD";
-                    renderRow(s.id, p, pv, s, fmtMC(mc, cur), mc, chg, pct);
-                  } else fetchFallbackDirect(s);
-                });
-                sortListDesc(listId);
-              };
-              processArr(US_TOP10, "us-top-list");
-              processArr(KR_TOP10, "kr-top-list");
+              processTopList(US_TOP10, "us-top-list", map);
             } else {
               US_TOP10.forEach(fetchFallbackDirect);
+            }
+          })
+          .catch(function (err) {
+            logFetchError("US_TOP10", err);
+            US_TOP10.forEach(fetchFallbackDirect);
+          });
+      }
+
+      function doLoadKrTop10() {
+        fetchJson("quotes.php", { syms: KR_TOP_SYMS })
+          .then(function (j) {
+            if (j && j.quoteResponse && j.quoteResponse.result) {
+              var map = {};
+              j.quoteResponse.result.forEach(function (q) {
+                map[q.symbol] = q;
+              });
+              processTopList(KR_TOP10, "kr-top-list", map);
+            } else {
               KR_TOP10.forEach(fetchFallbackDirect);
             }
           })
-          .catch(function () {
-            US_TOP10.forEach(fetchFallbackDirect);
+          .catch(function (err) {
+            logFetchError("KR_TOP10", err);
             KR_TOP10.forEach(fetchFallbackDirect);
           });
       }
 
       function doLoadFX() {
-        fetch(
-          "quotes.php?syms=" +
-            encodeURIComponent(FX_SYMS) +
-            "&_t=" +
-            Date.now(),
-        )
-          .then(function (r) {
-            return r.json();
-          })
+        fetchJson("quotes.php", { syms: FX_SYMS })
           .then(function (j) {
             if (j && j.quoteResponse && j.quoteResponse.result) {
               var map = {};
@@ -3236,11 +3278,16 @@
                   var chg = (q.regularMarketChange || 0) * mult;
                   var pct = q.regularMarketChangePercent || 0;
                   renderRow(s.id, p, pv, s, null, null, chg, pct);
-                } else fetchFallbackDirect(s);
+                } else {
+                  fetchFallbackDirect(s);
+                }
               });
-            } else FX.forEach(fetchFallbackDirect);
+            } else {
+              FX.forEach(fetchFallbackDirect);
+            }
           })
-          .catch(function () {
+          .catch(function (err) {
+            logFetchError("FX", err);
             FX.forEach(fetchFallbackDirect);
           });
       }
@@ -3248,17 +3295,11 @@
       function fetchFallbackDirect(s) {
         var rg =
           s.sym.indexOf(".KS") > -1 || s.sym.indexOf(".KQ") > -1 ? "10d" : "5d";
-        fetch(
-          "chart.php?sym=" +
-            encodeURIComponent(s.sym) +
-            "&iv=1d&rg=" +
-            rg +
-            "&_t=" +
-            Date.now(),
-        )
-          .then(function (r) {
-            return r.ok ? r.json() : null;
-          })
+        fetchJson("chart.php", {
+          sym: s.sym,
+          iv: "1d",
+          rg: rg,
+        })
           .then(function (j) {
             if (!j || !j.chart || !j.chart.result || !j.chart.result[0]) return;
             var res = j.chart.result[0];
@@ -3270,7 +3311,9 @@
               renderRow(s.id, p * mult, pv * mult, s);
             }
           })
-          .catch(function () {});
+          .catch(function (err) {
+            logFetchError("FALLBACK:" + s.sym, err);
+          });
       }
 
       /* ── 차트: H-Line (전일종가 점선 표기) ── */
@@ -4114,10 +4157,7 @@
         });
       }
       function doLoadFG() {
-        fetch("quotes.php?fg=1&_t=" + Date.now())
-          .then(function (r) {
-            return r.ok ? r.json() : null;
-          })
+        fetchJson("quotes.php", { fg: 1 })
           .then(function (j) {
             if (!j || j.error || !j.fear_and_greed) {
               renderFGErr();
@@ -4145,7 +4185,8 @@
             var tEl = $("cy-fg-time");
             if (tEl) tEl.textContent = nowStr() + " 기준";
           })
-          .catch(function () {
+          .catch(function (err) {
+            logFetchError("FG", err);
             renderFGErr();
           });
       }
@@ -4708,15 +4749,7 @@
       }
 
       function doLoadHM() {
-        fetch(
-          "quotes.php?syms=" +
-            encodeURIComponent(HM_SYMS) +
-            "&_t=" +
-            Date.now(),
-        )
-          .then(function (r) {
-            return r.ok ? r.json() : null;
-          })
+        fetchJson("quotes.php", { syms: HM_SYMS })
           .then(function (j) {
             if (!j) {
               showHMErr();
@@ -4755,14 +4788,16 @@
               if (tEl) tEl.textContent = nowStr() + " 기준";
             }
           })
-          .catch(function () {
+          .catch(function (err) {
+            logFetchError("HM", err);
             showHMErr();
           });
       }
       function showHMErr() {
         var s = $("hm-st");
         if (s) {
-          s.textContent = "⚠ quotes.php 를 Cafe24에 업로드해 주세요";
+          s.textContent =
+            "⚠ 데이터 프록시 응답에 실패했습니다. quotes.php / chart.php 경로와 PHP 설정을 확인해 주세요.";
           s.className = "hm-er";
         }
       }
@@ -4781,7 +4816,7 @@
         "us-top-list",
         "cy-us-top-time",
         "us",
-        doLoadBatchedTop10,
+        doLoadUsTop10,
         10000,
       );
       runSchedule(
@@ -4789,7 +4824,7 @@
         "kr-top-list",
         "cy-kr-top-time",
         "kr",
-        function () {},
+        doLoadKrTop10,
         10000,
       );
       runSchedule("fx", "fx-list", "cy-fx-time", "global", doLoadFX, 10000);
@@ -4797,7 +4832,7 @@
       doLoadHM();
 
       doLoadFG();
-      setInterval(doLoadFG, 12 * 60 * 60 * 1000);
+      setInterval(doLoadFG, FG_REFRESH_MS);
 
       /* ── 네비게이션 스크롤 스파이 ── */
       document.addEventListener("DOMContentLoaded", function () {
