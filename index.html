@@ -578,7 +578,7 @@
           <div class="sec" id="sec-global">
             <div class="sec-hd">
               <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
-                <span class="sec-lbl">주요 지표·지수</span>
+                <span class="sec-lbl">글로벌 | 주요 지표 지수</span>
                 <span class="sec-cyc" id="cy-idx">10초마다 갱신</span>
               </div>
               <span class="sec-src">Yahoo Finance</span>
@@ -617,10 +617,66 @@
             <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
           </div>
 
+          <div class="sec">
+            <div class="sec-hd">
+              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
+                <span class="sec-lbl">글로벌 | 공포 &amp; 탐욕 지수 (증시)</span>
+                <span class="sec-cyc" id="cy-fg">12시간마다 갱신</span>
+              </div>
+              <span class="sec-src">CNN</span>
+            </div>
+            <div id="fg-body">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 12px 0;">
+                <div class="sk" style="width: 100%; max-width: 280px; height: 88px; border-radius: 6px;"></div>
+                <div class="sk" style="width: 60px; height: 40px; border-radius: 4px"></div>
+                <div class="sk" style="width: 200px; height: 100px; border-radius: 4px; margin-top: 4px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec">
+            <div class="sec-hd">
+              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
+                <span class="sec-lbl">글로벌 | 환율 (원, 24시간)</span>
+                <span class="sec-cyc" id="cy-fx">1분마다 갱신</span>
+              </div>
+              <span class="sec-src">Yahoo Finance</span>
+            </div>
+            <div class="lst" id="fx-list">
+              <div class="row" id="fx-usd" onclick="clickFx(0)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/us.png" alt=""/>USD/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row" id="fx-eur" onclick="clickFx(1)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/eu.png" alt=""/>EUR/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row" id="fx-jpy" onclick="clickFx(2)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/jp.png" alt=""/>JPY/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row" id="fx-gbp" onclick="clickFx(3)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/gb.png" alt=""/>GBP/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+              <div class="row" id="fx-cny" onclick="clickFx(4)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/cn.png" alt=""/>CNY/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
+            </div>
+            
+            <div class="chart-area" id="fx-chart-area">
+              <div class="chart-hd">
+                <span class="chart-nm" id="fx-chart-nm">—</span>
+                <div class="chart-ranges">
+                  <button class="rbtn on" data-r="1D" onclick="setFxRange('1D')">1D</button>
+                  <button class="rbtn" data-r="1W" onclick="setFxRange('1W')">1W</button>
+                  <button class="rbtn" data-r="1M" onclick="setFxRange('1M')">1M</button>
+                  <button class="rbtn" data-r="6M" onclick="setFxRange('6M')">6M</button>
+                  <button class="rbtn" data-r="1Y" onclick="setFxRange('1Y')">1Y</button>
+                  <button class="rbtn" data-r="3Y" onclick="setFxRange('3Y')">3Y</button>
+                  <button class="rbtn" data-r="5Y" onclick="setFxRange('5Y')">5Y</button>
+                  <button class="rbtn" data-r="10Y" onclick="setFxRange('10Y')">10Y</button>
+                </div>
+              </div>
+              <div class="chart-note" id="fx-chart-note"></div>
+              <div class="chart-perf" id="fx-chart-perf"></div>
+              <div class="canvas-wrap"><canvas id="fx-canvas"></canvas></div>
+            </div>
+            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비 (24시간 글로벌 시장 기준)</div>
+          </div>
+        </div>
+
+        <div class="col">
           <div class="sec" id="sec-us">
             <div class="sec-hd">
               <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
-                <span class="sec-lbl">미국 주식 시총 TOP 10</span>
+                <span class="sec-lbl">미국 | 주요 지수 및 시총 Top 10</span>
                 <span class="sec-cyc" id="cy-us-top">10초마다 갱신</span>
               </div>
               <span class="sec-src">Yahoo Finance</span>
@@ -659,10 +715,28 @@
             <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
           </div>
 
+          <div class="sec">
+            <div class="sec-hd">
+              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
+                <span class="sec-lbl">미국 | 섹터 별 히트맵</span>
+                <span class="sec-cyc" id="cy-hm">1분마다 갱신</span>
+              </div>
+              <span class="sec-src">Yahoo Finance</span>
+            </div>
+            <div id="hm-wrap">
+              <div class="hm-ld" id="hm-st">데이터 로딩 중...</div>
+            </div>
+            <div class="hm-legend">
+              <span class="hm-lt">-5%</span>
+              <div class="hm-bar"></div>
+              <span class="hm-lt">+5%</span>
+            </div>
+          </div>
+
           <div class="sec" id="sec-kr">
             <div class="sec-hd">
               <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
-                <span class="sec-lbl">한국 주식 시총 TOP 10</span>
+                <span class="sec-lbl">한국 | 주요 지수 및 시총 Top 10</span>
                 <span class="sec-cyc" id="cy-kr-top">10초마다 갱신</span>
               </div>
               <span class="sec-src">Yahoo Finance</span>
@@ -699,80 +773,6 @@
               <div class="canvas-wrap"><canvas id="kr-top-canvas"></canvas></div>
             </div>
             <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
-          </div>
-        </div>
-
-        <div class="col">
-          <div class="sec">
-            <div class="sec-hd">
-              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
-                <span class="sec-lbl">환율-KRW</span>
-                <span class="sec-cyc" id="cy-fx">1분마다 갱신</span>
-              </div>
-              <span class="sec-src">Yahoo Finance</span>
-            </div>
-            <div class="lst" id="fx-list">
-              <div class="row" id="fx-usd" onclick="clickFx(0)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/us.png" alt=""/>USD/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row" id="fx-eur" onclick="clickFx(1)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/eu.png" alt=""/>EUR/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row" id="fx-jpy" onclick="clickFx(2)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/jp.png" alt=""/>JPY/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row" id="fx-gbp" onclick="clickFx(3)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/gb.png" alt=""/>GBP/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-              <div class="row" id="fx-cny" onclick="clickFx(4)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/cn.png" alt=""/>CNY/KRW</div><div class="sk" style="height: 17px; width: 88px; margin-left: auto"></div><div class="sk" style="height: 28px; width: 82px; margin-left: 8px"></div></div>
-            </div>
-            
-            <div class="chart-area" id="fx-chart-area">
-              <div class="chart-hd">
-                <span class="chart-nm" id="fx-chart-nm">—</span>
-                <div class="chart-ranges">
-                  <button class="rbtn on" data-r="1D" onclick="setFxRange('1D')">1D</button>
-                  <button class="rbtn" data-r="1W" onclick="setFxRange('1W')">1W</button>
-                  <button class="rbtn" data-r="1M" onclick="setFxRange('1M')">1M</button>
-                  <button class="rbtn" data-r="6M" onclick="setFxRange('6M')">6M</button>
-                  <button class="rbtn" data-r="1Y" onclick="setFxRange('1Y')">1Y</button>
-                  <button class="rbtn" data-r="3Y" onclick="setFxRange('3Y')">3Y</button>
-                  <button class="rbtn" data-r="5Y" onclick="setFxRange('5Y')">5Y</button>
-                  <button class="rbtn" data-r="10Y" onclick="setFxRange('10Y')">10Y</button>
-                </div>
-              </div>
-              <div class="chart-note" id="fx-chart-note"></div>
-              <div class="chart-perf" id="fx-chart-perf"></div>
-              <div class="canvas-wrap"><canvas id="fx-canvas"></canvas></div>
-            </div>
-            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비 (24시간 글로벌 시장 기준)</div>
-          </div>
-
-          <div class="sec">
-            <div class="sec-hd">
-              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
-                <span class="sec-lbl">미국 섹터 히트맵</span>
-                <span class="sec-cyc" id="cy-hm">1분마다 갱신</span>
-              </div>
-              <span class="sec-src">Yahoo Finance</span>
-            </div>
-            <div id="hm-wrap">
-              <div class="hm-ld" id="hm-st">데이터 로딩 중...</div>
-            </div>
-            <div class="hm-legend">
-              <span class="hm-lt">-5%</span>
-              <div class="hm-bar"></div>
-              <span class="hm-lt">+5%</span>
-            </div>
-          </div>
-
-          <div class="sec">
-            <div class="sec-hd">
-              <div style="display: flex; align-items: baseline; gap: 7px; min-width: 0;">
-                <span class="sec-lbl">공포 &amp; 탐욕 [주식]</span>
-                <span class="sec-cyc" id="cy-fg">12시간마다 갱신</span>
-              </div>
-              <span class="sec-src">CNN</span>
-            </div>
-            <div id="fg-body">
-              <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 12px 0;">
-                <div class="sk" style="width: 100%; max-width: 280px; height: 88px; border-radius: 6px;"></div>
-                <div class="sk" style="width: 60px; height: 40px; border-radius: 4px"></div>
-                <div class="sk" style="width: 200px; height: 100px; border-radius: 4px; margin-top: 4px;"></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
