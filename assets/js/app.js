@@ -122,7 +122,6 @@ const CTTL = { "1D": 60, "1W": 300, "1M": 900, "6M": 1800, "1Y": 3600, "3Y": 720
 
 function effRange(s, r) { return s.no1D && r === "1D" ? "1W" : r; }
 
-// 앱 상태 변수
 let _prev = {};
 let _lastUpdated = {};
 let globalBoostLevel = 0;
@@ -132,6 +131,22 @@ let intervals = {};
 /* =========================================================================
    2. UI 상호작용 및 렌더링 (UI Interactions & Render)
    ========================================================================= */
+
+// 💡 탭 전환 함수
+function setMainTab(e, tabId) {
+  document.querySelectorAll('.m-tab').forEach(btn => btn.classList.remove('active'));
+  if(e) e.currentTarget.classList.add('active');
+  document.querySelectorAll('.tab-area').forEach(area => area.classList.remove('active'));
+  $('area-' + tabId).classList.add('active');
+}
+
+function setSubTab(e, parentId, subId) {
+  const parentArea = $('area-' + parentId);
+  parentArea.querySelectorAll('.s-tab').forEach(btn => btn.classList.remove('active'));
+  if(e) e.currentTarget.classList.add('active');
+  parentArea.querySelectorAll('.sub-area').forEach(area => area.classList.remove('active'));
+  $(parentId + '-' + subId).classList.add('active');
+}
 
 function initThemeIcons() {
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
@@ -152,18 +167,6 @@ function toggleTheme() {
   if (activeFxSym) doChart(activeFxSym, activeFxRange, "fx");
   if (lastHmMap && Object.keys(lastHmMap).length > 0) drawHM(lastHmMap, lastHmClosed);
   doLoadFG();
-}
-
-function toggleSec(el) {
-  const sec = el.closest(".sec");
-  if (sec) sec.classList.toggle("collapsed");
-}
-
-function toggleAllSec(expand) {
-  document.querySelectorAll(".sec").forEach(sec => {
-    if (expand) sec.classList.remove("collapsed");
-    else sec.classList.add("collapsed");
-  });
 }
 
 function updateSyncBadges() {
@@ -775,21 +778,23 @@ function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
   intervals[taskId] = setInterval(() => { if (!document.hidden) exec(); }, interval);
 }
 
+// 💡 다중 배너 동시 업데이트 로직
 function activateGlobalBoost(e) {
   if (e) e.stopPropagation();
 
   if (globalBoostLevel === 0) {
     globalBoostLevel = 1;
     alert("데이터 갱신 주기가 6초로 단축되었습니다! 🚀");
-    $("g-banner-title").textContent = "🚀 실시간 속도 향상 적용 중!";
-    $("g-banner-desc").textContent = "한 번 더 시청하시면 가장 빠른 3초 주기로 업데이트됩니다.";
-    const btn = $("g-banner-btn");
-    btn.innerHTML = "▶ 한 번 더 보고 최고 속도 내기";
-    btn.style.background = "#0284c7"; // 파란색
+    document.querySelectorAll(".g-banner-title").forEach(el => el.textContent = "🚀 실시간 속도 향상 적용 중!");
+    document.querySelectorAll(".g-banner-desc").forEach(el => el.textContent = "한 번 더 시청하시면 가장 빠른 3초 주기로 업데이트됩니다.");
+    document.querySelectorAll(".g-banner-btn").forEach(btn => {
+      btn.innerHTML = "▶ 한 번 더 보고 최고 속도 내기";
+      btn.style.background = "#0284c7";
+    });
   } else if (globalBoostLevel === 1) {
     globalBoostLevel = 2;
     alert("최고 속도 달성!\n갱신 속도가 3초로 단축되며 다이내믹 가격 효과가 적용됩니다 🔥");
-    if ($("global-boost-banner")) $("global-boost-banner").style.display = "none";
+    document.querySelectorAll(".boost-banner").forEach(banner => banner.style.display = "none");
   }
 
   const newInterval = globalBoostLevel === 1 ? 6000 : 3000;
@@ -835,20 +840,6 @@ document.addEventListener("visibilitychange", () => {
 document.addEventListener("DOMContentLoaded", () => {
   initThemeIcons();
   if($("copy-t")) $("copy-t").textContent = "© 2025–" + new Date().getFullYear() + " MoneyScoop 제작. All rights reserved.";
-
-  // 네비게이션 스크롤 스파이
-  const sections = document.querySelectorAll(".sec[id]");
-  const navLinks = document.querySelectorAll(".nav-link");
-  window.addEventListener("scroll", () => {
-    let current = "";
-    sections.forEach(sec => {
-      if (scrollY >= sec.offsetTop - 130) current = sec.getAttribute("id");
-    });
-    navLinks.forEach(link => {
-      link.classList.remove("active");
-      if (link.getAttribute("href") === `#${current}`) link.classList.add("active");
-    });
-  });
 
   // 스케줄러 등록
   runSchedule("idx", ["idx-list", "idx-us-list", "idx-kr-list"], ["cy-idx-time", "cy-us-idx-time", "cy-kr-idx-time"], "global", doLoadIdx, 10000);
