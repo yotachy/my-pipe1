@@ -132,21 +132,24 @@ let intervals = {};
    2. UI 상호작용 및 렌더링 (UI Interactions & Render)
    ========================================================================= */
 
-// 💡 메인 탭(글로벌/미국/한국) 전환 함수
-window.switchMainTab = function(tabId) {
-  // 버튼 활성화 처리
-  document.querySelectorAll('.hdr-center .nav-link').forEach(btn => {
+// 💡 영역 내 하위 메뉴 탭 전환 함수 (기존 switchMainTab 대체)
+window.switchSubTab = function(region, secId) {
+  // 클릭한 탭의 활성화 상태 변경
+  document.querySelectorAll(`#tabs-${region} .sub-tab`).forEach(btn => {
     btn.classList.remove('active');
-    if (btn.getAttribute('onclick').includes(tabId)) {
+    if (btn.getAttribute('onclick').includes(secId)) {
       btn.classList.add('active');
     }
   });
-  // 콘텐츠 영역 보이기/숨기기
-  document.querySelectorAll('.main-area').forEach(area => area.classList.remove('active'));
-  const targetArea = $('area-' + tabId);
-  if (targetArea) {
-    targetArea.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // 탭 변경시 최상단 스크롤
+
+  // 해당 영역(글로벌, 미국 등) 내부의 섹션만 끄고 대상 섹션 켜기
+  document.querySelectorAll(`#area-${region} .sec`).forEach(sec => {
+    sec.classList.remove('active');
+  });
+  
+  const targetSec = $(secId);
+  if (targetSec) {
+    targetSec.classList.add('active');
   }
 };
 
@@ -169,11 +172,6 @@ function toggleTheme() {
   if (activeFxSym) doChart(activeFxSym, activeFxRange, "fx");
   if (lastHmMap && Object.keys(lastHmMap).length > 0) drawHM(lastHmMap, lastHmClosed);
   doLoadFG();
-}
-
-function toggleSec(el) {
-  const sec = el.closest(".sec");
-  if (sec) sec.classList.toggle("collapsed");
 }
 
 // 💡 갱신 주기 뱃지(알약 디자인) 업데이트 로직

@@ -32,12 +32,6 @@
           <span class="hdr-sub">by MoneyScoop</span>
         </div>
 
-        <nav class="hdr-center">
-          <button class="nav-link active" onclick="switchMainTab('gl')">글로벌</button>
-          <button class="nav-link" onclick="switchMainTab('us')">미국</button>
-          <button class="nav-link" onclick="switchMainTab('kr')">한국</button>
-        </nav>
-
         <div class="hdr-right">
           <button class="theme-btn" id="theme-toggle" aria-label="테마 변경" onclick="toggleTheme()">
             <svg id="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -60,15 +54,16 @@
         <button class="g-banner-btn free-reward-btn" onclick="activateGlobalBoost(event)">▶ 광고 보고 속도 올리기</button>
       </div>
 
-      <div id="area-gl" class="main-area active">
-        <div class="visible-sub-menu">
-          <a href="#gl-idx" class="v-sub-link">주요 지표·지수</a>
-          <a href="#gl-fx" class="v-sub-link">환율 (24시간)</a>
+      <div id="area-gl" class="region-area">
+        <h2 class="region-title">🌍 글로벌</h2>
+        <div class="sub-tab-menu" id="tabs-gl">
+          <button class="sub-tab active" onclick="switchSubTab('gl', 'gl-idx')">주요 지표·지수</button>
+          <button class="sub-tab" onclick="switchSubTab('gl', 'gl-fx')">환율 (24시간)</button>
         </div>
 
-        <div class="sec" id="gl-idx">
-          <div class="sec-hd" onclick="toggleSec(this)">
-            <div class="sec-hd-left"><span class="sec-lbl">글로벌 | 주요 지표 지수 <span class="chevron">▼</span></span></div>
+        <div class="sec active" id="gl-idx">
+          <div class="sec-hd">
+            <div class="sec-hd-left"><span class="sec-lbl">주요 지표·지수</span></div>
             <div class="sec-hd-right">
               <span class="badge-sync" data-market="global" id="badge-idx">상태 확인 중</span>
               <span class="sec-time" id="cy-idx-time"></span>
@@ -104,8 +99,8 @@
         </div>
 
         <div class="sec" id="gl-fx">
-          <div class="sec-hd" onclick="toggleSec(this)">
-            <div class="sec-hd-left"><span class="sec-lbl">글로벌 | 환율 (원, 24시간) <span class="chevron">▼</span></span></div>
+          <div class="sec-hd">
+            <div class="sec-hd-left"><span class="sec-lbl">환율 (원, 24시간)</span></div>
             <div class="sec-hd-right">
               <span class="badge-sync" data-market="global" id="badge-fx">상태 확인 중</span>
               <span class="sec-time" id="cy-fx-time"></span>
@@ -142,17 +137,18 @@
         </div>
       </div>
 
-      <div id="area-us" class="main-area">
-        <div class="visible-sub-menu">
-          <a href="#us-idx" class="v-sub-link">주요 지표·지수</a>
-          <a href="#us-top" class="v-sub-link">시총 Top 10</a>
-          <a href="#us-hm" class="v-sub-link">섹터 히트맵</a>
-          <a href="#us-fg" class="v-sub-link">공포&탐욕 지수</a>
+      <div id="area-us" class="region-area">
+        <h2 class="region-title">🇺🇸 미국</h2>
+        <div class="sub-tab-menu" id="tabs-us">
+          <button class="sub-tab active" onclick="switchSubTab('us', 'us-idx')">주요 지표·지수</button>
+          <button class="sub-tab" onclick="switchSubTab('us', 'us-top')">시총 Top 10</button>
+          <button class="sub-tab" onclick="switchSubTab('us', 'us-hm')">섹터 히트맵</button>
+          <button class="sub-tab" onclick="switchSubTab('us', 'us-fg')">공포&탐욕 지수</button>
         </div>
 
-        <div class="sec" id="us-idx">
-          <div class="sec-hd" onclick="toggleSec(this)">
-            <div class="sec-hd-left"><span class="sec-lbl">미국 | 주요 지표·지수 <span class="chevron">▼</span></span></div>
+        <div class="sec active" id="us-idx">
+          <div class="sec-hd">
+            <div class="sec-hd-left"><span class="sec-lbl">주요 지표·지수</span></div>
             <div class="sec-hd-right">
               <span class="badge-sync" data-market="us" id="badge-us-idx">상태 확인 중</span>
               <span class="sec-time" id="cy-us-idx-time"></span>
@@ -170,8 +166,8 @@
         </div>
 
         <div class="sec" id="us-top">
-          <div class="sec-hd" onclick="toggleSec(this)">
-            <div class="sec-hd-left"><span class="sec-lbl">미국 | 시가총액 상위 10개 <span class="chevron">▼</span></span></div>
+          <div class="sec-hd">
+            <div class="sec-hd-left"><span class="sec-lbl">시가총액 상위 10개</span></div>
             <div class="sec-hd-right">
               <span class="badge-sync" data-market="us" id="badge-us-top">상태 확인 중</span>
               <span class="sec-time" id="cy-us-top-time"></span>
@@ -213,8 +209,8 @@
         </div>
 
         <div class="sec" id="us-hm">
-          <div class="sec-hd" onclick="toggleSec(this)">
-            <div class="sec-hd-left"><span class="sec-lbl">미국 | 섹터 별 히트맵 <span class="chevron">▼</span></span></div>
+          <div class="sec-hd">
+            <div class="sec-hd-left"><span class="sec-lbl">섹터 별 히트맵</span></div>
             <div class="sec-hd-right">
               <span class="badge-sync closed" data-market="us" id="badge-hm">🔒 잠금 상태</span>
               <span class="sec-time" id="cy-hm-time"></span>
@@ -236,8 +232,8 @@
         </div>
 
         <div class="sec" id="us-fg">
-          <div class="sec-hd" onclick="toggleSec(this)">
-            <div class="sec-hd-left"><span class="sec-lbl">미국 | 공포 &amp; 탐욕 지수 <span class="chevron">▼</span></span></div>
+          <div class="sec-hd">
+            <div class="sec-hd-left"><span class="sec-lbl">공포 &amp; 탐욕 지수</span></div>
             <div class="sec-hd-right">
               <span class="badge-sync" data-market="us" id="badge-fg">상태 확인 중</span>
               <span class="sec-time" id="cy-fg-time"></span>
@@ -253,15 +249,16 @@
         </div>
       </div>
 
-      <div id="area-kr" class="main-area">
-        <div class="visible-sub-menu">
-          <a href="#kr-idx" class="v-sub-link">주요 지표·지수</a>
-          <a href="#kr-top" class="v-sub-link">시총 Top 10</a>
+      <div id="area-kr" class="region-area">
+        <h2 class="region-title">🇰🇷 한국</h2>
+        <div class="sub-tab-menu" id="tabs-kr">
+          <button class="sub-tab active" onclick="switchSubTab('kr', 'kr-idx')">주요 지표·지수</button>
+          <button class="sub-tab" onclick="switchSubTab('kr', 'kr-top')">시총 Top 10</button>
         </div>
 
-        <div class="sec" id="kr-idx">
-          <div class="sec-hd" onclick="toggleSec(this)">
-            <div class="sec-hd-left"><span class="sec-lbl">한국 | 주요 지표·지수 <span class="chevron">▼</span></span></div>
+        <div class="sec active" id="kr-idx">
+          <div class="sec-hd">
+            <div class="sec-hd-left"><span class="sec-lbl">주요 지표·지수</span></div>
             <div class="sec-hd-right">
               <span class="badge-sync" data-market="kr" id="badge-kr-idx">상태 확인 중</span>
               <span class="sec-time" id="cy-kr-idx-time"></span>
@@ -277,8 +274,8 @@
         </div>
 
         <div class="sec" id="kr-top">
-          <div class="sec-hd" onclick="toggleSec(this)">
-            <div class="sec-hd-left"><span class="sec-lbl">한국 | 시가총액 상위 10개 <span class="chevron">▼</span></span></div>
+          <div class="sec-hd">
+            <div class="sec-hd-left"><span class="sec-lbl">시가총액 상위 10개</span></div>
             <div class="sec-hd-right">
               <span class="badge-sync" data-market="kr" id="badge-kr-top">상태 확인 중</span>
               <span class="sec-time" id="cy-kr-top-time"></span>
