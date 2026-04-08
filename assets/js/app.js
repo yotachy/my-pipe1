@@ -146,7 +146,6 @@ function toggleTheme() {
   else { el.setAttribute("data-theme", "dark"); localStorage.setItem("theme", "dark"); }
   initThemeIcons();
   
-  // 차트 재렌더링
   if (activeIdxSym) doChart(activeIdxSym, activeIdxRange, "idx");
   if (activeUsTopSym) doChart(activeUsTopSym, activeUsTopRange, "us-top");
   if (activeKrTopSym) doChart(activeKrTopSym, activeKrTopRange, "kr-top");
@@ -251,7 +250,92 @@ function sortListDesc(listId) {
 
 
 /* =========================================================================
-   3. 차트 (Chart.js), 히트맵 (D3.js), 게이지 렌더링 로직
+   3. API Fetch 로직 (Data Fetching)
+   ========================================================================= */
+
+function doLoadIdx() {
+  fetch("quotes.php?syms=" + encodeURIComponent(IDX_SYMS))
+    .then(r => r.json())
+    .then(j => {
+      if (j && j.quoteResponse && j.quoteResponse.result) {
+        const map = {};
+        j.quoteResponse.result.forEach(q => { map[q.symbol] = q; });
+        IDX.forEach(s => {
+          const q = map[s.sym];
+          if (q && q.regularMarketPrice) {
+            const p = q.regularMarketPrice;
+            const pv = q.regularMarketPreviousClose || p;
+            renderRow(s.id, p, pv, s, null, null, q.regularMarketChange, q.regularMarketChangePercent);
+          } else fetchFallbackDirect(s);
+        });
+      } else IDX.forEach(fetchFallbackDirect);
+    }).catch(() => IDX.forEach(fetchFallbackDirect));
+}
+
+function doLoadBatchedTop10() {
+  fetch("quotes.php?syms=" + encodeURIComponent(BATCH_TOP_SYMS))
+    .then(r => r.json())
+    .then(j => {
+      if (j && j.quoteResponse && j.quoteResponse.result) {
+        const map = {};
+        j.quoteResponse.result.forEach(q => { map[q.symbol] = q; });
+        const processArr = (arr, listId) => {
+          arr.forEach(s => {
+            const q = map[s.sym];
+            if (q && q.regularMarketPrice) {
+              const p = q.regularMarketPrice;
+              const pv = q.regularMarketPreviousClose || p;
+              const mc = q.marketCap || 0;
+              const cur = s.sym.indexOf(".KS") > -1 ? "KRW" : "USD";
+              renderRow(s.id, p, pv, s, fmtMC(mc, cur), mc, q.regularMarketChange, q.regularMarketChangePercent);
+            } else fetchFallbackDirect(s);
+          });
+          sortListDesc(listId);
+        };
+        processArr(US_TOP10, "us-top-list");
+        processArr(KR_TOP10, "kr-top-list");
+      } else {
+        US_TOP10.forEach(fetchFallbackDirect); KR_TOP10.forEach(fetchFallbackDirect);
+      }
+    }).catch(() => { US_TOP10.forEach(fetchFallbackDirect); KR_TOP10.forEach(fetchFallbackDirect); });
+}
+
+function doLoadFX() {
+  fetch("quotes.php?syms=" + encodeURIComponent(FX_SYMS))
+    .then(r => r.json())
+    .then(j => {
+      if (j && j.quoteResponse && j.quoteResponse.result) {
+        const map = {};
+        j.quoteResponse.result.forEach(q => { map[q.symbol] = q; });
+        FX.forEach(s => {
+          const q = map[s.sym];
+          if (q && q.regularMarketPrice) {
+            const mult = s.mult || 1;
+            const p = q.regularMarketPrice * mult;
+            const pv = (q.regularMarketPreviousClose || q.regularMarketPrice) * mult;
+            renderRow(s.id, p, pv, s, null, null, (q.regularMarketChange || 0) * mult, q.regularMarketChangePercent || 0);
+          } else fetchFallbackDirect(s);
+        });
+      } else FX.forEach(fetchFallbackDirect);
+    }).catch(() => FX.forEach(fetchFallbackDirect));
+}
+
+function fetchFallbackDirect(s) {
+  const rg = s.sym.indexOf(".KS") > -1 || s.sym.indexOf(".KQ") > -1 ? "10d" : "5d";
+  fetch("chart.php?sym=" + encodeURIComponent(s.sym) + "&iv=1d&rg=" + rg)
+    .then(r => r.ok ? r.json() : null)
+    .then(j => {
+      if (!j) return;
+      const res = j.chart && j.chart.result && j.chart.result[0];
+      if (!res) return;
+      const m = res.meta, p = m.regularMarketPrice, pv = m.previousClose || m.chartPreviousClose;
+      if (p && pv) renderRow(s.id, p * (s.mult || 1), pv * (s.mult || 1), s);
+    }).catch(() => {});
+}
+
+
+/* =========================================================================
+   4. 차트 (Chart.js), 히트맵 (D3.js), 게이지 렌더링 로직
    ========================================================================= */
 
 let CJS = false, CJScbs = [];
@@ -300,7 +384,6 @@ function insertChart(rowId, areaId) {
   if (row && row.parentNode) row.parentNode.insertBefore(el, row.nextSibling);
 }
 
-// 클릭 이벤트 맵핑
 function clickIdx(i) { handleRowClick(IDX[i], 'idx-list', 'idx-us-list', 'idx-kr-list', 'idx', activeIdxSym, v => activeIdxSym = v, activeIdxRange); }
 function clickUsTop(i) { handleRowClick(US_TOP10[i], 'us-top-list', null, null, 'us-top', activeUsTopSym, v => activeUsTopSym = v, activeUsTopRange); }
 function clickKrTop(i) { handleRowClick(KR_TOP10[i], 'kr-top-list', null, null, 'kr-top', activeKrTopSym, v => activeKrTopSym = v, activeKrTopRange); }
@@ -324,7 +407,6 @@ function handleRowClick(s, list1, list2, list3, type, currentActive, setActive, 
   doChart(s, range, type);
 }
 
-// 레인지 셋팅 이벤트
 function setIdxRange(r) { activeIdxRange = r; updateRangeUI('idx', r, activeIdxSym); }
 function setUsTopRange(r) { activeUsTopRange = r; updateRangeUI('us-top', r, activeUsTopSym); }
 function setKrTopRange(r) { activeKrTopRange = r; updateRangeUI('kr-top', r, activeKrTopSym); }
@@ -478,7 +560,7 @@ function drawChart(s, range, j, wrap, type) {
   });
 }
 
-// === F&G 및 히트맵 그리기 ===
+// === F&G 영역 ===
 const ZONES = [
   { kr: "극도의 공포", color: "#ef5350", from: 0, to: 25 },
   { kr: "공포", color: "#ff9800", from: 25, to: 45 },
@@ -488,15 +570,193 @@ const ZONES = [
 ];
 let fgCh = null;
 function getZ(s) { return ZONES.find(z => s >= z.from && s < z.to) || ZONES[4]; }
-// ... (게이지, 히트맵 렌더링 함수는 원본과 동일하여 분량상 일부 축약 적용하셔도 됩니다)
-// 이전에 드린 HTML내부의 gauge(), drawHM() 함수 전체를 이곳에 유지합니다.
 
-// 편의상 위축약 없이 원본에 있던 gauge, drawHM 전체를 넣어주세요.
-// (본 소스코드의 제약으로 위 1, 2, 3번 항목들을 순서대로 합쳐주시면 완벽한 app.js가 됩니다)
+function gauge(score) {
+  let cx = 140, cy = 105, R = 88, sw = 11, gap = 0.018, p = "";
+  ZONES.forEach(z => {
+    let a1 = Math.PI * (z.from / 100) + gap, a2 = Math.PI * (z.to / 100) - gap;
+    let sx = cx - R * Math.cos(a1), sy = cy - R * Math.sin(a1), ex = cx - R * Math.cos(a2), ey = cy - R * Math.sin(a2);
+    p += `<path d="M${sx.toFixed(2)},${sy.toFixed(2)} A${R},${R} 0 0 1 ${ex.toFixed(2)},${ey.toFixed(2)}" fill="none" stroke="${z.color}" stroke-width="${sw}" stroke-linecap="round" opacity="0.15"/>`;
+    let cap = Math.min(score, z.to);
+    if (cap > z.from) {
+      let fa1 = Math.PI * (z.from / 100) + gap, fa2 = Math.PI * (cap / 100) - (score <= z.to ? gap : 0);
+      if (fa2 > fa1) {
+        let a = cx - R * Math.cos(fa1), b = cy - R * Math.sin(fa1), c = cx - R * Math.cos(fa2), d = cy - R * Math.sin(fa2);
+        p += `<path d="M${a.toFixed(2)},${b.toFixed(2)} A${R},${R} 0 0 1 ${c.toFixed(2)},${d.toFixed(2)}" fill="none" stroke="${z.color}" stroke-width="${sw}" stroke-linecap="round"/>`;
+      }
+    }
+  });
+  let na = Math.PI * (score / 100), zn = getZ(score), nx = (cx - 70 * Math.cos(na)).toFixed(2), ny = (cy - 70 * Math.sin(na)).toFixed(2);
+  return `<svg class="gsvg" viewBox="0 0 280 112" xmlns="http://www.w3.org/2000/svg">${p}<line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="${zn.color}" stroke-width="2.5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="6" fill="${zn.color}"/><circle cx="${cx}" cy="${cy}" r="3" fill="var(--bg)"/></svg>`;
+}
+
+function segbar(score) {
+  let zn = getZ(score), h = '<div class="segbar">';
+  ZONES.forEach(z => { h += `<div class="seg${z === zn ? ' on' : ''}" style="background:${z.color}"></div>`; });
+  return h + "</div>";
+}
+
+function renderFG(score, prev, hist) {
+  let zn = getZ(score), diff = score - prev;
+  let html = `<div class="gw">${gauge(score)}<div class="gends"><span class="gend">공포</span><span class="gend">탐욕</span></div></div>` +
+             `<div class="sb"><div class="sb-n" style="color:${zn.color}">${score}</div><div class="sb-l" style="color:${zn.color}">${zn.kr}</div>` +
+             `<div class="sb-c">전일 대비 ${diff >= 0 ? '+' : ''}${diff}&ensp;·&ensp;전일 ${prev}</div></div>${segbar(score)}`;
+  if (hist && hist.length) html += '<div class="fg-chart-wrap"><canvas id="fg-cv"></canvas></div>';
+  $("fg-body").innerHTML = html;
+  if (hist && hist.length) drawFGChart(hist, zn.color);
+}
+
+function drawFGChart(hist, color) {
+  loadCJS(() => {
+    let cv = $("fg-cv"); if (!cv) return;
+    if (fgCh) { fgCh.destroy(); fgCh = null; }
+    let labels = [], vals = [];
+    hist.forEach(d => { labels.push(new Date(d.x)); vals.push(parseFloat(d.y)); });
+    
+    fgCh = new Chart(cv.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: vals, borderColor: color, borderWidth: 1.5, fill: true,
+          backgroundColor: ctx => {
+            let ca = ctx.chart.chartArea; if (!ca) return color + "10";
+            let g = ctx.chart.ctx.createLinearGradient(0, ca.top, 0, ca.bottom);
+            g.addColorStop(0, color + "30"); g.addColorStop(1, color + "00"); return g;
+          }, pointRadius: 0, tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: it => { let d = labels[it[0].dataIndex]; return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`; }, label: it => `지수: ${it.parsed.y.toFixed(0)} (${getZ(Math.round(it.parsed.y)).kr})` } } },
+        scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { family: "Pretendard", size: 10 }, color: getCssVar("--t4"), callback: (v, i) => { let d = labels[i]; return d ? `${d.getMonth() + 1}/${d.getDate()}` : ""; } }, border: { display: false } }, y: { min: 0, max: 100, position: "right", grid: { color: getCssVar("--chart-grid") }, ticks: { stepSize: 25, font: { family: "Pretendard", size: 10 }, color: getCssVar("--t4"), callback: v => v === 0 ? "공포" : v === 50 ? "중립" : v === 100 ? "탐욕" : v }, border: { display: false } } }, animation: { duration: 300 }
+      }
+    });
+  });
+}
+
+function doLoadFG() {
+  fetch("quotes.php?fg=1").then(r => r.ok ? r.json() : null).then(j => {
+    if (!j || j.error || !j.fear_and_greed) return renderFGErr();
+    let fg = j.fear_and_greed, hist = (j.fear_and_greed_historical && j.fear_and_greed_historical.data) || null;
+    renderFG(Math.round(fg.score), Math.round(fg.previous_close), hist);
+    let badge = $("badge-fg"), tEl = $("cy-fg-time");
+    if (badge) {
+      if (isMarketOpen("us")) { badge.style.color = ""; badge.textContent = "🟡 12시간 갱신 중"; }
+      else { badge.style.color = "var(--dn)"; badge.textContent = "🔴 장마감"; }
+    }
+    if (tEl) tEl.textContent = nowStr() + " 기준";
+  }).catch(renderFGErr);
+}
+function renderFGErr() { $("fg-body").innerHTML = '<div class="fg-er"><div class="fg-er-t">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="doLoadFG()">다시 시도 ↻</button></div>'; }
+
+// === 히트맵 영역 ===
+let HM = [
+  { name: "Technology", cap: 16000, stocks: [{ s: "AAPL", cap: 3000 }, { s: "MSFT", cap: 3000 }, { s: "NVDA", cap: 2800 }, { s: "AVGO", cap: 600 }, { s: "ORCL", cap: 350 }, { s: "ADBE", cap: 250 }, { s: "CRM", cap: 280 }, { s: "AMD", cap: 260 }, { s: "QCOM", cap: 180 }, { s: "TXN", cap: 160 }, { s: "INTC", cap: 130 }, { s: "IBM", cap: 160 }, { s: "NOW", cap: 150 }, { s: "INTU", cap: 170 }, { s: "AMAT", cap: 160 }, { s: "MU", cap: 130 }, { s: "PANW", cap: 100 }] },
+  { name: "Communication", cap: 7000, stocks: [{ s: "GOOGL", cap: 2000 }, { s: "META", cap: 1200 }, { s: "NFLX", cap: 250 }, { s: "TMUS", cap: 190 }, { s: "DIS", cap: 200 }, { s: "VZ", cap: 160 }, { s: "T", cap: 120 }, { s: "EA", cap: 40 }, { s: "CMCSA", cap: 170 }, { s: "WBD", cap: 30 }, { s: "SIRI", cap: 20 }, { s: "FOXA", cap: 20 }, { s: "CHTR", cap: 50 }, { s: "LYV", cap: 25 }, { s: "TTWO", cap: 25 }] },
+  { name: "Cons. Cyclical", cap: 6500, stocks: [{ s: "AMZN", cap: 1900 }, { s: "TSLA", cap: 600 }, { s: "HD", cap: 350 }, { s: "MCD", cap: 200 }, { s: "LOW", cap: 150 }, { s: "NKE", cap: 120 }, { s: "SBUX", cap: 100 }, { s: "TJX", cap: 110 }, { s: "GM", cap: 50 }, { s: "F", cap: 45 }, { s: "BKNG", cap: 120 }, { s: "MAR", cap: 70 }, { s: "CMG", cap: 75 }, { s: "ORLY", cap: 60 }, { s: "AZO", cap: 50 }] },
+  { name: "Healthcare", cap: 6000, stocks: [{ s: "LLY", cap: 700 }, { s: "UNH", cap: 450 }, { s: "JNJ", cap: 350 }, { s: "ABBV", cap: 300 }, { s: "MRK", cap: 280 }, { s: "ABT", cap: 190 }, { s: "PFE", cap: 150 }, { s: "AMGN", cap: 140 }, { s: "GILD", cap: 90 }, { s: "CVS", cap: 70 }, { s: "ISRG", cap: 130 }, { s: "SYK", cap: 120 }, { s: "VRTX", cap: 100 }, { s: "REGN", cap: 100 }, { s: "BSX", cap: 90 }] },
+  { name: "Financial", cap: 5500, stocks: [{ s: "BRK-B", cap: 850 }, { s: "JPM", cap: 550 }, { s: "V", cap: 500 }, { s: "MA", cap: 400 }, { s: "BAC", cap: 300 }, { s: "WFC", cap: 220 }, { s: "MS", cap: 160 }, { s: "GS", cap: 150 }, { s: "C", cap: 120 }, { s: "AXP", cap: 160 }, { s: "SPGI", cap: 130 }, { s: "BLK", cap: 110 }, { s: "SCHW", cap: 120 }, { s: "PGR", cap: 110 }, { s: "CB", cap: 100 }] },
+  { name: "Cons. Defensive", cap: 4000, stocks: [{ s: "WMT", cap: 500 }, { s: "PG", cap: 350 }, { s: "COST", cap: 300 }, { s: "KO", cap: 250 }, { s: "PEP", cap: 220 }, { s: "PM", cap: 150 }, { s: "MO", cap: 80 }, { s: "CL", cap: 70 }, { s: "KR", cap: 40 }, { s: "SYY", cap: 40 }, { s: "KMB", cap: 40 }, { s: "EL", cap: 50 }, { s: "GIS", cap: 40 }, { s: "TGT", cap: 70 }, { s: "HSY", cap: 40 }] },
+  { name: "Industrials", cap: 3800, stocks: [{ s: "GE", cap: 180 }, { s: "CAT", cap: 170 }, { s: "RTX", cap: 140 }, { s: "HON", cap: 120 }, { s: "BA", cap: 100 }, { s: "UNP", cap: 140 }, { s: "LMT", cap: 110 }, { s: "DE", cap: 110 }, { s: "FDX", cap: 65 }, { s: "UPS", cap: 120 }, { s: "EMR", cap: 60 }, { s: "ETN", cap: 110 }, { s: "CMI", cap: 40 }, { s: "PH", cap: 70 }, { s: "PCAR", cap: 60 }] },
+  { name: "Energy", cap: 2800, stocks: [{ s: "XOM", cap: 450 }, { s: "CVX", cap: 280 }, { s: "COP", cap: 130 }, { s: "SLB", cap: 70 }, { s: "EOG", cap: 70 }, { s: "PSX", cap: 60 }, { s: "VLO", cap: 50 }, { s: "OXY", cap: 55 }, { s: "MPC", cap: 70 }, { s: "HAL", cap: 30 }, { s: "BKR", cap: 30 }, { s: "WMB", cap: 45 }, { s: "HES", cap: 40 }, { s: "KMI", cap: 40 }, { s: "TRGP", cap: 45 }] },
+  { name: "Utilities", cap: 1800, stocks: [{ s: "NEE", cap: 120 }, { s: "DUK", cap: 75 }, { s: "SO", cap: 75 }, { s: "SRE", cap: 45 }, { s: "AEP", cap: 45 }, { s: "ED", cap: 30 }, { s: "D", cap: 40 }, { s: "PEG", cap: 30 }, { s: "EXC", cap: 35 }, { s: "XEL", cap: 30 }, { s: "WEC", cap: 25 }, { s: "ES", cap: 20 }] },
+  { name: "Real Estate", cap: 1500, stocks: [{ s: "PLD", cap: 120 }, { s: "AMT", cap: 90 }, { s: "EQIX", cap: 80 }, { s: "WELL", cap: 50 }, { s: "PSA", cap: 45 }, { s: "SPG", cap: 50 }, { s: "O", cap: 45 }, { s: "DLR", cap: 45 }, { s: "CSGP", cap: 35 }, { s: "CCI", cap: 40 }] },
+  { name: "Basic Materials", cap: 1500, stocks: [{ s: "LIN", cap: 200 }, { s: "SHW", cap: 80 }, { s: "FCX", cap: 70 }, { s: "APD", cap: 60 }, { s: "ECL", cap: 65 }, { s: "NEM", cap: 45 }, { s: "CTVA", cap: 40 }, { s: "NUE", cap: 45 }, { s: "DOW", cap: 40 }, { s: "DD", cap: 35 }] }
+];
+let HM_SYMS = HM.flatMap(s => s.stocks.map(t => t.s)).join(",");
+
+function hmCol(pct, ok) {
+  let isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  if (!ok) return isDark ? "#334155" : "#cbd5e1";
+  if (Math.abs(pct) < 0.05) return isDark ? "#1e293b" : "#f1f5f9";
+  let t = Math.max(-1, Math.min(1, pct / 3.0)), a = Math.abs(t);
+  if (isDark) {
+    let br = 30, bg = 41, bb = 59;
+    return t > 0 ? `rgb(${Math.round(br*(1-a)+16*a)},${Math.round(bg*(1-a)+185*a)},${Math.round(bb*(1-a)+129*a)})` : `rgb(${Math.round(br*(1-a)+239*a)},${Math.round(bg*(1-a)+68*a)},${Math.round(bb*(1-a)+68*a)})`;
+  } else {
+    let br = 241, bg = 245, bb = 249;
+    return t > 0 ? `rgb(${Math.round(br*(1-a)+16*a)},${Math.round(bg*(1-a)+185*a)},${Math.round(bb*(1-a)+129*a)})` : `rgb(${Math.round(br*(1-a)+239*a)},${Math.round(bg*(1-a)+68*a)},${Math.round(bb*(1-a)+68*a)})`;
+  }
+}
+function hmTxt(pct, ok) { if (!ok) return "var(--t4)"; return Math.abs(pct) > 1.2 ? "#fff" : (document.documentElement.getAttribute("data-theme") === "dark" ? "#cbd5e1" : "#1a1a1a"); }
+
+let D3 = false, D3cbs = [], lastHmMap = {}, lastHmClosed = false, hmResizeTimer;
+function loadD3(cb) {
+  if (D3) return cb();
+  D3cbs.push(cb);
+  if (D3cbs.length > 1) return;
+  let s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js";
+  s.onload = () => { D3 = true; D3cbs.forEach(f => f()); D3cbs = []; }; document.head.appendChild(s);
+}
+window.addEventListener("resize", () => {
+  clearTimeout(hmResizeTimer);
+  hmResizeTimer = setTimeout(() => { if (Object.keys(lastHmMap).length > 0) drawHM(lastHmMap, lastHmClosed); }, 300);
+});
+
+function drawHM(qmap, closed) {
+  lastHmMap = qmap; lastHmClosed = closed;
+  loadD3(() => {
+    let wrap = $("hm-wrap"), W = wrap.clientWidth || 320, H = Math.max(240, Math.round(W * 0.75));
+    let root = d3.hierarchy({ name: "root", children: HM.map(sec => ({ name: sec.name, children: sec.stocks.map(st => { let q = qmap[st.s]; return { name: st.s, cap: st.cap, pct: q ? q.pct : 0, price: q ? q.price : null, ok: !!q }; }) })) }).sum(d => d.children ? 0 : (d.cap ? d.cap : 0)).sort((a, b) => b.value - a.value);
+    d3.treemap().size([W, H]).paddingOuter(1).paddingTop(14).paddingInner(1).round(false)(root);
+    
+    let svg = d3.create("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("width", "100%").attr("height", H).style("font-family", "Pretendard");
+    svg.selectAll("g.hs").data(root.children).join("g").attr("class", "hs").call(g => {
+      g.append("rect").attr("x", d => d.x0).attr("y", d => d.y0).attr("width", d => d.x1 - d.x0).attr("height", d => d.y1 - d.y0).attr("fill", "var(--rule)").attr("rx", 2);
+      g.append("text").attr("x", d => d.x0 + 4).attr("y", d => d.y0 + 11).attr("font-size", 10).attr("font-weight", "700").attr("fill", "var(--t1)").each(function(d) { let av = d.x1 - d.x0 - 8; d3.select(this).text(av < 60 ? d.data.name.split(" ")[0] : d.data.name); });
+    });
+    
+    let stG = svg.selectAll("g.ht").data(root.leaves()).join("g").attr("class", "ht");
+    stG.append("rect").attr("x", d => d.x0).attr("y", d => d.y0).attr("width", d => Math.max(0, d.x1 - d.x0)).attr("height", d => Math.max(0, d.y1 - d.y0)).attr("fill", d => hmCol(d.data.pct, d.data.ok));
+    stG.each(function(d) {
+      let cw = d.x1 - d.x0 - 2, ch = d.y1 - d.y0 - 2; if (cw < 15 || ch < 8) return;
+      let g = d3.select(this), mx = (d.x0 + d.x1) / 2, my = (d.y0 + d.y1) / 2, pct = d.data.pct, tc = hmTxt(pct, d.data.ok), fs = Math.max(6, Math.min(15, cw / 5)), sign = pct > 0 ? "+" : pct < 0 ? "" : " ";
+      if (ch > 32 && cw > 35) {
+        g.append("text").attr("x", mx).attr("y", my - 2).attr("text-anchor", "middle").attr("font-size", Math.min(fs, 13)).attr("font-weight", "700").attr("fill", tc).text(d.data.name);
+        g.append("text").attr("x", mx).attr("y", my + Math.max(10, fs)).attr("text-anchor", "middle").attr("font-size", Math.max(6, fs - 3)).attr("fill", tc).attr("opacity", 0.88).text(d.data.ok ? sign + pct.toFixed(2) + "%" : "─");
+      } else if (ch > 14 && cw > 24) {
+        g.append("text").attr("x", mx).attr("y", my + 3).attr("text-anchor", "middle").attr("font-size", Math.max(6, fs - 2)).attr("font-weight", "700").attr("fill", tc).text(d.data.name);
+      }
+    });
+    
+    if (closed) {
+      svg.append("rect").attr("x", 0).attr("y", 0).attr("width", W).attr("height", 20).attr("fill", "rgba(245,245,247,0.88)");
+      svg.append("text").attr("x", 8).attr("y", 14).attr("font-size", 10).attr("font-weight", "700").attr("fill", "#828290").text("전일 종가 기준 (미국 장 마감)");
+    }
+    
+    let tip = d3.select("body").selectAll(".hm-tip").data([0]).join("div").attr("class", "hm-tip").style("position", "fixed").style("background", "var(--t1)").style("color", "var(--bg)").style("font-size", "13px").style("padding", "7px 11px").style("border-radius", "7px").style("pointer-events", "none").style("display", "none").style("z-index", "9999").style("font-family", "Pretendard").style("font-variant-numeric", "tabular-nums").style("white-space", "nowrap").style("line-height", "1.7");
+    stG.on("mousemove touchstart", (ev, d) => {
+      let pct = d.data.pct, sign = pct > 0 ? "▲" : pct < 0 ? "▼" : "─", col = pct > 0 ? "#10b981" : pct < 0 ? "#ef4444" : "var(--t4)";
+      let str = d.data.ok ? `${sign} ${Math.abs(pct).toFixed(2)}%` : (closed ? "종가 기준" : "─");
+      tip.style("display", "block").html(`<b>${d.data.name}</b>&ensp;<span style="color:${col}">${str}</span>${d.data.price ? "<br>$" + fmt(d.data.price, 2) : ""}`);
+      let ex = ev.touches ? ev.touches[0].clientX : ev.clientX, ey = ev.touches ? ev.touches[0].clientY : ev.clientY;
+      tip.style("left", ex + 14 + "px").style("top", ey - 48 + "px");
+    }).on("mouseleave touchend", () => tip.style("display", "none"));
+    
+    let old = wrap.querySelector("svg"); if (old) old.remove();
+    let st = $("hm-st"); if (st) st.remove();
+    wrap.appendChild(svg.node());
+  });
+}
+
+function doLoadHM() {
+  fetch("quotes.php?syms=" + encodeURIComponent(HM_SYMS)).then(r => r.ok ? r.json() : null).then(j => {
+    if (!j) return showHMErr();
+    let res = (j.quoteResponse && j.quoteResponse.result) || [], map = {}, nz = 0;
+    res.forEach(q => { let p = q.regularMarketChangePercent || 0; if (Math.abs(p) > 0.001) nz++; map[q.symbol] = { pct: p, price: q.regularMarketPrice || null, ok: true }; });
+    drawHM(map, res.length > 0 && nz === 0);
+    if (window.isHmUnlocked) {
+      let hmBadge = $("badge-hm"), tEl = $("cy-hm-time");
+      if (hmBadge) { if (isMarketOpen("us")) { hmBadge.style.color = ""; hmBadge.textContent = "🟡 30초 갱신 중"; } else { hmBadge.style.color = "var(--dn)"; hmBadge.textContent = "🔴 장마감"; } }
+      if (tEl) tEl.textContent = nowStr() + " 기준";
+    }
+  }).catch(showHMErr);
+}
+function showHMErr() { let s = $("hm-st"); if (s) { s.textContent = "⚠ quotes.php 연동 오류"; s.className = "hm-er"; } }
 
 
 /* =========================================================================
-   4. 메인 실행 로직 & 스케줄링 (Main Logic)
+   5. 메인 실행 로직 & 스케줄링 (Main Logic)
    ========================================================================= */
 
 function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
@@ -571,17 +831,10 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-function doLoadIdx() { /* 원본 fetch 로직 */ }
-function doLoadBatchedTop10() { /* 원본 fetch 로직 */ }
-function doLoadFX() { /* 원본 fetch 로직 */ }
-function fetchFallbackDirect(s) { /* 원본 fetch 로직 */ }
-function doLoadFG() { /* 원본 fetch 로직 */ }
-function doLoadHM() { /* 원본 fetch 로직 */ }
-
 // 초기화
 document.addEventListener("DOMContentLoaded", () => {
   initThemeIcons();
-  $("copy-t").textContent = "© 2025–" + new Date().getFullYear() + " MoneyScoop 제작. All rights reserved.";
+  if($("copy-t")) $("copy-t").textContent = "© 2025–" + new Date().getFullYear() + " MoneyScoop 제작. All rights reserved.";
 
   // 네비게이션 스크롤 스파이
   const sections = document.querySelectorAll(".sec[id]");
