@@ -1,6 +1,6 @@
 <?php
 session_start();
-// 💡 접속 비밀번호 (원하는 것으로 변경하세요!)
+// 💡 접속 비밀번호
 $PASSWORD = 'admin123'; 
 $DATA_FILE = __DIR__ . '/data.json';
 
@@ -33,18 +33,88 @@ if (!isset($_SESSION['admin_auth'])) {
     exit;
 }
 
-// API: 야후 파이낸스 티커 검색 연동 (무료 API)
+// API: 스마트 사전 + 야후 파이낸스 티커 검색
 if (isset($_GET['search'])) {
     header('Content-Type: application/json');
-    $q = urlencode($_GET['search']);
-    $url = "https://query2.finance.yahoo.com/v1/finance/search?q={$q}&quotesCount=10&newsCount=0";
+    $q = trim($_GET['search']);
+    $q_lower = mb_strtolower($q, 'UTF-8');
+
+    // 💡 스마트 검색 사전: 자주 쓰는 한글/별칭 -> 대표 티커 강제 매핑
+    $dictionary = [
+        '필라델피아' => ['sym' => '^SOX', 'nm' => 'PHLX Semiconductor Index', 'exch' => 'INDEX'],
+        '반도체지수' => ['sym' => '^SOX', 'nm' => 'PHLX Semiconductor Index', 'exch' => 'INDEX'],
+        'sox' => ['sym' => '^SOX', 'nm' => 'PHLX Semiconductor Index', 'exch' => 'INDEX'],
+        '금' => ['sym' => 'GC=F', 'nm' => 'Gold', 'exch' => 'COMEX'],
+        'gold' => ['sym' => 'GC=F', 'nm' => 'Gold', 'exch' => 'COMEX'],
+        '은' => ['sym' => 'SI=F', 'nm' => 'Silver', 'exch' => 'COMEX'],
+        'silver' => ['sym' => 'SI=F', 'nm' => 'Silver', 'exch' => 'COMEX'],
+        '구리' => ['sym' => 'HG=F', 'nm' => 'Copper', 'exch' => 'COMEX'],
+        '동' => ['sym' => 'HG=F', 'nm' => 'Copper', 'exch' => 'COMEX'],
+        '유가' => ['sym' => 'CL=F', 'nm' => 'WTI Crude Oil', 'exch' => 'NYMEX'],
+        'wti' => ['sym' => 'CL=F', 'nm' => 'WTI Crude Oil', 'exch' => 'NYMEX'],
+        '천연가스' => ['sym' => 'NG=F', 'nm' => 'Natural Gas', 'exch' => 'NYMEX'],
+        'vix' => ['sym' => '^VIX', 'nm' => 'Volatility Index', 'exch' => 'CBOE'],
+        '공포지수' => ['sym' => '^VIX', 'nm' => 'Volatility Index', 'exch' => 'CBOE'],
+        '달러' => ['sym' => 'DX-Y.NYB', 'nm' => 'US Dollar Index', 'exch' => 'ICE'],
+        'dxy' => ['sym' => 'DX-Y.NYB', 'nm' => 'US Dollar Index', 'exch' => 'ICE'],
+        '비트코인' => ['sym' => 'BTC-USD', 'nm' => 'Bitcoin', 'exch' => 'CRYPTO'],
+        '이더리움' => ['sym' => 'ETH-USD', 'nm' => 'Ethereum', 'exch' => 'CRYPTO'],
+        '테슬라' => ['sym' => 'TSLA', 'nm' => 'Tesla', 'exch' => 'NASDAQ'],
+        '애플' => ['sym' => 'AAPL', 'nm' => 'Apple', 'exch' => 'NASDAQ'],
+        '엔비디아' => ['sym' => 'NVDA', 'nm' => 'NVIDIA', 'exch' => 'NASDAQ'],
+        '마소' => ['sym' => 'MSFT', 'nm' => 'Microsoft', 'exch' => 'NASDAQ'],
+        '마이크로소프트' => ['sym' => 'MSFT', 'nm' => 'Microsoft', 'exch' => 'NASDAQ'],
+        '삼성전자' => ['sym' => '005930.KS', 'nm' => 'Samsung Electronics', 'exch' => 'KOSPI'],
+        '하이닉스' => ['sym' => '000660.KS', 'nm' => 'SK Hynix', 'exch' => 'KOSPI'],
+        '코스피' => ['sym' => '^KS11', 'nm' => 'KOSPI Composite Index', 'exch' => 'KOSPI'],
+        '코스닥' => ['sym' => '^KQ11', 'nm' => 'KOSDAQ Composite Index', 'exch' => 'KOSDAQ'],
+        '나스닥' => ['sym' => '^IXIC', 'nm' => 'NASDAQ Composite', 'exch' => 'NASDAQ'],
+        's&p' => ['sym' => '^GSPC', 'nm' => 'S&P 500', 'exch' => 'S&P'],
+        '다우' => ['sym' => '^DJI', 'nm' => 'Dow Jones Industrial Average', 'exch' => 'DJI']
+    ];
+
+    $results = [];
+    $seen = [];
+
+    // 1. 사전에 매칭되는 단어가 있는지 확인
+    foreach ($dictionary as $key => $data) {
+        if (mb_strpos($q_lower, $key) !== false || mb_strpos($key, $q_lower) !== false) {
+            if (!isset($seen[$data['sym']])) {
+                $results[] = [
+                    'symbol' => $data['sym'],
+                    'shortname' => $data['nm'],
+                    'exchange' => $data['exch'],
+                    'is_smart' => true // UI 강조용 플래그
+                ];
+                $seen[$data['sym']] = true;
+            }
+        }
+    }
+
+    // 2. 야후 API 원본 검색 연동
+    $url = "https://query2.finance.yahoo.com/v1/finance/search?q=" . urlencode($q) . "&quotesCount=10&newsCount=0";
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
-    $res = curl_exec($ch);
+    $yahoo_res = curl_exec($ch);
     curl_close($ch);
-    echo $res ?: file_get_contents($url);
+
+    if ($yahoo_res) {
+        $yahoo_data = json_decode($yahoo_res, true);
+        if (!empty($yahoo_data['quotes'])) {
+            foreach ($yahoo_data['quotes'] as $quote) {
+                if (!isset($quote['symbol'])) continue;
+                // 사전에 이미 추가된 티커는 중복 제거
+                if (!isset($seen[$quote['symbol']])) {
+                    $results[] = $quote;
+                    $seen[$quote['symbol']] = true;
+                }
+            }
+        }
+    }
+
+    echo json_encode(['quotes' => $results]);
     exit;
 }
 
@@ -76,8 +146,10 @@ if (isset($_POST['save_data'])) {
         button { padding: 10px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-blue { background: #2563eb; color: #fff; }
         .btn-blue:hover { background: #1d4ed8; }
-        .res-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        
+        .res-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; border-radius: 6px; margin-bottom: 4px; }
         .res-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .res-item.smart { background: #eff6ff; border: 1px solid #bfdbfe; }
         
         .cat-sel { margin-bottom: 16px; }
         .drag-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px; }
@@ -93,9 +165,9 @@ if (isset($_POST['save_data'])) {
     
     <div class="wrap">
         <div class="panel left">
-            <h2>🔍 종목 추가 (Yahoo API)</h2>
+            <h2>🔍 스마트 종목 추가</h2>
             <div style="display:flex; gap:8px; margin-bottom: 16px;">
-                <input type="text" id="sq" placeholder="티커명 입력 (예: TSLA, 삼성전자)" onkeypress="if(event.key==='Enter') searchTicker()">
+                <input type="text" id="sq" placeholder="검색어 (예: 필라델피아, 금, TSLA)" onkeypress="if(event.key==='Enter') searchTicker()">
                 <button class="btn-blue" onclick="searchTicker()" style="white-space:nowrap;">검색</button>
             </div>
             <div>
@@ -108,8 +180,8 @@ if (isset($_POST['save_data'])) {
                     <option value="FX">환율 에 추가</option>
                 </select>
             </div>
-            <div id="search-res" style="max-height: 400px; overflow-y: auto;">
-                <p style="color:#94a3b8; font-size:13px; text-align:center;">티커나 기업명을 검색하세요.</p>
+            <div id="search-res" style="max-height: 500px; overflow-y: auto;">
+                <p style="color:#94a3b8; font-size:13px; text-align:center;">티커나 종목명(한글/영문)을 검색하세요.<br>유명한 종목은 자동 매칭됩니다.</p>
             </div>
         </div>
 
@@ -139,22 +211,27 @@ if (isset($_POST['save_data'])) {
             renderList();
         });
 
-        // 야후 파이낸스 검색
+        // 스마트 + 야후 검색
         function searchTicker() {
             const q = document.getElementById('sq').value;
             if(!q) return;
             document.getElementById('search-res').innerHTML = '검색 중...';
+            
             fetch('?search=' + encodeURIComponent(q))
             .then(r => r.json())
             .then(d => {
                 let html = '';
                 const arr = d.quotes || [];
                 if(arr.length === 0) html = '<p style="color:red; font-size:13px;">검색 결과가 없습니다.</p>';
+                
                 arr.forEach(q => {
                     const nm = (q.shortname || q.longname || q.symbol).replace(/'/g, "\\'");
-                    html += `<div class="res-item">
-                        <span><b>${q.symbol}</b><br><span style="color:#64748b; font-size:11px;">${nm} (${q.exchange})</span></span>
-                        <button onclick="doAdd('${q.symbol}', '${nm}')" style="background:#10b981; color:#fff; border:none; padding:6px 10px; border-radius:4px; font-size:12px; cursor:pointer;">추가</button>
+                    const isSmart = q.is_smart ? 'smart' : '';
+                    const smartBadge = q.is_smart ? '<span style="background:#3b82f6; color:#fff; padding:2px 5px; border-radius:4px; font-size:10px; margin-left:6px; vertical-align:middle;">✨ 추천</span>' : '';
+                    
+                    html += `<div class="res-item ${isSmart}">
+                        <span><b style="font-size:15px;">${q.symbol}</b> ${smartBadge}<br><span style="color:#64748b; font-size:12px;">${nm} (${q.exchange})</span></span>
+                        <button onclick="doAdd('${q.symbol}', '${nm}')" style="background:#10b981; color:#fff; border:none; padding:6px 12px; border-radius:4px; font-size:13px; cursor:pointer;">추가</button>
                     </div>`;
                 });
                 document.getElementById('search-res').innerHTML = html;
