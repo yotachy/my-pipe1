@@ -132,9 +132,14 @@ let intervals = {};
    2. UI 상호작용 및 렌더링 (UI Interactions & Render)
    ========================================================================= */
 
-// 💡 영역 내 하위 메뉴 탭 전환 함수 (기존 switchMainTab 대체)
+// 💡 영역 접기/펼치기 토글 함수
+window.toggleRegion = function(el) {
+  const region = el.closest('.region-area');
+  if (region) region.classList.toggle('collapsed');
+};
+
+// 💡 영역 내 하위 메뉴 탭 전환 함수
 window.switchSubTab = function(region, secId) {
-  // 클릭한 탭의 활성화 상태 변경
   document.querySelectorAll(`#tabs-${region} .sub-tab`).forEach(btn => {
     btn.classList.remove('active');
     if (btn.getAttribute('onclick').includes(secId)) {
@@ -142,7 +147,6 @@ window.switchSubTab = function(region, secId) {
     }
   });
 
-  // 해당 영역(글로벌, 미국 등) 내부의 섹션만 끄고 대상 섹션 켜기
   document.querySelectorAll(`#area-${region} .sec`).forEach(sec => {
     sec.classList.remove('active');
   });
@@ -178,7 +182,7 @@ function toggleTheme() {
 function updateSyncBadges() {
   document.querySelectorAll(".badge-sync").forEach(badge => {
     const mkt = badge.getAttribute("data-market");
-    badge.className = "badge-sync"; // 기본 클래스 리셋
+    badge.className = "badge-sync"; 
     
     if (!isMarketOpen(mkt)) {
       badge.classList.add('closed');
@@ -187,7 +191,8 @@ function updateSyncBadges() {
     }
     
     badge.classList.add('level-' + globalBoostLevel);
-    const txt = globalBoostLevel === 1 ? "6초 갱신 중" : globalBoostLevel === 2 ? "3초 갱신 중" : "10초 갱신 중";
+    // 💡 광고 시청을 유도하는 텍스트로 변경
+    const txt = globalBoostLevel === 1 ? "6초 갱신 중" : globalBoostLevel === 2 ? "최고 속도 (3초)" : "10초 (🚀스피드업 가능)";
     const icon = globalBoostLevel === 1 ? "🚀" : globalBoostLevel === 2 ? "🔥" : "⚡";
     badge.innerHTML = `${icon} ${txt}`;
   });
