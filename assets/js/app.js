@@ -1,5 +1,5 @@
 /* =========================================================================
-   1. 데이터 & 유틸리티 설정 (Data & Utilities)
+   1. 데이터 변수 선언 및 기본 유틸리티 (Data & Utilities)
    ========================================================================= */
 const $ = id => document.getElementById(id);
 
@@ -16,14 +16,8 @@ function fmtMC(val, currency) {
   return fmt(val / 1000000000, 1) + "B";
 }
 
-function getCssVar(name) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
-
-function nowStr() {
-  const d = new Date();
-  return (d.getMonth() + 1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
-}
+function getCssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function nowStr() { const d = new Date(); return (d.getMonth() + 1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); }
 
 function animateValue(obj, start, end, duration, formatFn) {
   let startTimestamp = null;
@@ -64,54 +58,9 @@ function isMarketOpen(type) {
   }
 }
 
-// 심볼 정의
-const IDX = [
-  { sym: "^GSPC", id: "idx-sp500", nm: "S&P 500", special: "", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "^IXIC", id: "idx-nasdaq", nm: "NASDAQ", special: "", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "^DJI", id: "idx-dow", nm: "DOW", special: "", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "^RUT", id: "idx-russell", nm: "Russell 2000", special: "", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "DX-Y.NYB", id: "idx-dxy", nm: "DXY", special: "dxy", d: 2, fmt: p => fmt(p, 2), no1D: true },
-  { sym: "GC=F", id: "idx-gold", nm: "Gold", special: "cmd", d: 1, fmt: p => fmt(p, 1) },
-  { sym: "SI=F", id: "idx-silver", nm: "Silver", special: "cmd", d: 3, fmt: p => fmt(p, 3) },
-  { sym: "^VIX", id: "idx-vix", nm: "VIX", special: "vix", d: 2, fmt: p => fmt(p, 2), no1D: true },
-  { sym: "^KS11", id: "idx-kospi", nm: "KOSPI", special: "", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "^KQ11", id: "idx-kosdaq", nm: "KOSDAQ", special: "", d: 2, fmt: p => fmt(p, 2) },
-];
-const US_TOP10 = [
-  { sym: "AAPL", id: "us-top-aapl", nm: "Apple", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "MSFT", id: "us-top-msft", nm: "Microsoft", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "NVDA", id: "us-top-nvda", nm: "NVIDIA", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "GOOG", id: "us-top-goog", nm: "Alphabet", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "AMZN", id: "us-top-amzn", nm: "Amazon", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "META", id: "us-top-meta", nm: "Meta", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "BRK-B", id: "us-top-brkb", nm: "Berkshire", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "LLY", id: "us-top-lly", nm: "Eli Lilly", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "AVGO", id: "us-top-avgo", nm: "Broadcom", d: 2, fmt: p => fmt(p, 2) },
-  { sym: "TSLA", id: "us-top-tsla", nm: "Tesla", d: 2, fmt: p => fmt(p, 2) },
-];
-const KR_TOP10 = [
-  { sym: "005930.KS", id: "kr-top-005930", nm: "삼성전자", d: 0, fmt: p => fmt(p, 0) },
-  { sym: "000660.KS", id: "kr-top-000660", nm: "SK하이닉스", d: 0, fmt: p => fmt(p, 0) },
-  { sym: "373220.KS", id: "kr-top-373220", nm: "LG에너지솔루션", d: 0, fmt: p => fmt(p, 0) },
-  { sym: "207940.KS", id: "kr-top-207940", nm: "삼성바이오로직스", d: 0, fmt: p => fmt(p, 0) },
-  { sym: "005380.KS", id: "kr-top-005380", nm: "현대차", d: 0, fmt: p => fmt(p, 0) },
-  { sym: "000270.KS", id: "kr-top-000270", nm: "기아", d: 0, fmt: p => fmt(p, 0) },
-  { sym: "068270.KS", id: "kr-top-068270", nm: "셀트리온", d: 0, fmt: p => fmt(p, 0) },
-  { sym: "105560.KS", id: "kr-top-105560", nm: "KB금융", d: 0, fmt: p => fmt(p, 0) },
-  { sym: "005490.KS", id: "kr-top-005490", nm: "POSCO홀딩스", d: 0, fmt: p => fmt(p, 0) },
-  { sym: "035420.KS", id: "kr-top-035420", nm: "NAVER", d: 0, fmt: p => fmt(p, 0) },
-];
-const FX = [
-  { sym: "USDKRW=X", id: "fx-usd", nm: "USD/KRW", mult: 1, d: 2, fmt: p => fmt(p, 2) },
-  { sym: "EURKRW=X", id: "fx-eur", nm: "EUR/KRW", mult: 1, d: 2, fmt: p => fmt(p, 2) },
-  { sym: "JPYKRW=X", id: "fx-jpy", nm: "JPY/KRW", mult: 100, d: 2, fmt: p => fmt(p, 2) },
-  { sym: "GBPKRW=X", id: "fx-gbp", nm: "GBP/KRW", mult: 1, d: 2, fmt: p => fmt(p, 2) },
-  { sym: "CNYKRW=X", id: "fx-cny", nm: "CNY/KRW", mult: 1, d: 2, fmt: p => fmt(p, 2) },
-];
-
-const IDX_SYMS = IDX.map(s => s.sym).join(",");
-const BATCH_TOP_SYMS = US_TOP10.map(s => s.sym).join(",") + "," + KR_TOP10.map(s => s.sym).join(",");
-const FX_SYMS = FX.map(s => s.sym).join(",");
+// 💡 JSON 연동을 위해 비워둔 동적 데이터 배열
+let IDX = [], US_TOP10 = [], KR_TOP10 = [], FX = [];
+let IDX_SYMS = "", BATCH_TOP_SYMS = "", FX_SYMS = "";
 
 const RM = {
   "1D": ["2m", "1d"], "1W": ["30m", "5d"], "1M": ["1d", "1mo"],
@@ -132,29 +81,46 @@ let intervals = {};
    2. UI 상호작용 및 렌더링 (UI Interactions & Render)
    ========================================================================= */
 
-// 💡 영역 접기/펼치기 토글 함수
+// 동적 HTML row 렌더링 함수
+function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, offset = 0) {
+  const container = $(containerId);
+  if(!container) return;
+  container.innerHTML = '';
+  
+  arr.forEach((item, index) => {
+    let row = document.createElement('div');
+    row.className = 'row' + (hasMc ? ' has-mc' : '');
+    row.id = item.id;
+    row.onclick = () => window[clickHandlerName](offset + index);
+    
+    let flagHtml = item.flag ? `<img class="flag" src="${item.flag}" alt=""/>` : '';
+    let mcHtml = hasMc ? `<div class="mc"></div>` : '';
+    
+    row.innerHTML = `
+      <div class="lbl">${flagHtml}${item.nm}</div>
+      ${mcHtml}
+      <div class="sk sk-val"></div>
+      <div class="sk sk-chg"></div>
+    `;
+    container.appendChild(row);
+  });
+}
+
 window.toggleRegion = function(el) {
   const region = el.closest('.region-area');
   if (region) region.classList.toggle('collapsed');
 };
 
-// 💡 영역 내 하위 메뉴 탭 전환 함수
 window.switchSubTab = function(region, secId) {
   document.querySelectorAll(`#tabs-${region} .sub-tab`).forEach(btn => {
     btn.classList.remove('active');
-    if (btn.getAttribute('onclick').includes(secId)) {
-      btn.classList.add('active');
-    }
+    if (btn.getAttribute('onclick').includes(secId)) btn.classList.add('active');
   });
 
-  document.querySelectorAll(`#area-${region} .sec`).forEach(sec => {
-    sec.classList.remove('active');
-  });
+  document.querySelectorAll(`#area-${region} .sec`).forEach(sec => sec.classList.remove('active'));
   
   const targetSec = $(secId);
-  if (targetSec) {
-    targetSec.classList.add('active');
-  }
+  if (targetSec) targetSec.classList.add('active');
 };
 
 function initThemeIcons() {
@@ -165,8 +131,7 @@ function initThemeIcons() {
 
 function toggleTheme() {
   const el = document.documentElement;
-  const isDark = el.getAttribute("data-theme") === "dark";
-  if (isDark) { el.removeAttribute("data-theme"); localStorage.setItem("theme", "light"); } 
+  if (el.getAttribute("data-theme") === "dark") { el.removeAttribute("data-theme"); localStorage.setItem("theme", "light"); } 
   else { el.setAttribute("data-theme", "dark"); localStorage.setItem("theme", "dark"); }
   initThemeIcons();
   
@@ -178,7 +143,6 @@ function toggleTheme() {
   doLoadFG();
 }
 
-// 💡 갱신 주기 뱃지(알약 디자인) 업데이트 로직
 function updateSyncBadges() {
   document.querySelectorAll(".badge-sync").forEach(badge => {
     const mkt = badge.getAttribute("data-market");
@@ -191,7 +155,6 @@ function updateSyncBadges() {
     }
     
     badge.classList.add('level-' + globalBoostLevel);
-    // 💡 광고 시청을 유도하는 텍스트로 변경
     const txt = globalBoostLevel === 1 ? "6초 갱신 중" : globalBoostLevel === 2 ? "최고 속도 (3초)" : "10초 (🚀스피드업 가능)";
     const icon = globalBoostLevel === 1 ? "🚀" : globalBoostLevel === 2 ? "🔥" : "⚡";
     badge.innerHTML = `${icon} ${txt}`;
@@ -203,8 +166,7 @@ function dotHtml(cls) { return `<span class="dot ${cls}"></span>`; }
 function forceSleepDots(listIds) {
   if (!Array.isArray(listIds)) listIds = [listIds];
   listIds.forEach(listId => {
-    const el = $(listId);
-    if (!el) return;
+    const el = $(listId); if (!el) return;
     el.querySelectorAll(".dot").forEach(dot => dot.className = "dot dot-sleep");
   });
 }
@@ -228,11 +190,9 @@ function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitP
   let dotClass = "dot-sleep";
 
   if (isInitial) {
-    _lastUpdated[id] = 0;
-    dotClass = "dot-load";
+    _lastUpdated[id] = 0; dotClass = "dot-load";
   } else if (changed) {
-    _lastUpdated[id] = Date.now();
-    dotClass = "dot-live-" + globalBoostLevel;
+    _lastUpdated[id] = Date.now(); dotClass = "dot-live-" + globalBoostLevel;
   } else if (Date.now() - _lastUpdated[id] < 15000 && _lastUpdated[id] !== 0) {
     dotClass = "dot-live-" + globalBoostLevel;
   }
@@ -245,9 +205,7 @@ function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitP
   if (mcVal !== undefined) el.dataset.mc = mcVal;
 
   if (changed) {
-    el.classList.remove("flash");
-    void el.offsetWidth;
-    el.classList.add("flash");
+    el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
     el.addEventListener("animationend", () => el.classList.remove("flash"), { once: true });
     if (globalBoostLevel === 2 && prev !== undefined && prev !== price) {
       const valEl = el.querySelector(".val");
@@ -271,6 +229,7 @@ function sortListDesc(listId) {
    ========================================================================= */
 
 function doLoadIdx() {
+  if(!IDX_SYMS) return;
   fetch("quotes.php?syms=" + encodeURIComponent(IDX_SYMS))
     .then(r => r.json())
     .then(j => {
@@ -290,6 +249,7 @@ function doLoadIdx() {
 }
 
 function doLoadBatchedTop10() {
+  if(!BATCH_TOP_SYMS) return;
   fetch("quotes.php?syms=" + encodeURIComponent(BATCH_TOP_SYMS))
     .then(r => r.json())
     .then(j => {
@@ -303,7 +263,7 @@ function doLoadBatchedTop10() {
               const p = q.regularMarketPrice;
               const pv = q.regularMarketPreviousClose || p;
               const mc = q.marketCap || 0;
-              const cur = s.sym.indexOf(".KS") > -1 ? "KRW" : "USD";
+              const cur = s.sym.indexOf(".KS") > -1 || s.sym.indexOf(".KQ") > -1 ? "KRW" : "USD";
               renderRow(s.id, p, pv, s, fmtMC(mc, cur), mc, q.regularMarketChange, q.regularMarketChangePercent);
             } else fetchFallbackDirect(s);
           });
@@ -318,6 +278,7 @@ function doLoadBatchedTop10() {
 }
 
 function doLoadFX() {
+  if(!FX_SYMS) return;
   fetch("quotes.php?syms=" + encodeURIComponent(FX_SYMS))
     .then(r => r.json())
     .then(j => {
@@ -401,12 +362,13 @@ function insertChart(rowId, areaId) {
   if (row && row.parentNode) row.parentNode.insertBefore(el, row.nextSibling);
 }
 
-function clickIdx(i) { handleRowClick(IDX[i], 'idx-list', 'idx-us-list', 'idx-kr-list', 'idx', activeIdxSym, v => activeIdxSym = v, activeIdxRange); }
-function clickUsTop(i) { handleRowClick(US_TOP10[i], 'us-top-list', null, null, 'us-top', activeUsTopSym, v => activeUsTopSym = v, activeUsTopRange); }
-function clickKrTop(i) { handleRowClick(KR_TOP10[i], 'kr-top-list', null, null, 'kr-top', activeKrTopSym, v => activeKrTopSym = v, activeKrTopRange); }
-function clickFx(i) { handleRowClick(FX[i], 'fx-list', null, null, 'fx', activeFxSym, v => activeFxSym = v, activeFxRange); }
+window.clickIdx = function(i) { handleRowClick(IDX[i], 'idx-list', 'idx-us-list', 'idx-kr-list', 'idx', activeIdxSym, v => activeIdxSym = v, activeIdxRange); }
+window.clickUsTop = function(i) { handleRowClick(US_TOP10[i], 'us-top-list', null, null, 'us-top', activeUsTopSym, v => activeUsTopSym = v, activeUsTopRange); }
+window.clickKrTop = function(i) { handleRowClick(KR_TOP10[i], 'kr-top-list', null, null, 'kr-top', activeKrTopSym, v => activeKrTopSym = v, activeKrTopRange); }
+window.clickFx = function(i) { handleRowClick(FX[i], 'fx-list', null, null, 'fx', activeFxSym, v => activeFxSym = v, activeFxRange); }
 
 function handleRowClick(s, list1, list2, list3, type, currentActive, setActive, range) {
+  if(!s) return;
   const selectors = [`#${list1} .row`];
   if(list2) selectors.push(`#${list2} .row`);
   if(list3) selectors.push(`#${list3} .row`);
@@ -424,10 +386,10 @@ function handleRowClick(s, list1, list2, list3, type, currentActive, setActive, 
   doChart(s, range, type);
 }
 
-function setIdxRange(r) { activeIdxRange = r; updateRangeUI('idx', r, activeIdxSym); }
-function setUsTopRange(r) { activeUsTopRange = r; updateRangeUI('us-top', r, activeUsTopSym); }
-function setKrTopRange(r) { activeKrTopRange = r; updateRangeUI('kr-top', r, activeKrTopSym); }
-function setFxRange(r) { activeFxRange = r; updateRangeUI('fx', r, activeFxSym); }
+window.setIdxRange = function(r) { activeIdxRange = r; updateRangeUI('idx', r, activeIdxSym); }
+window.setUsTopRange = function(r) { activeUsTopRange = r; updateRangeUI('us-top', r, activeUsTopSym); }
+window.setKrTopRange = function(r) { activeKrTopRange = r; updateRangeUI('kr-top', r, activeKrTopSym); }
+window.setFxRange = function(r) { activeFxRange = r; updateRangeUI('fx', r, activeFxSym); }
 
 function updateRangeUI(type, r, activeSym) {
   document.querySelectorAll(`#${type}-chart-area .rbtn`).forEach(b => b.classList.toggle("on", b.dataset.r === r));
@@ -651,7 +613,7 @@ function drawFGChart(hist, color) {
   });
 }
 
-function doLoadFG() {
+window.doLoadFG = function() {
   fetch("quotes.php?fg=1").then(r => r.ok ? r.json() : null).then(j => {
     if (!j || j.error || !j.fear_and_greed) return renderFGErr();
     let fg = j.fear_and_greed, hist = (j.fear_and_greed_historical && j.fear_and_greed_historical.data) || null;
@@ -660,7 +622,7 @@ function doLoadFG() {
 }
 function renderFGErr() { $("fg-body").innerHTML = '<div class="fg-er"><div class="fg-er-t">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="doLoadFG()">다시 시도 ↻</button></div>'; }
 
-// === 히트맵 영역 ===
+// === 히트맵 영역 (고정 하드코딩) ===
 let HM = [
   { name: "Technology", cap: 16000, stocks: [{ s: "AAPL", cap: 3000 }, { s: "MSFT", cap: 3000 }, { s: "NVDA", cap: 2800 }, { s: "AVGO", cap: 600 }, { s: "ORCL", cap: 350 }, { s: "ADBE", cap: 250 }, { s: "CRM", cap: 280 }, { s: "AMD", cap: 260 }, { s: "QCOM", cap: 180 }, { s: "TXN", cap: 160 }, { s: "INTC", cap: 130 }, { s: "IBM", cap: 160 }, { s: "NOW", cap: 150 }, { s: "INTU", cap: 170 }, { s: "AMAT", cap: 160 }, { s: "MU", cap: 130 }, { s: "PANW", cap: 100 }] },
   { name: "Communication", cap: 7000, stocks: [{ s: "GOOGL", cap: 2000 }, { s: "META", cap: 1200 }, { s: "NFLX", cap: 250 }, { s: "TMUS", cap: 190 }, { s: "DIS", cap: 200 }, { s: "VZ", cap: 160 }, { s: "T", cap: 120 }, { s: "EA", cap: 40 }, { s: "CMCSA", cap: 170 }, { s: "WBD", cap: 30 }, { s: "SIRI", cap: 20 }, { s: "FOXA", cap: 20 }, { s: "CHTR", cap: 50 }, { s: "LYV", cap: 25 }, { s: "TTWO", cap: 25 }] },
@@ -750,7 +712,7 @@ function drawHM(qmap, closed) {
   });
 }
 
-function doLoadHM() {
+window.doLoadHM = function() {
   fetch("quotes.php?syms=" + encodeURIComponent(HM_SYMS)).then(r => r.ok ? r.json() : null).then(j => {
     if (!j) return showHMErr();
     let res = (j.quoteResponse && j.quoteResponse.result) || [], map = {}, nz = 0;
@@ -762,7 +724,7 @@ function showHMErr() { let s = $("hm-st"); if (s) { s.textContent = "⚠ quotes.
 
 
 /* =========================================================================
-   5. 메인 실행 로직 & 스케줄링 (Main Logic)
+   5. 메인 실행 및 스케줄링 로직 (Main Logic)
    ========================================================================= */
 
 function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
@@ -836,17 +798,57 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// 앱 초기화 실행
+
+/* =========================================================================
+   6. 메인 앱 초기화 로직 (JSON Load & Initialize)
+   ========================================================================= */
 document.addEventListener("DOMContentLoaded", () => {
   initThemeIcons();
   if($("copy-t")) $("copy-t").textContent = "© 2025–" + new Date().getFullYear() + " MoneyScoop 제작. All rights reserved.";
 
-  runSchedule("idx", ["idx-list", "idx-us-list", "idx-kr-list"], ["cy-idx-time", "cy-us-idx-time", "cy-kr-idx-time"], "global", doLoadIdx, 10000);
-  runSchedule("us-top", "us-top-list", "cy-us-top-time", "us", doLoadBatchedTop10, 10000);
-  runSchedule("kr-top", "kr-top-list", "cy-kr-top-time", "kr", () => {}, 10000);
-  runSchedule("fx", "fx-list", "cy-fx-time", "global", doLoadFX, 10000);
+  // 💡 관리자 페이지(admin.php)에서 갱신한 JSON 파일을 불러옵니다!
+  fetch('data.json?t=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      
+      // 불러온 데이터를 전역 배열에 병합하여 할당
+      IDX = [...(data.IDX_GL||[]), ...(data.IDX_US||[]), ...(data.IDX_KR||[])];
+      US_TOP10 = data.US_TOP10 || [];
+      KR_TOP10 = data.KR_TOP10 || [];
+      FX = data.FX || [];
 
-  doLoadHM();
-  doLoadFG();
-  setInterval(doLoadFG, 12 * 60 * 60 * 1000);
+      // 숫자 포맷 함수 및 기본 소수점(d) 주입
+      IDX.forEach(s => { s.d = s.d !== undefined ? s.d : 2; s.fmt = p => fmt(p, s.d); });
+      US_TOP10.forEach(s => { s.d = s.d !== undefined ? s.d : 2; s.fmt = p => fmt(p, s.d); });
+      KR_TOP10.forEach(s => { s.d = s.d !== undefined ? s.d : 0; s.fmt = p => fmt(p, s.d); });
+      FX.forEach(s => { s.d = s.d !== undefined ? s.d : 2; s.fmt = p => fmt(p, s.d); });
+
+      // API 요청용 콤마 문자열 생성
+      IDX_SYMS = IDX.map(s => s.sym).join(",");
+      BATCH_TOP_SYMS = US_TOP10.map(s => s.sym).join(",") + "," + KR_TOP10.map(s => s.sym).join(",");
+      FX_SYMS = FX.map(s => s.sym).join(",");
+
+      // HTML DOM 동적 생성 (offset을 이용해 통합된 IDX 배열 인덱스와 매칭)
+      renderInitialRows('idx-list', data.IDX_GL || [], 'clickIdx', false, 0);
+      renderInitialRows('idx-us-list', data.IDX_US || [], 'clickIdx', false, (data.IDX_GL||[]).length);
+      renderInitialRows('idx-kr-list', data.IDX_KR || [], 'clickIdx', false, (data.IDX_GL||[]).length + (data.IDX_US||[]).length);
+      
+      renderInitialRows('us-top-list', US_TOP10, 'clickUsTop', true);
+      renderInitialRows('kr-top-list', KR_TOP10, 'clickKrTop', true);
+      renderInitialRows('fx-list', FX, 'clickFx');
+
+      // 스케줄러 가동
+      runSchedule("idx", ["idx-list", "idx-us-list", "idx-kr-list"], ["cy-idx-time", "cy-us-idx-time", "cy-kr-idx-time"], "global", doLoadIdx, 10000);
+      runSchedule("us-top", "us-top-list", "cy-us-top-time", "us", doLoadBatchedTop10, 10000);
+      runSchedule("kr-top", "kr-top-list", "cy-kr-top-time", "kr", () => {}, 10000);
+      runSchedule("fx", "fx-list", "cy-fx-time", "global", doLoadFX, 10000);
+
+      doLoadHM();
+      doLoadFG();
+      setInterval(doLoadFG, 12 * 60 * 60 * 1000);
+    })
+    .catch(err => {
+      console.error("데이터 로드 실패:", err);
+      alert("종목 데이터를 불러오는데 실패했습니다.");
+    });
 });

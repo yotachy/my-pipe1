@@ -1,0 +1,49 @@
+{
+  "IDX_GL": [
+    {"sym": "DX-Y.NYB", "id": "idx-dxy", "nm": "DXY", "special": "dxy", "no1D": true},
+    {"sym": "GC=F", "id": "idx-gold", "nm": "Gold", "special": "cmd", "d": 1},
+    {"sym": "SI=F", "id": "idx-silver", "nm": "Silver", "special": "cmd", "d": 3},
+    {"sym": "^VIX", "id": "idx-vix", "nm": "VIX", "special": "vix", "no1D": true}
+  ],
+  "IDX_US": [
+    {"sym": "^GSPC", "id": "idx-sp500", "nm": "S&P 500"},
+    {"sym": "^IXIC", "id": "idx-nasdaq", "nm": "NASDAQ"},
+    {"sym": "^DJI", "id": "idx-dow", "nm": "DOW"},
+    {"sym": "^RUT", "id": "idx-russell", "nm": "Russell 2000"}
+  ],
+  "IDX_KR": [
+    {"sym": "^KS11", "id": "idx-kospi", "nm": "KOSPI"},
+    {"sym": "^KQ11", "id": "idx-kosdaq", "nm": "KOSDAQ"}
+  ],
+  "US_TOP10": [
+    {"sym": "AAPL", "id": "us-top-aapl", "nm": "Apple"},
+    {"sym": "MSFT", "id": "us-top-msft", "nm": "Microsoft"},
+    {"sym": "NVDA", "id": "us-top-nvda", "nm": "NVIDIA"},
+    {"sym": "GOOG", "id": "us-top-goog", "nm": "Alphabet"},
+    {"sym": "AMZN", "id": "us-top-amzn", "nm": "Amazon"},
+    {"sym": "META", "id": "us-top-meta", "nm": "Meta"},
+    {"sym": "BRK-B", "id": "us-top-brkb", "nm": "Berkshire"},
+    {"sym": "LLY", "id": "us-top-lly", "nm": "Eli Lilly"},
+    {"sym": "AVGO", "id": "us-top-avgo", "nm": "Broadcom"},
+    {"sym": "TSLA", "id": "us-top-tsla", "nm": "Tesla"}
+  ],
+  "KR_TOP10": [
+    {"sym": "005930.KS", "id": "kr-top-005930", "nm": "삼성전자"},
+    {"sym": "000660.KS", "id": "kr-top-000660", "nm": "SK하이닉스"},
+    {"sym": "373220.KS", "id": "kr-top-373220", "nm": "LG에너지솔루션"},
+    {"sym": "207940.KS", "id": "kr-top-207940", "nm": "삼성바이오로직스"},
+    {"sym": "005380.KS", "id": "kr-top-005380", "nm": "현대차"},
+    {"sym": "000270.KS", "id": "kr-top-000270", "nm": "기아"},
+    {"sym": "068270.KS", "id": "kr-top-068270", "nm": "셀트리온"},
+    {"sym": "105560.KS", "id": "kr-top-105560", "nm": "KB금융"},
+    {"sym": "005490.KS", "id": "kr-top-005490", "nm": "POSCO홀딩스"},
+    {"sym": "035420.KS", "id": "kr-top-035420", "nm": "NAVER"}
+  ],
+  "FX": [
+    {"sym": "USDKRW=X", "id": "fx-usd", "nm": "USD/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/us.png"},
+    {"sym": "EURKRW=X", "id": "fx-eur", "nm": "EUR/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/eu.png"},
+    {"sym": "JPYKRW=X", "id": "fx-jpy", "nm": "JPY/KRW", "mult": 100, "flag": "https://flagcdn.com/w40/jp.png"},
+    {"sym": "GBPKRW=X", "id": "fx-gbp", "nm": "GBP/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/gb.png"},
+    {"sym": "CNYKRW=X", "id": "fx-cny", "nm": "CNY/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/cn.png"}
+  ]
+}
