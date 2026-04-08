@@ -143,6 +143,7 @@ function toggleTheme() {
   doLoadFG();
 }
 
+// 💡 뱃지를 광고 버튼화 & 통일된 문구 적용
 function updateSyncBadges() {
   document.querySelectorAll(".badge-sync").forEach(badge => {
     const mkt = badge.getAttribute("data-market");
@@ -151,12 +152,27 @@ function updateSyncBadges() {
     if (!isMarketOpen(mkt)) {
       badge.classList.add('closed');
       badge.innerHTML = "⏸ 장마감";
+      badge.onclick = null;
       return;
     }
     
     badge.classList.add('level-' + globalBoostLevel);
-    const txt = globalBoostLevel === 1 ? "6초 갱신 중" : globalBoostLevel === 2 ? "최고 속도 (3초)" : "10초 (🚀스피드업 가능)";
-    const icon = globalBoostLevel === 1 ? "🚀" : globalBoostLevel === 2 ? "🔥" : "⚡";
+    let txt, icon;
+    
+    if (globalBoostLevel === 0) {
+      txt = "10초 갱신 (▶ 스피드업)"; 
+      icon = "⚡";
+      badge.onclick = window.activateGlobalBoost;
+    } else if (globalBoostLevel === 1) {
+      txt = "6초 갱신 (▶ MAX 스피드업)"; 
+      icon = "🚀";
+      badge.onclick = window.activateGlobalBoost;
+    } else {
+      txt = "3초 갱신 (MAX 최고속도)"; 
+      icon = "🔥";
+      badge.onclick = null; // 최고 속도 도달 시 클릭 해제
+    }
+    
     badge.innerHTML = `${icon} ${txt}`;
   });
 }
@@ -622,7 +638,7 @@ window.doLoadFG = function() {
 }
 function renderFGErr() { $("fg-body").innerHTML = '<div class="fg-er"><div class="fg-er-t">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="doLoadFG()">다시 시도 ↻</button></div>'; }
 
-// === 히트맵 영역 (고정 하드코딩) ===
+// === 히트맵 영역 ===
 let HM = [
   { name: "Technology", cap: 16000, stocks: [{ s: "AAPL", cap: 3000 }, { s: "MSFT", cap: 3000 }, { s: "NVDA", cap: 2800 }, { s: "AVGO", cap: 600 }, { s: "ORCL", cap: 350 }, { s: "ADBE", cap: 250 }, { s: "CRM", cap: 280 }, { s: "AMD", cap: 260 }, { s: "QCOM", cap: 180 }, { s: "TXN", cap: 160 }, { s: "INTC", cap: 130 }, { s: "IBM", cap: 160 }, { s: "NOW", cap: 150 }, { s: "INTU", cap: 170 }, { s: "AMAT", cap: 160 }, { s: "MU", cap: 130 }, { s: "PANW", cap: 100 }] },
   { name: "Communication", cap: 7000, stocks: [{ s: "GOOGL", cap: 2000 }, { s: "META", cap: 1200 }, { s: "NFLX", cap: 250 }, { s: "TMUS", cap: 190 }, { s: "DIS", cap: 200 }, { s: "VZ", cap: 160 }, { s: "T", cap: 120 }, { s: "EA", cap: 40 }, { s: "CMCSA", cap: 170 }, { s: "WBD", cap: 30 }, { s: "SIRI", cap: 20 }, { s: "FOXA", cap: 20 }, { s: "CHTR", cap: 50 }, { s: "LYV", cap: 25 }, { s: "TTWO", cap: 25 }] },
@@ -743,23 +759,28 @@ function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
   intervals[taskId] = setInterval(() => { if (!document.hidden) exec(); }, interval);
 }
 
-// 상단/하단 배너 동시 업데이트 로직
+// 상단/하단 배너 & 클릭 뱃지 동시 업데이트 로직
 window.activateGlobalBoost = function(e) {
   if (e) e.stopPropagation();
 
   if (globalBoostLevel === 0) {
     globalBoostLevel = 1;
     alert("데이터 갱신 주기가 6초로 단축되었습니다! 🚀");
-    document.querySelectorAll(".g-banner-title").forEach(el => el.textContent = "🚀 실시간 속도 향상 적용 중!");
-    document.querySelectorAll(".g-banner-desc").forEach(el => el.textContent = "한 번 더 시청하시면 가장 빠른 3초 주기로 업데이트됩니다.");
-    document.querySelectorAll(".g-banner-btn").forEach(btn => {
-      btn.innerHTML = "▶ 한 번 더 보고 최고 속도 내기";
-      btn.style.background = "#0284c7";
+    document.querySelectorAll(".boost-banner").forEach(banner => {
+      banner.classList.add("banner-lvl-1");
+      banner.querySelector(".g-banner-title").textContent = "🚀 실시간 속도 향상 적용 중!";
+      banner.querySelector(".g-banner-desc").textContent = "한 번 더 시청하시면 가장 빠른 3초 주기로 업데이트됩니다.";
+      banner.querySelector(".g-banner-btn").innerHTML = "▶ 한 번 더 보고 최고 속도 내기";
     });
   } else if (globalBoostLevel === 1) {
     globalBoostLevel = 2;
     alert("최고 속도 달성!\n갱신 속도가 3초로 단축되며 다이내믹 가격 효과가 적용됩니다 🔥");
-    document.querySelectorAll(".boost-banner").forEach(banner => banner.style.display = "none");
+    document.querySelectorAll(".boost-banner").forEach(banner => {
+      banner.classList.remove("banner-lvl-1");
+      banner.classList.add("banner-lvl-2");
+      banner.querySelector(".g-banner-title").textContent = "🔥 최고 속도 (3초) 적용 중!";
+      banner.querySelector(".g-banner-desc").textContent = "현재 제공 가능한 가장 빠른 속도로 시장 데이터를 실시간 갱신하고 있습니다.";
+    });
   }
 
   const newInterval = globalBoostLevel === 1 ? 6000 : 3000;
@@ -806,29 +827,25 @@ document.addEventListener("DOMContentLoaded", () => {
   initThemeIcons();
   if($("copy-t")) $("copy-t").textContent = "© 2025–" + new Date().getFullYear() + " MoneyScoop 제작. All rights reserved.";
 
-  // 💡 관리자 페이지(admin.php)에서 갱신한 JSON 파일을 불러옵니다!
+  // 💡 관리자 페이지에서 갱신한 JSON 파일을 불러옵니다
   fetch('data.json?t=' + Date.now())
     .then(r => r.json())
     .then(data => {
       
-      // 불러온 데이터를 전역 배열에 병합하여 할당
       IDX = [...(data.IDX_GL||[]), ...(data.IDX_US||[]), ...(data.IDX_KR||[])];
       US_TOP10 = data.US_TOP10 || [];
       KR_TOP10 = data.KR_TOP10 || [];
       FX = data.FX || [];
 
-      // 숫자 포맷 함수 및 기본 소수점(d) 주입
       IDX.forEach(s => { s.d = s.d !== undefined ? s.d : 2; s.fmt = p => fmt(p, s.d); });
       US_TOP10.forEach(s => { s.d = s.d !== undefined ? s.d : 2; s.fmt = p => fmt(p, s.d); });
       KR_TOP10.forEach(s => { s.d = s.d !== undefined ? s.d : 0; s.fmt = p => fmt(p, s.d); });
       FX.forEach(s => { s.d = s.d !== undefined ? s.d : 2; s.fmt = p => fmt(p, s.d); });
 
-      // API 요청용 콤마 문자열 생성
       IDX_SYMS = IDX.map(s => s.sym).join(",");
       BATCH_TOP_SYMS = US_TOP10.map(s => s.sym).join(",") + "," + KR_TOP10.map(s => s.sym).join(",");
       FX_SYMS = FX.map(s => s.sym).join(",");
 
-      // HTML DOM 동적 생성 (offset을 이용해 통합된 IDX 배열 인덱스와 매칭)
       renderInitialRows('idx-list', data.IDX_GL || [], 'clickIdx', false, 0);
       renderInitialRows('idx-us-list', data.IDX_US || [], 'clickIdx', false, (data.IDX_GL||[]).length);
       renderInitialRows('idx-kr-list', data.IDX_KR || [], 'clickIdx', false, (data.IDX_GL||[]).length + (data.IDX_US||[]).length);
@@ -837,7 +854,6 @@ document.addEventListener("DOMContentLoaded", () => {
       renderInitialRows('kr-top-list', KR_TOP10, 'clickKrTop', true);
       renderInitialRows('fx-list', FX, 'clickFx');
 
-      // 스케줄러 가동
       runSchedule("idx", ["idx-list", "idx-us-list", "idx-kr-list"], ["cy-idx-time", "cy-us-idx-time", "cy-kr-idx-time"], "global", doLoadIdx, 10000);
       runSchedule("us-top", "us-top-list", "cy-us-top-time", "us", doLoadBatchedTop10, 10000);
       runSchedule("kr-top", "kr-top-list", "cy-kr-top-time", "kr", () => {}, 10000);
