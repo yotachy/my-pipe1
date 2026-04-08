@@ -132,21 +132,23 @@ let intervals = {};
    2. UI 상호작용 및 렌더링 (UI Interactions & Render)
    ========================================================================= */
 
-// 💡 탭 전환 함수
-function setMainTab(e, tabId) {
-  document.querySelectorAll('.m-tab').forEach(btn => btn.classList.remove('active'));
-  if(e) e.currentTarget.classList.add('active');
-  document.querySelectorAll('.tab-area').forEach(area => area.classList.remove('active'));
-  $('area-' + tabId).classList.add('active');
-}
-
-function setSubTab(e, parentId, subId) {
-  const parentArea = $('area-' + parentId);
-  parentArea.querySelectorAll('.s-tab').forEach(btn => btn.classList.remove('active'));
-  if(e) e.currentTarget.classList.add('active');
-  parentArea.querySelectorAll('.sub-area').forEach(area => area.classList.remove('active'));
-  $(parentId + '-' + subId).classList.add('active');
-}
+// 💡 메인 탭(글로벌/미국/한국) 전환 함수
+window.switchMainTab = function(tabId) {
+  // 버튼 활성화 처리
+  document.querySelectorAll('.hdr-center .nav-link').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.getAttribute('onclick').includes(tabId)) {
+      btn.classList.add('active');
+    }
+  });
+  // 콘텐츠 영역 보이기/숨기기
+  document.querySelectorAll('.main-area').forEach(area => area.classList.remove('active'));
+  const targetArea = $('area-' + tabId);
+  if (targetArea) {
+    targetArea.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // 탭 변경시 최상단 스크롤
+  }
+};
 
 function initThemeIcons() {
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
@@ -169,18 +171,27 @@ function toggleTheme() {
   doLoadFG();
 }
 
+function toggleSec(el) {
+  const sec = el.closest(".sec");
+  if (sec) sec.classList.toggle("collapsed");
+}
+
+// 💡 갱신 주기 뱃지(알약 디자인) 업데이트 로직
 function updateSyncBadges() {
   document.querySelectorAll(".badge-sync").forEach(badge => {
     const mkt = badge.getAttribute("data-market");
+    badge.className = "badge-sync"; // 기본 클래스 리셋
+    
     if (!isMarketOpen(mkt)) {
-      badge.style.color = "var(--dn)";
-      badge.textContent = "🔴 장마감";
+      badge.classList.add('closed');
+      badge.innerHTML = "⏸ 장마감";
       return;
     }
-    badge.style.color = "";
-    const txt = globalBoostLevel === 1 ? "6초" : globalBoostLevel === 2 ? "3초" : "10초";
-    const icon = globalBoostLevel === 1 ? "🟢" : globalBoostLevel === 2 ? "🟣" : "🟡";
-    badge.textContent = `${icon} ${txt} 갱신 중`;
+    
+    badge.classList.add('level-' + globalBoostLevel);
+    const txt = globalBoostLevel === 1 ? "6초 갱신 중" : globalBoostLevel === 2 ? "3초 갱신 중" : "10초 갱신 중";
+    const icon = globalBoostLevel === 1 ? "🚀" : globalBoostLevel === 2 ? "🔥" : "⚡";
+    badge.innerHTML = `${icon} ${txt}`;
   });
 }
 
@@ -642,12 +653,6 @@ function doLoadFG() {
     if (!j || j.error || !j.fear_and_greed) return renderFGErr();
     let fg = j.fear_and_greed, hist = (j.fear_and_greed_historical && j.fear_and_greed_historical.data) || null;
     renderFG(Math.round(fg.score), Math.round(fg.previous_close), hist);
-    let badge = $("badge-fg"), tEl = $("cy-fg-time");
-    if (badge) {
-      if (isMarketOpen("us")) { badge.style.color = ""; badge.textContent = "🟡 12시간 갱신 중"; }
-      else { badge.style.color = "var(--dn)"; badge.textContent = "🔴 장마감"; }
-    }
-    if (tEl) tEl.textContent = nowStr() + " 기준";
   }).catch(renderFGErr);
 }
 function renderFGErr() { $("fg-body").innerHTML = '<div class="fg-er"><div class="fg-er-t">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="doLoadFG()">다시 시도 ↻</button></div>'; }
@@ -748,11 +753,6 @@ function doLoadHM() {
     let res = (j.quoteResponse && j.quoteResponse.result) || [], map = {}, nz = 0;
     res.forEach(q => { let p = q.regularMarketChangePercent || 0; if (Math.abs(p) > 0.001) nz++; map[q.symbol] = { pct: p, price: q.regularMarketPrice || null, ok: true }; });
     drawHM(map, res.length > 0 && nz === 0);
-    if (window.isHmUnlocked) {
-      let hmBadge = $("badge-hm"), tEl = $("cy-hm-time");
-      if (hmBadge) { if (isMarketOpen("us")) { hmBadge.style.color = ""; hmBadge.textContent = "🟡 30초 갱신 중"; } else { hmBadge.style.color = "var(--dn)"; hmBadge.textContent = "🔴 장마감"; } }
-      if (tEl) tEl.textContent = nowStr() + " 기준";
-    }
   }).catch(showHMErr);
 }
 function showHMErr() { let s = $("hm-st"); if (s) { s.textContent = "⚠ quotes.php 연동 오류"; s.className = "hm-er"; } }
@@ -778,8 +778,8 @@ function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
   intervals[taskId] = setInterval(() => { if (!document.hidden) exec(); }, interval);
 }
 
-// 💡 다중 배너 동시 업데이트 로직
-function activateGlobalBoost(e) {
+// 상단/하단 배너 동시 업데이트 로직
+window.activateGlobalBoost = function(e) {
   if (e) e.stopPropagation();
 
   if (globalBoostLevel === 0) {
@@ -802,10 +802,10 @@ function activateGlobalBoost(e) {
   runSchedule("us-top", "us-top-list", "cy-us-top-time", "us", doLoadBatchedTop10, newInterval);
   runSchedule("kr-top", "kr-top-list", "cy-kr-top-time", "kr", () => {}, newInterval);
   runSchedule("fx", "fx-list", "cy-fx-time", "global", doLoadFX, newInterval);
-}
+};
 
 window.isHmUnlocked = false;
-function unlockHeatmap(e) {
+window.unlockHeatmap = function(e) {
   if (e) e.stopPropagation();
   alert("광고 시청 완료!\n히트맵 잠금이 해제되었습니다 🔓");
   isHmUnlocked = true;
@@ -822,12 +822,9 @@ function unlockHeatmap(e) {
   intervals["hm"] = setInterval(() => {
     if (document.hidden) return;
     if (isMarketOpen("us")) doLoadHM();
-    else {
-      if ($("badge-hm")) { $("badge-hm").textContent = "🔴 장마감"; $("badge-hm").style.color = "var(--dn)"; }
-      if ($("cy-hm-time")) $("cy-hm-time").textContent = nowStr() + " 기준";
-    }
+    else { if ($("cy-hm-time")) $("cy-hm-time").textContent = nowStr() + " 기준"; }
   }, 30000);
-}
+};
 
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
@@ -836,12 +833,11 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// 초기화
+// 앱 초기화 실행
 document.addEventListener("DOMContentLoaded", () => {
   initThemeIcons();
   if($("copy-t")) $("copy-t").textContent = "© 2025–" + new Date().getFullYear() + " MoneyScoop 제작. All rights reserved.";
 
-  // 스케줄러 등록
   runSchedule("idx", ["idx-list", "idx-us-list", "idx-kr-list"], ["cy-idx-time", "cy-us-idx-time", "cy-kr-idx-time"], "global", doLoadIdx, 10000);
   runSchedule("us-top", "us-top-list", "cy-us-top-time", "us", doLoadBatchedTop10, 10000);
   runSchedule("kr-top", "kr-top-list", "cy-kr-top-time", "kr", () => {}, 10000);

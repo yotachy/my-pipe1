@@ -32,6 +32,12 @@
           <span class="hdr-sub">by MoneyScoop</span>
         </div>
 
+        <nav class="hdr-center">
+          <button class="nav-link active" onclick="switchMainTab('gl')">글로벌</button>
+          <button class="nav-link" onclick="switchMainTab('us')">미국</button>
+          <button class="nav-link" onclick="switchMainTab('kr')">한국</button>
+        </nav>
+
         <div class="hdr-right">
           <button class="theme-btn" id="theme-toggle" aria-label="테마 변경" onclick="toggleTheme()">
             <svg id="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -54,178 +60,190 @@
         <button class="g-banner-btn free-reward-btn" onclick="activateGlobalBoost(event)">▶ 광고 보고 속도 올리기</button>
       </div>
 
-      <div class="market-tabs-wrap">
-        <div class="m-tabs">
-          <button class="m-tab active" onclick="setMainTab(event, 'kr')">🇰🇷 한국 증시</button>
-          <button class="m-tab" onclick="setMainTab(event, 'us')">🇺🇸 미국 증시</button>
-          <button class="m-tab" onclick="setMainTab(event, 'gl')">🌍 글로벌</button>
+      <div id="area-gl" class="main-area active">
+        <div class="visible-sub-menu">
+          <a href="#gl-idx" class="v-sub-link">주요 지표·지수</a>
+          <a href="#gl-fx" class="v-sub-link">환율 (24시간)</a>
+        </div>
+
+        <div class="sec" id="gl-idx">
+          <div class="sec-hd" onclick="toggleSec(this)">
+            <div class="sec-hd-left"><span class="sec-lbl">글로벌 | 주요 지표 지수 <span class="chevron">▼</span></span></div>
+            <div class="sec-hd-right">
+              <span class="badge-sync" data-market="global" id="badge-idx">상태 확인 중</span>
+              <span class="sec-time" id="cy-idx-time"></span>
+            </div>
+          </div>
+          <div class="sec-body">
+            <div class="lst" id="idx-list">
+              <div class="row" id="idx-dxy" onclick="clickIdx(4)"><div class="lbl">DXY</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="idx-gold" onclick="clickIdx(5)"><div class="lbl">Gold</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="idx-silver" onclick="clickIdx(6)"><div class="lbl">Silver</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="idx-vix" onclick="clickIdx(7)"><div class="lbl">VIX</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+            </div>
+            <div class="chart-area" id="idx-chart-area">
+              <div class="chart-hd">
+                <span class="chart-nm" id="idx-chart-nm">—</span>
+                <div class="chart-ranges">
+                  <button class="rbtn on" data-r="1D" onclick="setIdxRange('1D')">1D</button>
+                  <button class="rbtn" data-r="1W" onclick="setIdxRange('1W')">1W</button>
+                  <button class="rbtn" data-r="1M" onclick="setIdxRange('1M')">1M</button>
+                  <button class="rbtn" data-r="6M" onclick="setIdxRange('6M')">6M</button>
+                  <button class="rbtn" data-r="1Y" onclick="setIdxRange('1Y')">1Y</button>
+                  <button class="rbtn" data-r="3Y" onclick="setIdxRange('3Y')">3Y</button>
+                  <button class="rbtn" data-r="5Y" onclick="setIdxRange('5Y')">5Y</button>
+                  <button class="rbtn" data-r="10Y" onclick="setIdxRange('10Y')">10Y</button>
+                </div>
+              </div>
+              <div class="chart-note" id="idx-chart-note"></div>
+              <div class="chart-perf" id="idx-chart-perf"></div>
+              <div class="canvas-wrap"><canvas id="idx-canvas"></canvas></div>
+            </div>
+            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
+          </div>
+        </div>
+
+        <div class="sec" id="gl-fx">
+          <div class="sec-hd" onclick="toggleSec(this)">
+            <div class="sec-hd-left"><span class="sec-lbl">글로벌 | 환율 (원, 24시간) <span class="chevron">▼</span></span></div>
+            <div class="sec-hd-right">
+              <span class="badge-sync" data-market="global" id="badge-fx">상태 확인 중</span>
+              <span class="sec-time" id="cy-fx-time"></span>
+            </div>
+          </div>
+          <div class="sec-body">
+            <div class="lst" id="fx-list">
+              <div class="row" id="fx-usd" onclick="clickFx(0)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/us.png" alt=""/>USD/KRW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="fx-eur" onclick="clickFx(1)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/eu.png" alt=""/>EUR/KRW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="fx-jpy" onclick="clickFx(2)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/jp.png" alt=""/>JPY/KRW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="fx-gbp" onclick="clickFx(3)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/gb.png" alt=""/>GBP/KRW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="fx-cny" onclick="clickFx(4)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/cn.png" alt=""/>CNY/KRW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+            </div>
+            <div class="chart-area" id="fx-chart-area">
+              <div class="chart-hd">
+                <span class="chart-nm" id="fx-chart-nm">—</span>
+                <div class="chart-ranges">
+                  <button class="rbtn on" data-r="1D" onclick="setFxRange('1D')">1D</button>
+                  <button class="rbtn" data-r="1W" onclick="setFxRange('1W')">1W</button>
+                  <button class="rbtn" data-r="1M" onclick="setFxRange('1M')">1M</button>
+                  <button class="rbtn" data-r="6M" onclick="setFxRange('6M')">6M</button>
+                  <button class="rbtn" data-r="1Y" onclick="setFxRange('1Y')">1Y</button>
+                  <button class="rbtn" data-r="3Y" onclick="setFxRange('3Y')">3Y</button>
+                  <button class="rbtn" data-r="5Y" onclick="setFxRange('5Y')">5Y</button>
+                  <button class="rbtn" data-r="10Y" onclick="setFxRange('10Y')">10Y</button>
+                </div>
+              </div>
+              <div class="chart-note" id="fx-chart-note"></div>
+              <div class="chart-perf" id="fx-chart-perf"></div>
+              <div class="canvas-wrap"><canvas id="fx-canvas"></canvas></div>
+            </div>
+            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비 (24시간 글로벌 시장 기준)</div>
+          </div>
         </div>
       </div>
 
-      <div id="area-kr" class="tab-area active">
-        <div class="s-tabs">
-          <button class="s-tab active" onclick="setSubTab(event, 'kr', 'idx')">주요 지표·지수</button>
-          <button class="s-tab" onclick="setSubTab(event, 'kr', 'top')">시총 Top 10</button>
+      <div id="area-us" class="main-area">
+        <div class="visible-sub-menu">
+          <a href="#us-idx" class="v-sub-link">주요 지표·지수</a>
+          <a href="#us-top" class="v-sub-link">시총 Top 10</a>
+          <a href="#us-hm" class="v-sub-link">섹터 히트맵</a>
+          <a href="#us-fg" class="v-sub-link">공포&탐욕 지수</a>
         </div>
 
-        <div id="kr-idx" class="sub-area active">
-          <div class="sync-bar">
-            <span class="badge-sync" data-market="kr" id="badge-kr-idx">상태 확인 중</span>
-            <span class="sec-time" id="cy-kr-idx-time"></span>
-          </div>
-          <div class="lst" id="idx-kr-list">
-            <div class="row" id="idx-kospi" onclick="clickIdx(8)">
-              <div class="lbl">KOSPI</div><div class="sk sk-val"></div><div class="sk sk-chg"></div>
-            </div>
-            <div class="row" id="idx-kosdaq" onclick="clickIdx(9)">
-              <div class="lbl">KOSDAQ</div><div class="sk sk-val"></div><div class="sk sk-chg"></div>
+        <div class="sec" id="us-idx">
+          <div class="sec-hd" onclick="toggleSec(this)">
+            <div class="sec-hd-left"><span class="sec-lbl">미국 | 주요 지표·지수 <span class="chevron">▼</span></span></div>
+            <div class="sec-hd-right">
+              <span class="badge-sync" data-market="us" id="badge-us-idx">상태 확인 중</span>
+              <span class="sec-time" id="cy-us-idx-time"></span>
             </div>
           </div>
-          <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
-          
-          <div class="chart-area" id="idx-chart-area">
-            <div class="chart-hd">
-              <span class="chart-nm" id="idx-chart-nm">—</span>
-              <div class="chart-ranges">
-                <button class="rbtn on" data-r="1D" onclick="setIdxRange('1D')">1D</button>
-                <button class="rbtn" data-r="1W" onclick="setIdxRange('1W')">1W</button>
-                <button class="rbtn" data-r="1M" onclick="setIdxRange('1M')">1M</button>
-                <button class="rbtn" data-r="6M" onclick="setIdxRange('6M')">6M</button>
-                <button class="rbtn" data-r="1Y" onclick="setIdxRange('1Y')">1Y</button>
-                <button class="rbtn" data-r="3Y" onclick="setIdxRange('3Y')">3Y</button>
-                <button class="rbtn" data-r="5Y" onclick="setIdxRange('5Y')">5Y</button>
-                <button class="rbtn" data-r="10Y" onclick="setIdxRange('10Y')">10Y</button>
+          <div class="sec-body">
+            <div class="lst" id="idx-us-list">
+              <div class="row" id="idx-sp500" onclick="clickIdx(0)"><div class="lbl">S&amp;P 500</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="idx-nasdaq" onclick="clickIdx(1)"><div class="lbl">NASDAQ</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="idx-dow" onclick="clickIdx(2)"><div class="lbl">DOW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="idx-russell" onclick="clickIdx(3)"><div class="lbl">Russell 2000</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+            </div>
+            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
+          </div>
+        </div>
+
+        <div class="sec" id="us-top">
+          <div class="sec-hd" onclick="toggleSec(this)">
+            <div class="sec-hd-left"><span class="sec-lbl">미국 | 시가총액 상위 10개 <span class="chevron">▼</span></span></div>
+            <div class="sec-hd-right">
+              <span class="badge-sync" data-market="us" id="badge-us-top">상태 확인 중</span>
+              <span class="sec-time" id="cy-us-top-time"></span>
+            </div>
+          </div>
+          <div class="sec-body">
+            <div class="lst" id="us-top-list">
+              <div class="row has-mc" id="us-top-aapl" onclick="clickUsTop(0)"><div class="lbl">Apple</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="us-top-msft" onclick="clickUsTop(1)"><div class="lbl">Microsoft</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="us-top-nvda" onclick="clickUsTop(2)"><div class="lbl">NVIDIA</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="us-top-goog" onclick="clickUsTop(3)"><div class="lbl">Alphabet</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="us-top-amzn" onclick="clickUsTop(4)"><div class="lbl">Amazon</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="us-top-meta" onclick="clickUsTop(5)"><div class="lbl">Meta</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="us-top-brkb" onclick="clickUsTop(6)"><div class="lbl">Berkshire</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="us-top-lly" onclick="clickUsTop(7)"><div class="lbl">Eli Lilly</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="us-top-avgo" onclick="clickUsTop(8)"><div class="lbl">Broadcom</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="us-top-tsla" onclick="clickUsTop(9)"><div class="lbl">Tesla</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+            </div>
+            <div class="chart-area" id="us-top-chart-area">
+              <div class="chart-hd">
+                <span class="chart-nm" id="us-top-chart-nm">—</span>
+                <div class="chart-ranges">
+                  <button class="rbtn on" data-r="1D" onclick="setUsTopRange('1D')">1D</button>
+                  <button class="rbtn" data-r="1W" onclick="setUsTopRange('1W')">1W</button>
+                  <button class="rbtn" data-r="1M" onclick="setUsTopRange('1M')">1M</button>
+                  <button class="rbtn" data-r="6M" onclick="setUsTopRange('6M')">6M</button>
+                  <button class="rbtn" data-r="1Y" onclick="setUsTopRange('1Y')">1Y</button>
+                  <button class="rbtn" data-r="3Y" onclick="setUsTopRange('3Y')">3Y</button>
+                  <button class="rbtn" data-r="5Y" onclick="setUsTopRange('5Y')">5Y</button>
+                  <button class="rbtn" data-r="10Y" onclick="setUsTopRange('10Y')">10Y</button>
+                </div>
               </div>
+              <div class="chart-note" id="us-top-chart-note"></div>
+              <div class="chart-perf" id="us-top-chart-perf"></div>
+              <div class="canvas-wrap"><canvas id="us-top-canvas"></canvas></div>
             </div>
-            <div class="chart-note" id="idx-chart-note"></div>
-            <div class="chart-perf" id="idx-chart-perf"></div>
-            <div class="canvas-wrap"><canvas id="idx-canvas"></canvas></div>
+            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
           </div>
         </div>
 
-        <div id="kr-top" class="sub-area">
-          <div class="sync-bar">
-            <span class="badge-sync" data-market="kr" id="badge-kr-top">상태 확인 중</span>
-            <span class="sec-time" id="cy-kr-top-time"></span>
+        <div class="sec" id="us-hm">
+          <div class="sec-hd" onclick="toggleSec(this)">
+            <div class="sec-hd-left"><span class="sec-lbl">미국 | 섹터 별 히트맵 <span class="chevron">▼</span></span></div>
+            <div class="sec-hd-right">
+              <span class="badge-sync closed" data-market="us" id="badge-hm">🔒 잠금 상태</span>
+              <span class="sec-time" id="cy-hm-time"></span>
+            </div>
           </div>
-          <div class="lst" id="kr-top-list">
-            <div class="row has-mc" id="kr-top-005930" onclick="clickKrTop(0)"><div class="lbl">삼성전자</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="kr-top-000660" onclick="clickKrTop(1)"><div class="lbl">SK하이닉스</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="kr-top-373220" onclick="clickKrTop(2)"><div class="lbl">LG에너지솔루션</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="kr-top-207940" onclick="clickKrTop(3)"><div class="lbl">삼성바이오로직스</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="kr-top-005380" onclick="clickKrTop(4)"><div class="lbl">현대차</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="kr-top-000270" onclick="clickKrTop(5)"><div class="lbl">기아</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="kr-top-068270" onclick="clickKrTop(6)"><div class="lbl">셀트리온</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="kr-top-105560" onclick="clickKrTop(7)"><div class="lbl">KB금융</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="kr-top-005490" onclick="clickKrTop(8)"><div class="lbl">POSCO홀딩스</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="kr-top-035420" onclick="clickKrTop(9)"><div class="lbl">NAVER</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-          </div>
-          <div class="chart-area" id="kr-top-chart-area">
-            <div class="chart-hd">
-              <span class="chart-nm" id="kr-top-chart-nm">—</span>
-              <div class="chart-ranges">
-                <button class="rbtn on" data-r="1D" onclick="setKrTopRange('1D')">1D</button>
-                <button class="rbtn" data-r="1W" onclick="setKrTopRange('1W')">1W</button>
-                <button class="rbtn" data-r="1M" onclick="setKrTopRange('1M')">1M</button>
-                <button class="rbtn" data-r="6M" onclick="setKrTopRange('6M')">6M</button>
-                <button class="rbtn" data-r="1Y" onclick="setKrTopRange('1Y')">1Y</button>
-                <button class="rbtn" data-r="3Y" onclick="setKrTopRange('3Y')">3Y</button>
-                <button class="rbtn" data-r="5Y" onclick="setKrTopRange('5Y')">5Y</button>
-                <button class="rbtn" data-r="10Y" onclick="setKrTopRange('10Y')">10Y</button>
+          <div class="sec-body">
+            <div class="hm-container">
+              <div id="hm-overlay" class="hm-overlay">
+                <div class="hm-lock-icon">🔒</div>
+                <div class="hm-lock-text">미국 섹터별 히트맵</div>
+                <button class="hm-unlock-btn" onclick="unlockHeatmap(event)"><span>AD</span> 광고 시청하고 잠금 해제</button>
               </div>
+              <div id="hm-wrap"><div class="hm-ld" id="hm-st" style="padding: 96px 0">데이터 불러오는 중...</div></div>
             </div>
-            <div class="chart-note" id="kr-top-chart-note"></div>
-            <div class="chart-perf" id="kr-top-chart-perf"></div>
-            <div class="canvas-wrap"><canvas id="kr-top-canvas"></canvas></div>
-          </div>
-          <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
-        </div>
-      </div>
-
-      <div id="area-us" class="tab-area">
-        <div class="s-tabs">
-          <button class="s-tab active" onclick="setSubTab(event, 'us', 'idx')">주요 지표·지수</button>
-          <button class="s-tab" onclick="setSubTab(event, 'us', 'top')">시총 Top 10</button>
-          <button class="s-tab" onclick="setSubTab(event, 'us', 'hm')">섹터 히트맵</button>
-          <button class="s-tab" onclick="setSubTab(event, 'us', 'fg')">공포&탐욕 지수</button>
-        </div>
-
-        <div id="us-idx" class="sub-area active">
-          <div class="sync-bar">
-            <span class="badge-sync" data-market="us" id="badge-us-idx">상태 확인 중</span>
-            <span class="sec-time" id="cy-us-idx-time"></span>
-          </div>
-          <div class="lst" id="idx-us-list">
-            <div class="row" id="idx-sp500" onclick="clickIdx(0)"><div class="lbl">S&amp;P 500</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row" id="idx-nasdaq" onclick="clickIdx(1)"><div class="lbl">NASDAQ</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row" id="idx-dow" onclick="clickIdx(2)"><div class="lbl">DOW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row" id="idx-russell" onclick="clickIdx(3)"><div class="lbl">Russell 2000</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-          </div>
-          <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
-        </div>
-
-        <div id="us-top" class="sub-area">
-          <div class="sync-bar">
-            <span class="badge-sync" data-market="us" id="badge-us-top">상태 확인 중</span>
-            <span class="sec-time" id="cy-us-top-time"></span>
-          </div>
-          <div class="lst" id="us-top-list">
-            <div class="row has-mc" id="us-top-aapl" onclick="clickUsTop(0)"><div class="lbl">Apple</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="us-top-msft" onclick="clickUsTop(1)"><div class="lbl">Microsoft</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="us-top-nvda" onclick="clickUsTop(2)"><div class="lbl">NVIDIA</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="us-top-goog" onclick="clickUsTop(3)"><div class="lbl">Alphabet</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="us-top-amzn" onclick="clickUsTop(4)"><div class="lbl">Amazon</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="us-top-meta" onclick="clickUsTop(5)"><div class="lbl">Meta</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="us-top-brkb" onclick="clickUsTop(6)"><div class="lbl">Berkshire</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="us-top-lly" onclick="clickUsTop(7)"><div class="lbl">Eli Lilly</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="us-top-avgo" onclick="clickUsTop(8)"><div class="lbl">Broadcom</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row has-mc" id="us-top-tsla" onclick="clickUsTop(9)"><div class="lbl">Tesla</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-          </div>
-          <div class="chart-area" id="us-top-chart-area">
-            <div class="chart-hd">
-              <span class="chart-nm" id="us-top-chart-nm">—</span>
-              <div class="chart-ranges">
-                <button class="rbtn on" data-r="1D" onclick="setUsTopRange('1D')">1D</button>
-                <button class="rbtn" data-r="1W" onclick="setUsTopRange('1W')">1W</button>
-                <button class="rbtn" data-r="1M" onclick="setUsTopRange('1M')">1M</button>
-                <button class="rbtn" data-r="6M" onclick="setUsTopRange('6M')">6M</button>
-                <button class="rbtn" data-r="1Y" onclick="setUsTopRange('1Y')">1Y</button>
-                <button class="rbtn" data-r="3Y" onclick="setUsTopRange('3Y')">3Y</button>
-                <button class="rbtn" data-r="5Y" onclick="setUsTopRange('5Y')">5Y</button>
-                <button class="rbtn" data-r="10Y" onclick="setUsTopRange('10Y')">10Y</button>
-              </div>
+            <div class="hm-legend">
+              <span class="hm-lt">-5%</span><div class="hm-bar"></div><span class="hm-lt">+5%</span>
             </div>
-            <div class="chart-note" id="us-top-chart-note"></div>
-            <div class="chart-perf" id="us-top-chart-perf"></div>
-            <div class="canvas-wrap"><canvas id="us-top-canvas"></canvas></div>
           </div>
-          <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
         </div>
 
-        <div id="us-hm" class="sub-area">
-          <div class="sync-bar">
-            <span class="badge-sync" data-market="us" id="badge-hm">🔒 잠금 상태</span>
-            <span class="sec-time" id="cy-hm-time"></span>
-          </div>
-          <div class="hm-container">
-            <div id="hm-overlay" class="hm-overlay">
-              <div class="hm-lock-icon">🔒</div>
-              <div class="hm-lock-text">미국 섹터별 히트맵</div>
-              <button class="hm-unlock-btn" onclick="unlockHeatmap(event)"><span>AD</span> 광고 시청하고 잠금 해제</button>
+        <div class="sec" id="us-fg">
+          <div class="sec-hd" onclick="toggleSec(this)">
+            <div class="sec-hd-left"><span class="sec-lbl">미국 | 공포 &amp; 탐욕 지수 <span class="chevron">▼</span></span></div>
+            <div class="sec-hd-right">
+              <span class="badge-sync" data-market="us" id="badge-fg">상태 확인 중</span>
+              <span class="sec-time" id="cy-fg-time"></span>
             </div>
-            <div id="hm-wrap"><div class="hm-ld" id="hm-st" style="padding: 96px 0">데이터 불러오는 중...</div></div>
           </div>
-          <div class="hm-legend">
-            <span class="hm-lt">-5%</span><div class="hm-bar"></div><span class="hm-lt">+5%</span>
-          </div>
-        </div>
-
-        <div id="us-fg" class="sub-area">
-          <div class="sync-bar">
-            <span class="badge-sync" data-market="us" id="badge-fg">상태 확인 중</span>
-            <span class="sec-time" id="cy-fg-time"></span>
-          </div>
-          <div id="fg-body">
+          <div class="sec-body" id="fg-body">
             <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 12px 0;">
               <div class="sk" style="width: 100%; max-width: 280px; height: 88px; border-radius: 6px;"></div>
               <div class="sk" style="width: 60px; height: 40px; border-radius: 4px;"></div>
@@ -235,57 +253,70 @@
         </div>
       </div>
 
-      <div id="area-gl" class="tab-area">
-        <div class="s-tabs">
-          <button class="s-tab active" onclick="setSubTab(event, 'gl', 'idx')">주요 지표·지수</button>
-          <button class="s-tab" onclick="setSubTab(event, 'gl', 'fx')">환율 (원, 24시간)</button>
+      <div id="area-kr" class="main-area">
+        <div class="visible-sub-menu">
+          <a href="#kr-idx" class="v-sub-link">주요 지표·지수</a>
+          <a href="#kr-top" class="v-sub-link">시총 Top 10</a>
         </div>
 
-        <div id="gl-idx" class="sub-area active">
-          <div class="sync-bar">
-            <span class="badge-sync" data-market="global" id="badge-idx">상태 확인 중</span>
-            <span class="sec-time" id="cy-idx-time"></span>
-          </div>
-          <div class="lst" id="idx-list">
-            <div class="row" id="idx-dxy" onclick="clickIdx(4)"><div class="lbl">DXY</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row" id="idx-gold" onclick="clickIdx(5)"><div class="lbl">Gold</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row" id="idx-silver" onclick="clickIdx(6)"><div class="lbl">Silver</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row" id="idx-vix" onclick="clickIdx(7)"><div class="lbl">VIX</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-          </div>
-          <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
-        </div>
-
-        <div id="gl-fx" class="sub-area">
-          <div class="sync-bar">
-            <span class="badge-sync" data-market="global" id="badge-fx">상태 확인 중</span>
-            <span class="sec-time" id="cy-fx-time"></span>
-          </div>
-          <div class="lst" id="fx-list">
-            <div class="row" id="fx-usd" onclick="clickFx(0)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/us.png" alt=""/>USD/KRW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row" id="fx-eur" onclick="clickFx(1)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/eu.png" alt=""/>EUR/KRW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row" id="fx-jpy" onclick="clickFx(2)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/jp.png" alt=""/>JPY/KRW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row" id="fx-gbp" onclick="clickFx(3)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/gb.png" alt=""/>GBP/KRW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-            <div class="row" id="fx-cny" onclick="clickFx(4)"><div class="lbl"><img class="flag" src="https://flagcdn.com/w40/cn.png" alt=""/>CNY/KRW</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
-          </div>
-          <div class="chart-area" id="fx-chart-area">
-            <div class="chart-hd">
-              <span class="chart-nm" id="fx-chart-nm">—</span>
-              <div class="chart-ranges">
-                <button class="rbtn on" data-r="1D" onclick="setFxRange('1D')">1D</button>
-                <button class="rbtn" data-r="1W" onclick="setFxRange('1W')">1W</button>
-                <button class="rbtn" data-r="1M" onclick="setFxRange('1M')">1M</button>
-                <button class="rbtn" data-r="6M" onclick="setFxRange('6M')">6M</button>
-                <button class="rbtn" data-r="1Y" onclick="setFxRange('1Y')">1Y</button>
-                <button class="rbtn" data-r="3Y" onclick="setFxRange('3Y')">3Y</button>
-                <button class="rbtn" data-r="5Y" onclick="setFxRange('5Y')">5Y</button>
-                <button class="rbtn" data-r="10Y" onclick="setFxRange('10Y')">10Y</button>
-              </div>
+        <div class="sec" id="kr-idx">
+          <div class="sec-hd" onclick="toggleSec(this)">
+            <div class="sec-hd-left"><span class="sec-lbl">한국 | 주요 지표·지수 <span class="chevron">▼</span></span></div>
+            <div class="sec-hd-right">
+              <span class="badge-sync" data-market="kr" id="badge-kr-idx">상태 확인 중</span>
+              <span class="sec-time" id="cy-kr-idx-time"></span>
             </div>
-            <div class="chart-note" id="fx-chart-note"></div>
-            <div class="chart-perf" id="fx-chart-perf"></div>
-            <div class="canvas-wrap"><canvas id="fx-canvas"></canvas></div>
           </div>
-          <div class="fn">클릭하면 차트 보기 · 전일 종가 대비 (24시간 글로벌 시장 기준)</div>
+          <div class="sec-body">
+            <div class="lst" id="idx-kr-list">
+              <div class="row" id="idx-kospi" onclick="clickIdx(8)"><div class="lbl">KOSPI</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row" id="idx-kosdaq" onclick="clickIdx(9)"><div class="lbl">KOSDAQ</div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+            </div>
+            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
+          </div>
+        </div>
+
+        <div class="sec" id="kr-top">
+          <div class="sec-hd" onclick="toggleSec(this)">
+            <div class="sec-hd-left"><span class="sec-lbl">한국 | 시가총액 상위 10개 <span class="chevron">▼</span></span></div>
+            <div class="sec-hd-right">
+              <span class="badge-sync" data-market="kr" id="badge-kr-top">상태 확인 중</span>
+              <span class="sec-time" id="cy-kr-top-time"></span>
+            </div>
+          </div>
+          <div class="sec-body">
+            <div class="lst" id="kr-top-list">
+              <div class="row has-mc" id="kr-top-005930" onclick="clickKrTop(0)"><div class="lbl">삼성전자</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="kr-top-000660" onclick="clickKrTop(1)"><div class="lbl">SK하이닉스</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="kr-top-373220" onclick="clickKrTop(2)"><div class="lbl">LG에너지솔루션</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="kr-top-207940" onclick="clickKrTop(3)"><div class="lbl">삼성바이오로직스</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="kr-top-005380" onclick="clickKrTop(4)"><div class="lbl">현대차</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="kr-top-000270" onclick="clickKrTop(5)"><div class="lbl">기아</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="kr-top-068270" onclick="clickKrTop(6)"><div class="lbl">셀트리온</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="kr-top-105560" onclick="clickKrTop(7)"><div class="lbl">KB금융</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="kr-top-005490" onclick="clickKrTop(8)"><div class="lbl">POSCO홀딩스</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+              <div class="row has-mc" id="kr-top-035420" onclick="clickKrTop(9)"><div class="lbl">NAVER</div><div class="mc"></div><div class="sk sk-val"></div><div class="sk sk-chg"></div></div>
+            </div>
+            <div class="chart-area" id="kr-top-chart-area">
+              <div class="chart-hd">
+                <span class="chart-nm" id="kr-top-chart-nm">—</span>
+                <div class="chart-ranges">
+                  <button class="rbtn on" data-r="1D" onclick="setKrTopRange('1D')">1D</button>
+                  <button class="rbtn" data-r="1W" onclick="setKrTopRange('1W')">1W</button>
+                  <button class="rbtn" data-r="1M" onclick="setKrTopRange('1M')">1M</button>
+                  <button class="rbtn" data-r="6M" onclick="setKrTopRange('6M')">6M</button>
+                  <button class="rbtn" data-r="1Y" onclick="setKrTopRange('1Y')">1Y</button>
+                  <button class="rbtn" data-r="3Y" onclick="setKrTopRange('3Y')">3Y</button>
+                  <button class="rbtn" data-r="5Y" onclick="setKrTopRange('5Y')">5Y</button>
+                  <button class="rbtn" data-r="10Y" onclick="setKrTopRange('10Y')">10Y</button>
+                </div>
+              </div>
+              <div class="chart-note" id="kr-top-chart-note"></div>
+              <div class="chart-perf" id="kr-top-chart-perf"></div>
+              <div class="canvas-wrap"><canvas id="kr-top-canvas"></canvas></div>
+            </div>
+            <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
+          </div>
         </div>
       </div>
 
