@@ -93,7 +93,7 @@ window.showCryptoMsg = function(e) {
   }, 2000);
 };
 
-// 💡 텍스트 설명란 대신 클릭 가능한 "i" 아이콘 렌더링
+// 💡 종목명(절대 안 짤림) + 설명란(우측 스크롤) 구조 렌더링
 function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, offset = 0) {
   const container = $(containerId);
   if(!container) return;
@@ -108,12 +108,12 @@ function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, of
     let flagHtml = item.flag ? `<img class="flag" src="${item.flag}" alt=""/>` : '';
     let mcHtml = hasMc ? `<div class="mc"></div>` : '';
     
-    // 💡 모바일 환경을 고려하여 툴팁 대신 명확한 alert 알림 창 연결
-    let descHtml = item.desc ? `<span class="info-icon" onclick="alert('${item.desc}'); event.stopPropagation();">i</span>` : '';
+    let descHtml = item.desc ? `<div class="lbl-desc-scroll"><span class="lbl-desc">${item.desc}</span></div>` : '';
     
     row.innerHTML = `
       <div class="lbl">
-        <div class="lbl-nm">${flagHtml}${item.nm}${descHtml}</div>
+        <div class="lbl-nm">${flagHtml}${item.nm}</div>
+        ${descHtml}
       </div>
       ${mcHtml}
       <div class="sk sk-val"></div>
@@ -484,6 +484,7 @@ function doChart(s, range, type) {
     .catch(() => wrap.innerHTML = `<div class="chart-er">데이터를 불러올 수 없습니다<br><button onclick="doChart(window.active${type.replace('-','')}Sym, '${range}', '${type}')" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-weight:600;">↻ 다시 시도</button></div>`);
 }
 
+// 💡 차트 X축 가독성 100% 최적화 & 1D 점 제거 로직
 function drawChart(s, range, j, wrap, type) {
   const res = j.chart && j.chart.result && j.chart.result[0];
   if (!res) return wrap.innerHTML = '<div class="chart-er">데이터 없음</div>';
@@ -513,41 +514,36 @@ function drawChart(s, range, j, wrap, type) {
 
   const pRadii = [], tickLabels = [], hitCols = [];
   
-  let boundaries = [];
-  for (let k = 0; k < labels.length; k++) {
-    const d = labels[k];
-    const hr = d.getHours(), mo = d.getMonth(), dy = d.getDate(), yr = d.getFullYear();
-    const prevD = k > 0 ? labels[k - 1] : null;
-    let isBoundary = false, txt = "";
-
-    if (range === "1D") {
-      if (!prevD || prevD.getHours() !== hr) { isBoundary = true; txt = hr + "시"; } 
-    } else if (range === "1W") {
-      if (!prevD || prevD.getDate() !== dy) { isBoundary = true; txt = (mo + 1) + "/" + dy; }
-    } else if (range === "1M") {
-      if (!prevD || (d.getDay() === 1 && prevD.getDay() !== 1) || (d.getTime() - prevD.getTime() > 4*86400000)) { 
-        isBoundary = true; txt = (mo + 1) + "/" + dy; 
+  // 💡 라벨 오버랩 완전 방지: 어떤 기간이든 5~6개 지점에만 텍스트를 고르게 강제 할당
+  const numTicks = 6;
+  const tickIndices = [];
+  if (labels.length > numTicks) {
+      for(let i=0; i<numTicks; i++) {
+          tickIndices.push(Math.floor(i * (labels.length - 1) / (numTicks - 1)));
       }
-    } else if (range === "6M" || range === "1Y") {
-       const period = range === "6M" ? 1 : 2;
-       if (!prevD || Math.floor(mo / period) !== Math.floor(prevD.getMonth() / period)) { 
-           isBoundary = true; txt = (mo + 1) + "월"; 
-       }
-    } else {
-        if (!prevD || prevD.getFullYear() !== yr) { isBoundary = true; txt = yr + "년"; }
-    }
-    if(isBoundary) boundaries.push({k, txt});
-  }
-  
-  let step = Math.max(1, Math.ceil(boundaries.length / 6));
-  let markSet = {};
-  for(let i=0; i<boundaries.length; i+=step) {
-      markSet[boundaries[i].k] = boundaries[i].txt;
+  } else {
+      for(let i=0; i<labels.length; i++) tickIndices.push(i);
   }
 
   for (let k = 0; k < labels.length; k++) {
-     let txt = markSet[k] || "";
-     pRadii.push((txt && range !== "1D") ? 3.5 : 0);
+     let mark = tickIndices.includes(k);
+     let txt = "";
+
+     if (mark) {
+         const d = labels[k];
+         const hr = d.getHours(), mo = d.getMonth(), dy = d.getDate(), yr = d.getFullYear();
+         if (range === "1D") {
+             txt = hr + "시";
+         } else if (range === "1W" || range === "1M") {
+             txt = (mo + 1) + "/" + dy;
+         } else if (range === "6M" || range === "1Y") {
+             txt = (mo + 1) + "월";
+         } else {
+             txt = yr + "년";
+         }
+     }
+
+     pRadii.push((mark && range !== "1D") ? 3.5 : 0);
      tickLabels.push(txt);
      hitCols.push(col);
   }
@@ -696,27 +692,27 @@ function renderFGErr() { $("fg-body").innerHTML = '<div class="fg-er"><div class
 
 // === 💡 동적 히트맵 렌더링 로직 ===
 let HM_US = [
-  { name: "Technology", cap: 16000, stocks: [{ s: "AAPL", cap: 3000 }, { s: "MSFT", cap: 3000 }, { s: "NVDA", cap: 2800 }, { s: "AVGO", cap: 600 }, { s: "ORCL", cap: 350 }, { s: "ADBE", cap: 250 }, { s: "CRM", cap: 280 }, { s: "AMD", cap: 260 }, { s: "QCOM", cap: 180 }, { s: "TXN", cap: 160 }, { s: "INTC", cap: 130 }, { s: "IBM", cap: 160 }, { s: "NOW", cap: 150 }, { s: "INTU", cap: 170 }, { s: "AMAT", cap: 160 }, { s: "MU", cap: 130 }, { s: "PANW", cap: 100 }] },
-  { name: "Communication", cap: 7000, stocks: [{ s: "GOOGL", cap: 2000 }, { s: "META", cap: 1200 }, { s: "NFLX", cap: 250 }, { s: "TMUS", cap: 190 }, { s: "DIS", cap: 200 }, { s: "VZ", cap: 160 }, { s: "T", cap: 120 }, { s: "EA", cap: 40 }, { s: "CMCSA", cap: 170 }, { s: "WBD", cap: 30 }, { s: "SIRI", cap: 20 }, { s: "FOXA", cap: 20 }, { s: "CHTR", cap: 50 }, { s: "LYV", cap: 25 }, { s: "TTWO", cap: 25 }] },
-  { name: "Cons. Cyclical", cap: 6500, stocks: [{ s: "AMZN", cap: 1900 }, { s: "TSLA", cap: 600 }, { s: "HD", cap: 350 }, { s: "MCD", cap: 200 }, { s: "LOW", cap: 150 }, { s: "NKE", cap: 120 }, { s: "SBUX", cap: 100 }, { s: "TJX", cap: 110 }, { s: "GM", cap: 50 }, { s: "F", cap: 45 }, { s: "BKNG", cap: 120 }, { s: "MAR", cap: 70 }, { s: "CMG", cap: 75 }, { s: "ORLY", cap: 60 }, { s: "AZO", cap: 50 }] },
-  { name: "Healthcare", cap: 6000, stocks: [{ s: "LLY", cap: 700 }, { s: "UNH", cap: 450 }, { s: "JNJ", cap: 350 }, { s: "ABBV", cap: 300 }, { s: "MRK", cap: 280 }, { s: "ABT", cap: 190 }, { s: "PFE", cap: 150 }, { s: "AMGN", cap: 140 }, { s: "GILD", cap: 90 }, { s: "CVS", cap: 70 }, { s: "ISRG", cap: 130 }, { s: "SYK", cap: 120 }, { s: "VRTX", cap: 100 }, { s: "REGN", cap: 100 }, { s: "BSX", cap: 90 }] },
-  { name: "Financial", cap: 5500, stocks: [{ s: "BRK-B", cap: 850 }, { s: "JPM", cap: 550 }, { s: "V", cap: 500 }, { s: "MA", cap: 400 }, { s: "BAC", cap: 300 }, { s: "WFC", cap: 220 }, { s: "MS", cap: 160 }, { s: "GS", cap: 150 }, { s: "C", cap: 120 }, { s: "AXP", cap: 160 }, { s: "SPGI", cap: 130 }, { s: "BLK", cap: 110 }, { s: "SCHW", cap: 120 }, { s: "PGR", cap: 110 }, { s: "CB", cap: 100 }] },
-  { name: "Cons. Defensive", cap: 4000, stocks: [{ s: "WMT", cap: 500 }, { s: "PG", cap: 350 }, { s: "COST", cap: 300 }, { s: "KO", cap: 250 }, { s: "PEP", cap: 220 }, { s: "PM", cap: 150 }, { s: "MO", cap: 80 }, { s: "CL", cap: 70 }, { s: "KR", cap: 40 }, { s: "SYY", cap: 40 }, { s: "KMB", cap: 40 }, { s: "EL", cap: 50 }, { s: "GIS", cap: 40 }, { s: "TGT", cap: 70 }, { s: "HSY", cap: 40 }] },
-  { name: "Industrials", cap: 3800, stocks: [{ s: "GE", cap: 180 }, { s: "CAT", cap: 170 }, { s: "RTX", cap: 140 }, { s: "HON", cap: 120 }, { s: "BA", cap: 100 }, { s: "UNP", cap: 140 }, { s: "LMT", cap: 110 }, { s: "DE", cap: 110 }, { s: "FDX", cap: 65 }, { s: "UPS", cap: 120 }, { s: "EMR", cap: 60 }, { s: "ETN", cap: 110 }, { s: "CMI", cap: 40 }, { s: "PH", cap: 70 }, { s: "PCAR", cap: 60 }] },
-  { name: "Energy", cap: 2800, stocks: [{ s: "XOM", cap: 450 }, { s: "CVX", cap: 280 }, { s: "COP", cap: 130 }, { s: "SLB", cap: 70 }, { s: "EOG", cap: 70 }, { s: "PSX", cap: 60 }, { s: "VLO", cap: 50 }, { s: "OXY", cap: 55 }, { s: "MPC", cap: 70 }, { s: "HAL", cap: 30 }, { s: "BKR", cap: 30 }, { s: "WMB", cap: 45 }, { s: "HES", cap: 40 }, { s: "KMI", cap: 40 }, { s: "TRGP", cap: 45 }] },
-  { name: "Utilities", cap: 1800, stocks: [{ s: "NEE", cap: 120 }, { s: "DUK", cap: 75 }, { s: "SO", cap: 75 }, { s: "SRE", cap: 45 }, { s: "AEP", cap: 45 }, { s: "ED", cap: 30 }, { s: "D", cap: 40 }, { s: "PEG", cap: 30 }, { s: "EXC", cap: 35 }, { s: "XEL", cap: 30 }, { s: "WEC", cap: 25 }, { s: "ES", cap: 20 }] },
-  { name: "Real Estate", cap: 1500, stocks: [{ s: "PLD", cap: 120 }, { s: "AMT", cap: 90 }, { s: "EQIX", cap: 80 }, { s: "WELL", cap: 50 }, { s: "PSA", cap: 45 }, { s: "SPG", cap: 50 }, { s: "O", cap: 45 }, { s: "DLR", cap: 45 }, { s: "CSGP", cap: 35 }, { s: "CCI", cap: 40 }] },
-  { name: "Basic Materials", cap: 1500, stocks: [{ s: "LIN", cap: 200 }, { s: "SHW", cap: 80 }, { s: "FCX", cap: 70 }, { s: "APD", cap: 60 }, { s: "ECL", cap: 65 }, { s: "NEM", cap: 45 }, { s: "CTVA", cap: 40 }, { s: "NUE", cap: 45 }, { s: "DOW", cap: 40 }, { s: "DD", cap: 35 }] }
+  { name: "Technology", cap: 16000, stocks: [{ s: "AAPL", n: "Apple", cap: 3000 }, { s: "MSFT", n: "Microsoft", cap: 3000 }, { s: "NVDA", n: "NVIDIA", cap: 2800 }, { s: "AVGO", n: "Broadcom", cap: 600 }, { s: "ORCL", n: "Oracle", cap: 350 }, { s: "ADBE", n: "Adobe", cap: 250 }, { s: "CRM", n: "Salesforce", cap: 280 }, { s: "AMD", n: "AMD", cap: 260 }, { s: "QCOM", n: "Qualcomm", cap: 180 }, { s: "TXN", n: "Texas Instr", cap: 160 }, { s: "INTC", n: "Intel", cap: 130 }, { s: "IBM", n: "IBM", cap: 160 }, { s: "NOW", n: "ServiceNow", cap: 150 }, { s: "INTU", n: "Intuit", cap: 170 }, { s: "AMAT", n: "Applied Mat", cap: 160 }, { s: "MU", n: "Micron", cap: 130 }, { s: "PANW", n: "Palo Alto", cap: 100 }] },
+  { name: "Communication", cap: 7000, stocks: [{ s: "GOOGL", n: "Alphabet", cap: 2000 }, { s: "META", n: "Meta", cap: 1200 }, { s: "NFLX", n: "Netflix", cap: 250 }, { s: "TMUS", n: "T-Mobile", cap: 190 }, { s: "DIS", n: "Disney", cap: 200 }, { s: "VZ", n: "Verizon", cap: 160 }, { s: "T", n: "AT&T", cap: 120 }, { s: "EA", n: "EA", cap: 40 }, { s: "CMCSA", n: "Comcast", cap: 170 }, { s: "WBD", n: "WBD", cap: 30 }, { s: "SIRI", n: "Sirius", cap: 20 }, { s: "FOXA", n: "Fox", cap: 20 }, { s: "CHTR", n: "Charter", cap: 50 }, { s: "LYV", n: "Live Nation", cap: 25 }, { s: "TTWO", n: "Take-Two", cap: 25 }] },
+  { name: "Cons. Cyclical", cap: 6500, stocks: [{ s: "AMZN", n: "Amazon", cap: 1900 }, { s: "TSLA", n: "Tesla", cap: 600 }, { s: "HD", n: "Home Depot", cap: 350 }, { s: "MCD", n: "McDonald's", cap: 200 }, { s: "LOW", n: "Lowe's", cap: 150 }, { s: "NKE", n: "Nike", cap: 120 }, { s: "SBUX", n: "Starbucks", cap: 100 }, { s: "TJX", n: "TJX", cap: 110 }, { s: "GM", n: "GM", cap: 50 }, { s: "F", n: "Ford", cap: 45 }, { s: "BKNG", n: "Booking", cap: 120 }, { s: "MAR", n: "Marriott", cap: 70 }, { s: "CMG", n: "Chipotle", cap: 75 }, { s: "ORLY", n: "O'Reilly", cap: 60 }, { s: "AZO", n: "AutoZone", cap: 50 }] },
+  { name: "Healthcare", cap: 6000, stocks: [{ s: "LLY", n: "Eli Lilly", cap: 700 }, { s: "UNH", n: "UnitedHealth", cap: 450 }, { s: "JNJ", n: "J&J", cap: 350 }, { s: "ABBV", n: "AbbVie", cap: 300 }, { s: "MRK", n: "Merck", cap: 280 }, { s: "ABT", n: "Abbott", cap: 190 }, { s: "PFE", n: "Pfizer", cap: 150 }, { s: "AMGN", n: "Amgen", cap: 140 }, { s: "GILD", n: "Gilead", cap: 90 }, { s: "CVS", n: "CVS", cap: 70 }, { s: "ISRG", n: "Intuitive", cap: 130 }, { s: "SYK", n: "Stryker", cap: 120 }, { s: "VRTX", n: "Vertex", cap: 100 }, { s: "REGN", n: "Regeneron", cap: 100 }, { s: "BSX", n: "Boston Sci", cap: 90 }] },
+  { name: "Financial", cap: 5500, stocks: [{ s: "BRK-B", n: "Berkshire", cap: 850 }, { s: "JPM", n: "JPMorgan", cap: 550 }, { s: "V", n: "Visa", cap: 500 }, { s: "MA", n: "Mastercard", cap: 400 }, { s: "BAC", n: "Bank of Am", cap: 300 }, { s: "WFC", n: "Wells Fargo", cap: 220 }, { s: "MS", n: "Morgan Stan", cap: 160 }, { s: "GS", n: "Goldman", cap: 150 }, { s: "C", n: "Citigroup", cap: 120 }, { s: "AXP", n: "Amex", cap: 160 }, { s: "SPGI", n: "S&P Global", cap: 130 }, { s: "BLK", n: "BlackRock", cap: 110 }, { s: "SCHW", n: "Schwab", cap: 120 }, { s: "PGR", n: "Progressive", cap: 110 }, { s: "CB", n: "Chubb", cap: 100 }] },
+  { name: "Cons. Defensive", cap: 4000, stocks: [{ s: "WMT", n: "Walmart", cap: 500 }, { s: "PG", n: "P&G", cap: 350 }, { s: "COST", n: "Costco", cap: 300 }, { s: "KO", n: "Coca-Cola", cap: 250 }, { s: "PEP", n: "PepsiCo", cap: 220 }, { s: "PM", n: "Philip Morris", cap: 150 }, { s: "MO", n: "Altria", cap: 80 }, { s: "CL", n: "Colgate", cap: 70 }, { s: "KR", n: "Kroger", cap: 40 }, { s: "SYY", n: "Sysco", cap: 40 }, { s: "KMB", n: "Kimberly", cap: 40 }, { s: "EL", n: "Estee Lauder", cap: 50 }, { s: "GIS", n: "General Mills", cap: 40 }, { s: "TGT", n: "Target", cap: 70 }, { s: "HSY", n: "Hershey", cap: 40 }] },
+  { name: "Industrials", cap: 3800, stocks: [{ s: "GE", n: "GE", cap: 180 }, { s: "CAT", n: "Caterpillar", cap: 170 }, { s: "RTX", n: "RTX", cap: 140 }, { s: "HON", n: "Honeywell", cap: 120 }, { s: "BA", n: "Boeing", cap: 100 }, { s: "UNP", n: "Union Pac", cap: 140 }, { s: "LMT", n: "Lockheed", cap: 110 }, { s: "DE", n: "Deere", cap: 110 }, { s: "FDX", n: "FedEx", cap: 65 }, { s: "UPS", n: "UPS", cap: 120 }, { s: "EMR", n: "Emerson", cap: 60 }, { s: "ETN", n: "Eaton", cap: 110 }, { s: "CMI", n: "Cummins", cap: 40 }, { s: "PH", n: "Parker-Han", cap: 70 }, { s: "PCAR", n: "PACCAR", cap: 60 }] },
+  { name: "Energy", cap: 2800, stocks: [{ s: "XOM", n: "ExxonMobil", cap: 450 }, { s: "CVX", n: "Chevron", cap: 280 }, { s: "COP", n: "Conoco", cap: 130 }, { s: "SLB", n: "Schlumberger", cap: 70 }, { s: "EOG", n: "EOG Res", cap: 70 }, { s: "PSX", n: "Phillips 66", cap: 60 }, { s: "VLO", n: "Valero", cap: 50 }, { s: "OXY", n: "Occidental", cap: 55 }, { s: "MPC", n: "Marathon", cap: 70 }, { s: "HAL", n: "Halliburton", cap: 30 }, { s: "BKR", n: "Baker Hughes", cap: 30 }, { s: "WMB", n: "Williams", cap: 45 }, { s: "HES", n: "Hess", cap: 40 }, { s: "KMI", n: "Kinder", cap: 40 }, { s: "TRGP", n: "Targa", cap: 45 }] },
+  { name: "Utilities", cap: 1800, stocks: [{ s: "NEE", n: "NextEra", cap: 120 }, { s: "DUK", n: "Duke Energy", cap: 75 }, { s: "SO", n: "Southern", cap: 75 }, { s: "SRE", n: "Sempra", cap: 45 }, { s: "AEP", n: "Amer Elec", cap: 45 }, { s: "ED", n: "ConEd", cap: 30 }, { s: "D", n: "Dominion", cap: 40 }, { s: "PEG", n: "Pub Serv", cap: 30 }, { s: "EXC", n: "Exelon", cap: 35 }, { s: "XEL", n: "Xcel", cap: 30 }, { s: "WEC", n: "WEC Energy", cap: 25 }, { s: "ES", n: "Eversource", cap: 20 }] },
+  { name: "Real Estate", cap: 1500, stocks: [{ s: "PLD", n: "Prologis", cap: 120 }, { s: "AMT", n: "Am Tower", cap: 90 }, { s: "EQIX", n: "Equinix", cap: 80 }, { s: "WELL", n: "Welltower", cap: 50 }, { s: "PSA", n: "Public Stor", cap: 45 }, { s: "SPG", n: "Simon Prop", cap: 50 }, { s: "O", n: "Realty Inc", cap: 45 }, { s: "DLR", n: "Digital Rlty", cap: 45 }, { s: "CSGP", n: "CoStar", cap: 35 }, { s: "CCI", n: "Crown Castle", cap: 40 }] },
+  { name: "Basic Materials", cap: 1500, stocks: [{ s: "LIN", n: "Linde", cap: 200 }, { s: "SHW", n: "Sherwin", cap: 80 }, { s: "FCX", n: "Freeport", cap: 70 }, { s: "APD", n: "Air Prod", cap: 60 }, { s: "ECL", n: "Ecolab", cap: 65 }, { s: "NEM", n: "Newmont", cap: 45 }, { s: "CTVA", n: "Corteva", cap: 40 }, { s: "NUE", n: "Nucor", cap: 45 }, { s: "DOW", n: "Dow Inc", cap: 40 }, { s: "DD", n: "DuPont", cap: 35 }] }
 ];
 
 let HM_KR = [
-  { name: "IT/반도체", cap: 700, stocks: [{ s: "005930.KS", cap: 450 }, { s: "000660.KS", cap: 150 }, { s: "042700.KS", cap: 15 }] },
-  { name: "2차전지/화학", cap: 300, stocks: [{ s: "373220.KS", cap: 100 }, { s: "005490.KS", cap: 40 }, { s: "006400.KS", cap: 30 }, { s: "051910.KS", cap: 30 }, { s: "086520.KQ", cap: 20 }] },
-  { name: "바이오/의약", cap: 200, stocks: [{ s: "207940.KS", cap: 60 }, { s: "068270.KS", cap: 40 }, { s: "000100.KS", cap: 15 }] },
-  { name: "자동차", cap: 150, stocks: [{ s: "005380.KS", cap: 60 }, { s: "000270.KS", cap: 50 }, { s: "018260.KS", cap: 20 }] },
-  { name: "금융", cap: 150, stocks: [{ s: "105560.KS", cap: 30 }, { s: "055550.KS", cap: 25 }, { s: "086790.KS", cap: 20 }, { s: "138040.KS", cap: 15 }] },
-  { name: "인터넷/서비스", cap: 100, stocks: [{ s: "035420.KS", cap: 35 }, { s: "035720.KS", cap: 25 }] },
-  { name: "산업재", cap: 100, stocks: [{ s: "267260.KS", cap: 15 }, { s: "241560.KS", cap: 15 }, { s: "034020.KS", cap: 15 }] }
+  { name: "IT/반도체", cap: 700, stocks: [{ s: "005930.KS", n: "삼성전자", cap: 450 }, { s: "000660.KS", n: "SK하이닉스", cap: 150 }, { s: "042700.KS", n: "한미반도체", cap: 15 }] },
+  { name: "2차전지/화학", cap: 300, stocks: [{ s: "373220.KS", n: "LG엔솔", cap: 100 }, { s: "005490.KS", n: "POSCO홀딩스", cap: 40 }, { s: "006400.KS", n: "삼성SDI", cap: 30 }, { s: "051910.KS", n: "LG화학", cap: 30 }, { s: "086520.KQ", n: "에코프로", cap: 20 }] },
+  { name: "바이오/의약", cap: 200, stocks: [{ s: "207940.KS", n: "삼성바이오", cap: 60 }, { s: "068270.KS", n: "셀트리온", cap: 40 }, { s: "000100.KS", n: "유한양행", cap: 15 }] },
+  { name: "자동차", cap: 150, stocks: [{ s: "005380.KS", n: "현대차", cap: 60 }, { s: "000270.KS", n: "기아", cap: 50 }, { s: "012330.KS", n: "현대모비스", cap: 20 }] },
+  { name: "금융", cap: 150, stocks: [{ s: "105560.KS", n: "KB금융", cap: 30 }, { s: "055550.KS", n: "신한지주", cap: 25 }, { s: "086790.KS", n: "하나금융", cap: 20 }, { s: "138040.KS", n: "메리츠금융", cap: 15 }] },
+  { name: "인터넷/서비스", cap: 100, stocks: [{ s: "035420.KS", n: "NAVER", cap: 35 }, { s: "035720.KS", n: "카카오", cap: 25 }] },
+  { name: "산업재", cap: 100, stocks: [{ s: "267260.KS", n: "HD현대일렉", cap: 15 }, { s: "241560.KS", n: "두산밥캣", cap: 15 }, { s: "034020.KS", n: "두산에너빌", cap: 15 }] }
 ];
 
 let HM_US_SYMS = HM_US.flatMap(s => s.stocks.map(t => t.s)).join(",");
@@ -773,7 +769,8 @@ function drawHeatmap(qmap, closed, wrapId, dataArray, closedMsg) {
       name: sec.name, 
       children: sec.stocks.map(st => { 
         let q = qmap[st.s]; 
-        return { name: st.s.replace('.KS','').replace('.KQ',''), cap: st.cap, pct: q ? q.pct : 0, price: q ? q.price : null, ok: !!q }; 
+        let displayName = st.n ? st.n : st.s.replace('.KS','').replace('.KQ','');
+        return { name: displayName, cap: st.cap, pct: q ? q.pct : 0, price: q ? q.price : null, ok: !!q }; 
       }) 
     })) 
   }).sum(d => d.children ? 0 : (d.cap ? d.cap : 0)).sort((a, b) => b.value - a.value);
@@ -853,7 +850,7 @@ function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
   intervals[taskId] = setInterval(() => { if (!document.hidden) exec(); }, interval);
 }
 
-// 💡 상단/하단 배너 & 클릭 뱃지 동시 업데이트 (히트맵 개방 보상 추가)
+// 상단/하단 배너 동시 업데이트 로직
 window.activateGlobalBoost = function(e) {
   if (e) e.stopPropagation();
 
@@ -867,18 +864,17 @@ window.activateGlobalBoost = function(e) {
     document.querySelectorAll(".boost-banner").forEach(banner => {
       banner.className = "global-banner free-reward-banner boost-banner banner-lvl-1"; 
       banner.querySelector(".g-banner-title").innerHTML = '<span class="lvl-badge">Lv.2</span> 🚀 스피드업 + 하단 광고 제거!';
-      banner.querySelector(".g-banner-desc").innerHTML = '불편한 광고를 제거했습니다. 한번 더 시청하면 <b>최고 속도 갱신</b> 및 <b>섹터 히트맵</b>이 무료로 개방됩니다!<br><span class="g-banner-notice">💡 혜택(속도UP·광고제거·히트맵)은 앱 종료 전까지 계속 유지됩니다.</span>';
+      banner.querySelector(".g-banner-desc").innerHTML = '불편한 광고를 제거했습니다. 한번 더 시청하면 <b>최고 속도 갱신</b> 및 <b>종합 히트맵</b>이 무료로 개방됩니다!';
       
       const btn = banner.querySelector(".g-banner-btn");
-      btn.innerHTML = "▶ 최고 속도 + 히트맵 개방";
+      btn.innerHTML = "▶ 갱신 속도 MAX (최고치) 도달하기";
       btn.className = "g-banner-btn free-reward-btn";
       btn.onclick = window.activateGlobalBoost;
     });
   } else if (globalBoostLevel === 1) {
     globalBoostLevel = 2;
-    alert("최고 속도 달성 및 히트맵 잠금 해제! 🔥\n갱신 속도가 3초로 단축되며 히트맵이 무료 개방됩니다.");
+    alert("최고 속도 달성 및 히트맵 잠금 해제! 🔥\n갱신 속도가 3초로 단축되며 종합 히트맵이 무료 개방됩니다.");
     
-    // 💡 2단계 도달 시 히트맵 자동 잠금 해제!
     if (!window.isHmUnlocked) {
       window.isHmUnlocked = true;
       document.querySelectorAll('.hm-overlay').forEach(overlay => overlay.style.display = "none");
@@ -888,11 +884,11 @@ window.activateGlobalBoost = function(e) {
 
     document.querySelectorAll(".boost-banner").forEach(banner => {
       banner.className = "global-banner free-reward-banner boost-banner banner-lvl-2";
-      banner.querySelector(".g-banner-title").innerHTML = '<span class="lvl-badge">Lv.MAX</span> 🔥 갱신 속도 MAX + 히트맵 개방';
-      banner.querySelector(".g-banner-desc").innerHTML = '제공 가능한 최고치 속도(3초)로 갱신되며, 히트맵이 성공적으로 개방되었습니다.<br><span class="g-banner-notice">💡 모든 혜택은 앱 종료 전까지 계속 유지됩니다!</span>';
+      banner.querySelector(".g-banner-title").innerHTML = '<span class="lvl-badge">Lv.MAX</span> 🔥 전체 시장 데이터 갱신 속도 MAX';
+      banner.querySelector(".g-banner-desc").innerHTML = '제공 가능한 최고치 속도(3초 주기)로 시장 데이터를 실시간 갱신하고 있습니다.';
       
       const btn = banner.querySelector(".g-banner-btn");
-      btn.innerHTML = "모든 혜택 적용됨";
+      btn.innerHTML = "최고 속도 도달";
       btn.className = "g-banner-btn free-reward-btn disabled-btn";
       btn.onclick = null; 
     });
@@ -977,7 +973,6 @@ document.addEventListener("DOMContentLoaded", () => {
       runSchedule("kr-top", "kr-top-list", "cy-kr-top-time", "kr", () => {}, 10000);
       runSchedule("fx", "fx-list", "cy-fx-time", "global", doLoadFX, 10000);
 
-      // 잠금(블러) 상태여도 백그라운드에서 데이터를 즉시 불러와 세팅해둠
       doLoadHM();
       if (intervals["hm"]) clearInterval(intervals["hm"]);
       intervals["hm"] = setInterval(() => {
