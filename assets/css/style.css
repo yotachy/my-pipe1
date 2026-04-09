@@ -146,7 +146,7 @@ body {
   padding: 16px var(--pad) 40px;
 }
 
-/* ─ 부스트 배너 (보라색 배너 규격으로 통일) ─ */
+/* ─ 부스트 배너 ─ */
 .global-banner {
   display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 12px;
 }
@@ -177,7 +177,6 @@ body {
   background: #d1fae5; color: #059669; vertical-align: text-bottom; font-family: var(--mono); letter-spacing: 0;
 }
 
-/* 💡 단계별 영구 유지 안내 문구 */
 .g-banner-notice {
   display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 11px; font-weight: 800; color: inherit;
   opacity: 0.85; background: rgba(0,0,0,0.04); padding: 4px 8px; border-radius: 4px; letter-spacing: -0.3px;
@@ -201,6 +200,7 @@ body {
 .g-banner-btn.disabled-btn { background: #cbd5e1 !important; color: #64748b !important; box-shadow: none !important; cursor: default; }
 [data-theme="dark"] .g-banner-btn.disabled-btn { background: #334155 !important; color: #94a3b8 !important; }
 
+/* 하단 임시 AdMob 배너 */
 .admob-banner {
   background: #e2e8f0; color: #475569; text-align: center; padding: 24px; margin: 20px 0;
   border-radius: 6px; font-size: 13px; font-weight: bold; border: 1px dashed #cbd5e1;
@@ -222,7 +222,7 @@ body {
 .region-area.collapsed .region-body { display: none; }
 
 .sub-tab-menu {
-  display: flex; gap: 18px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none; 
+  display: flex; gap: 18px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; 
   border-bottom: 1px solid var(--rule); padding-bottom: 0;
 }
 .sub-tab-menu::-webkit-scrollbar { display: none; }
@@ -242,10 +242,10 @@ body {
 /* ─ 섹션 콘텐츠 ─ */
 .sec { display: none; margin-bottom: 16px; animation: fadeIn 0.3s ease-out; }
 .sec.active { display: block; }
-.sec-hd { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid var(--rule); margin-bottom: 8px; gap: 10px; flex-wrap: wrap; }
+.sec-hd { display: flex; align-items: center; justify-content: space-between; padding-bottom: 4px; margin-bottom: 6px; gap: 10px; flex-wrap: wrap; }
 .sec-hd-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex: 1 1 auto; }
-.sec-lbl { font-size: 15px; font-weight: 800; letter-spacing: -0.5px; color: var(--t1); white-space: nowrap; line-height: 1.3; }
-.sec-time { font-size: 11px; color: var(--t4); font-family: var(--sans); white-space: nowrap; font-weight: normal; margin-left: 2px; }
+.sec-time { font-size: 12px; color: var(--t4); font-family: var(--sans); white-space: nowrap; font-weight: 600; margin-left: 2px; display: flex; align-items: center; gap: 4px; }
+.sec-time::before { content: '🕒'; font-size: 11px; opacity: 0.8; }
 .sec-hd-right { display: flex; flex-direction: row; align-items: center; gap: 4px; flex-shrink: 0; margin-left: auto; }
 .sec-body { transition: all 0.3s; overflow: hidden; }
 
@@ -266,6 +266,7 @@ body {
 @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
 @keyframes pulse-purple { 0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.5); } 70% { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); } }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
 
 /* ─ 공통 행 ─ */
 .lst { display: flex; flex-direction: column; }
@@ -295,7 +296,7 @@ body {
 .chg { flex: 0 0 85px; display: flex; flex-direction: column; align-items: flex-end; gap: 0px; padding-left: 6px; }
 .pct { font-family: var(--sans); font-size: 12px; font-weight: 700; white-space: nowrap; line-height: 1.2; }
 .raw { font-family: var(--sans); font-size: 10px; color: var(--t4); white-space: nowrap; line-height: 1.2; }
-.fn { font-size: 10.5px; color: var(--t4); text-align: right; margin-top: 6px; }
+.fn { font-size: 10.5px; color: var(--t4); text-align: right; margin-top: 6px; display: block; width: 100%; }
 .flag { width: 14px; height: 10px; border-radius: 2px; object-fit: cover; flex-shrink: 0; }
 .up { color: var(--up); }
 .dn { color: var(--dn); }
@@ -320,6 +321,8 @@ body {
 @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.15; } 100% { opacity: 1; } }
 .flash { animation: flash 0.5s ease-out 1; }
 
+
+/* ─ 스켈레톤 및 차트 영역 ─ */
 .sk { background: var(--sk-bg); border-radius: 3px; animation: sh 1.3s ease-in-out infinite; transition: background 0.3s; }
 .sk-val { height: 16px; width: 80px; margin-left: auto; }
 .sk-chg { height: 26px; width: 75px; margin-left: 8px; }
@@ -345,6 +348,7 @@ body {
 .chart-ld { font-size: 11px; color: var(--t4); padding: 40px 0; text-align: center; font-family: var(--sans); }
 .chart-er { font-size: 11px; color: var(--dn); padding: 28px 0; text-align: center; }
 
+
 /* ─ F&G 및 히트맵 컴포넌트 ─ */
 .gw { display: flex; flex-direction: column; align-items: center; }
 .gsvg { width: 100%; max-width: 260px; }
@@ -364,7 +368,10 @@ body {
 
 .hm-ld { font-size: 11.5px; color: var(--t4); text-align: center; padding: 40px 0; font-family: var(--sans); }
 .hm-er { font-size: 11.5px; color: var(--dn); text-align: center; padding: 28px 0; }
-.hm-wrap { width: 100%; overflow: hidden; margin-top: 4px; }
+/* 💡 히트맵 블러 트랜지션 처리 */
+.hm-wrap { width: 100%; overflow: hidden; margin-top: 4px; transition: filter 0.4s, opacity 0.4s; }
+.hm-wrap.locked { filter: blur(6px) grayscale(40%); opacity: 0.6; pointer-events: none; user-select: none; }
+
 .hm-legend { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 .hm-bar { width: 80px; height: 6px; border-radius: 3px; background: linear-gradient(to right, #ef4444, #f5f5f7, #10b981); }
 [data-theme="dark"] .hm-bar { background: linear-gradient(to right, #ef4444, #1e293b, #10b981); }
@@ -375,10 +382,10 @@ body {
 .hm-overlay {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: rgba(245, 245, 247, 0.15); backdrop-filter: blur(8px) saturate(120%); -webkit-backdrop-filter: blur(8px) saturate(120%);
+  background: rgba(245, 245, 247, 0.1); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   border-radius: 6px; transition: opacity 0.4s;
 }
-[data-theme="dark"] .hm-overlay { background: rgba(10, 25, 47, 0.25); backdrop-filter: blur(8px) brightness(0.8); -webkit-backdrop-filter: blur(8px) brightness(0.8); }
+[data-theme="dark"] .hm-overlay { background: rgba(10, 25, 47, 0.2); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 .hm-lock-icon { font-size: 28px; margin-bottom: 6px; }
 .hm-lock-text { font-size: 14px; font-weight: 800; color: var(--t1); margin-bottom: 14px; letter-spacing: -0.5px; text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8); }
 [data-theme="dark"] .hm-lock-text { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
@@ -402,7 +409,7 @@ body {
 .priv-a { font-size: 10.5px; color: var(--t3); font-family: var(--sans); text-decoration: underline; transition: color 0.3s; font-weight: 500; }
 [data-theme="dark"] .priv-a:hover { color: var(--t1); }
 
-/* ─ 반응형 ─ */
+/* ─ 반응형 (모바일) ─ */
 @media (max-width: 680px) {
   .hdr { padding: 10px 0 0 0; }
   .hdr-left { flex: none; }
@@ -416,21 +423,32 @@ body {
   .global-banner.banner-lvl-2 { align-items: center; } 
   .g-banner-btn { align-self: flex-end; margin-top: 2px; } 
 }
-@media (min-width: 580px) {
-  .shell { max-width: 640px; }
+
+/* ─ 💡 반응형 (태블릿/PC/폴드 와이드) - 2단 그리드(Grid) 레이아웃 적용 ─ */
+@media (min-width: 720px) {
+  body { padding: 0 24px; } 
+  .hdr-wrap { padding: 0 24px; }
+  .shell { max-width: 960px; padding-bottom: 60px; }
+  
+  /* 리스트 2단 그리드로 변경 */
+  .lst {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 40px;
+    row-gap: 0px;
+    align-items: start;
+  }
+  
+  /* 차트 영역은 2단 전체를 차지하게 만듦 */
+  .chart-area {
+    grid-column: 1 / -1;
+    margin: 16px 0 24px;
+  }
+  
   .val { font-size: 16.5px; flex: 0 0 95px; } 
   .lbl-nm { font-size: 13.5px; } 
   .pct { font-size: 12px; } 
   .chg { flex: 0 0 90px; } 
-}
-@media (min-width: 820px) {
-  body { padding: 0 24px; } 
-  .hdr-wrap { padding: 0 24px; }
-  .shell { max-width: 760px; padding-bottom: 60px; }
-  .val { font-size: 16.5px; flex: 0 0 90px; } 
-  .lbl-nm { font-size: 13.5px; }
-  .pct { font-size: 12px; }
-  .chg { flex: 0 0 88px; }
   .sb-n { font-size: 32px; }
   .gsvg, .gends { max-width: 240px; }
   .fg-chart-wrap { max-width: 260px; }
