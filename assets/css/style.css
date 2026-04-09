@@ -200,7 +200,6 @@ body {
 .g-banner-btn.disabled-btn { background: #cbd5e1 !important; color: #64748b !important; box-shadow: none !important; cursor: default; }
 [data-theme="dark"] .g-banner-btn.disabled-btn { background: #334155 !important; color: #94a3b8 !important; }
 
-/* 하단 임시 AdMob 배너 */
 .admob-banner {
   background: #e2e8f0; color: #475569; text-align: center; padding: 24px; margin: 20px 0;
   border-radius: 6px; font-size: 13px; font-weight: bold; border: 1px dashed #cbd5e1;
@@ -268,23 +267,27 @@ body {
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
 
-/* ─ 공통 행 ─ */
+/* ─ 공통 행 (초밀도 최적화, 긴 글씨 말줄임 완벽 적용) ─ */
 .lst { display: flex; flex-direction: column; }
 .row {
-  display: flex; align-items: center; padding: 3px 0; border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--rule);
   cursor: pointer; border-left: 2.5px solid transparent; transition: border-color 0.18s, padding-left 0.18s; gap: 0;
 }
 .row:hover { opacity: 0.72; }
 .row.on { border-left-color: var(--t1); padding-left: 9px; }
 
+/* 💡 리스트 내부 유연한 축소(blowout 방지) 설정 */
 .lbl {
   flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; overflow: hidden;
 }
 .lbl-nm {
-  font-size: 13.5px; font-weight: 700; color: var(--t3); white-space: nowrap; display: flex; align-items: center; gap: 4px; flex-shrink: 0; transition: color 0.18s;
+  font-size: 13.5px; font-weight: 700; color: var(--t3); display: flex; align-items: center; gap: 4px;
+  flex: 0 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.18s;
 }
 .lbl-desc {
-  font-size: 11px; color: var(--t4); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 2px; transition: color 0.18s;
+  font-size: 11px; color: var(--t4); font-weight: 500;
+  flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding-left: 2px; transition: color 0.18s;
 }
 .row.on .lbl-nm { color: var(--t1) !important; }
 .row.on .lbl-desc { color: var(--t3) !important; }
@@ -348,7 +351,6 @@ body {
 .chart-ld { font-size: 11px; color: var(--t4); padding: 40px 0; text-align: center; font-family: var(--sans); }
 .chart-er { font-size: 11px; color: var(--dn); padding: 28px 0; text-align: center; }
 
-
 /* ─ F&G 및 히트맵 컴포넌트 ─ */
 .gw { display: flex; flex-direction: column; align-items: center; }
 .gsvg { width: 100%; max-width: 260px; }
@@ -357,7 +359,7 @@ body {
 .sb { text-align: center; margin-top: 2px; }
 .sb-n { font-family: var(--sans); font-size: 36px; font-weight: 700; line-height: 1; letter-spacing: -1px; }
 .sb-l { font-size: 13.5px; font-weight: 700; margin-top: 4px; }
-.sb-c { font-size: 11.5px; color: var(--t3); font-family: var(--sans); }
+.sb-c { font-size: 11.5px; color: var(--t3); margin-top: 4px; font-family: var(--sans); }
 .segbar { display: flex; gap: 3px; margin-top: 10px; }
 .seg { height: 3px; border-radius: 2px; flex: 1; opacity: 0.18; }
 .seg.on { opacity: 1; }
@@ -368,9 +370,10 @@ body {
 
 .hm-ld { font-size: 11.5px; color: var(--t4); text-align: center; padding: 40px 0; font-family: var(--sans); }
 .hm-er { font-size: 11.5px; color: var(--dn); text-align: center; padding: 28px 0; }
+
 /* 💡 히트맵 블러 트랜지션 처리 */
-.hm-wrap { width: 100%; overflow: hidden; margin-top: 4px; transition: filter 0.4s, opacity 0.4s; }
-.hm-wrap.locked { filter: blur(6px) grayscale(40%); opacity: 0.6; pointer-events: none; user-select: none; }
+.hm-wrap { width: 100%; overflow: hidden; margin-top: 4px; transition: filter 0.2s, opacity 0.2s; }
+.hm-wrap.locked { filter: blur(8px) grayscale(30%); opacity: 0.5; pointer-events: none; user-select: none; }
 
 .hm-legend { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 .hm-bar { width: 80px; height: 6px; border-radius: 3px; background: linear-gradient(to right, #ef4444, #f5f5f7, #10b981); }
@@ -378,14 +381,14 @@ body {
 .hm-lt { font-size: 10.5px; color: var(--t4); font-family: var(--sans); font-weight: 600; }
 .hm-note { font-size: 10.5px; color: var(--t4); text-align: center; margin-top: 8px; font-family: var(--sans); }
 
-.hm-container { position: relative; border-radius: 6px; overflow: hidden; min-height: 200px; margin-top: 8px; }
+.hm-container { position: relative; border-radius: 8px; overflow: hidden; min-height: 200px; margin-top: 8px; }
 .hm-overlay {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: rgba(245, 245, 247, 0.1); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  border-radius: 6px; transition: opacity 0.4s;
+  border-radius: 6px; transition: opacity 0.3s;
+  background: rgba(245, 245, 247, 0.2); 
 }
-[data-theme="dark"] .hm-overlay { background: rgba(10, 25, 47, 0.2); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+[data-theme="dark"] .hm-overlay { background: rgba(10, 25, 47, 0.3); }
 .hm-lock-icon { font-size: 28px; margin-bottom: 6px; }
 .hm-lock-text { font-size: 14px; font-weight: 800; color: var(--t1); margin-bottom: 14px; letter-spacing: -0.5px; text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8); }
 [data-theme="dark"] .hm-lock-text { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
@@ -424,31 +427,32 @@ body {
   .g-banner-btn { align-self: flex-end; margin-top: 2px; } 
 }
 
-/* ─ 💡 반응형 (태블릿/PC/폴드 와이드) - 2단 그리드(Grid) 레이아웃 적용 ─ */
+
+/* ─ 💡 반응형 (태블릿/PC/폴드 와이드) - 2단 그리드 완벽 적용 ─ */
 @media (min-width: 720px) {
   body { padding: 0 24px; } 
   .hdr-wrap { padding: 0 24px; }
   .shell { max-width: 960px; padding-bottom: 60px; }
   
-  /* 리스트 2단 그리드로 변경 */
+  /* 리스트를 2단 그리드로 변경 (minmax로 blowout 방지) */
   .lst {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 40px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
     row-gap: 0px;
     align-items: start;
   }
   
-  /* 차트 영역은 2단 전체를 차지하게 만듦 */
+  /* 차트 영역은 2단 전체(100%) 가로폭을 차지하도록 설정 */
   .chart-area {
     grid-column: 1 / -1;
     margin: 16px 0 24px;
   }
   
-  .val { font-size: 16.5px; flex: 0 0 95px; } 
+  .val { font-size: 16.5px; flex: 0 0 90px; } 
   .lbl-nm { font-size: 13.5px; } 
   .pct { font-size: 12px; } 
-  .chg { flex: 0 0 90px; } 
+  .chg { flex: 0 0 88px; } 
   .sb-n { font-size: 32px; }
   .gsvg, .gends { max-width: 240px; }
   .fg-chart-wrap { max-width: 260px; }
