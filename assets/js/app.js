@@ -82,6 +82,11 @@ function getMarketState(type) {
     return "REGULAR"; 
   }
 }
+// 💡 기존 코드 호환성을 위한 isMarketOpen 래퍼 함수 추가
+function isMarketOpen(type) {
+  return getMarketState(type) !== "CLOSED";
+}
+
 
 // JSON 연동용 동적 배열
 let IDX = [], CMD = [], US_TOP10 = [], KR_TOP10 = [], FX = [];
