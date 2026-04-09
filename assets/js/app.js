@@ -39,22 +39,47 @@ function getKSTTime() {
   return new Date(utc + 3600000 * 9);
 }
 
-function isMarketOpen(type) {
-  const kst = getKSTTime();
-  const day = kst.getDay();
-  const t = kst.getHours() * 100 + kst.getMinutes();
+// 💡 브라우저 호환성을 고려한 안전한 마켓 상태 판별 함수
+function getMarketState(type) {
+  let day, t;
+  
+  // 미국 뉴욕 현지 시간 계산 (에러 발생 시 수동 계산으로 폴백)
+  try {
+    const d = new Date();
+    const nyStr = d.toLocaleString("en-US", {timeZone: "America/New_York"});
+    const nyTime = new Date(nyStr);
+    if (isNaN(nyTime.getTime())) throw new Error("Invalid Timezone");
+    day = nyTime.getDay();
+    t = nyTime.getHours() * 100 + nyTime.getMinutes();
+  } catch(e) {
+    const utc = Date.now() + new Date().getTimezoneOffset() * 60000;
+    const nyTime = new Date(utc - 3600000 * 4); // Fallback (대략적인 EDT 시간)
+    day = nyTime.getDay();
+    t = nyTime.getHours() * 100 + nyTime.getMinutes();
+  }
 
-  if (type === "kr") return day >= 1 && day <= 5 && t >= 900 && t <= 1530;
+  if (type === "kr") {
+    const d = new Date();
+    const utc = d.getTime() + d.getTimezoneOffset() * 60000;
+    const kst = new Date(utc + 3600000 * 9);
+    const kDay = kst.getDay();
+    const kT = kst.getHours() * 100 + kst.getMinutes();
+    
+    if (kDay >= 1 && kDay <= 5) {
+      if (kT >= 900 && kT <= 1530) return "REGULAR";
+    }
+    return "CLOSED";
+  } 
   else if (type === "us") {
-    if (day === 0) return false;
-    if (day === 1 && t < 2230) return false;
-    if (day === 6 && t > 600) return false;
-    return t >= 2230 || t <= 600;
-  } else {
-    if (day === 6 && t > 600) return false;
-    if (day === 0) return false;
-    if (day === 1 && t < 700) return false;
-    return true;
+    if (day === 0 || day === 6) return "CLOSED";
+    if (t >= 400 && t < 930) return "PRE";       // 프리장
+    if (t >= 930 && t < 1600) return "REGULAR";  // 정규장
+    if (t >= 1600 && t < 2000) return "POST";    // 애프터장
+    return "CLOSED";
+  } 
+  else {
+    if (day === 0 || day === 6) return "CLOSED";
+    return "REGULAR"; 
   }
 }
 
@@ -93,7 +118,7 @@ window.showCryptoMsg = function(e) {
   }, 2000);
 };
 
-// 💡 종목명(절대 안 짤림) + 설명란(우측 스크롤) 구조 렌더링
+// 💡 렌더링 시 <span class="ext-badge"> 미리 배치
 function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, offset = 0) {
   const container = $(containerId);
   if(!container) return;
@@ -107,13 +132,11 @@ function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, of
     
     let flagHtml = item.flag ? `<img class="flag" src="${item.flag}" alt=""/>` : '';
     let mcHtml = hasMc ? `<div class="mc"></div>` : '';
-    
-    let descHtml = item.desc ? `<div class="lbl-desc-scroll"><span class="lbl-desc">${item.desc}</span></div>` : '';
+    let descHtml = item.desc ? `<span class="info-icon" onclick="alert('${item.desc}'); event.stopPropagation();">i</span>` : '';
     
     row.innerHTML = `
       <div class="lbl">
-        <div class="lbl-nm">${flagHtml}${item.nm}</div>
-        ${descHtml}
+        <div class="lbl-nm">${flagHtml}${item.nm}<span class="ext-badge"></span>${descHtml}</div>
       </div>
       ${mcHtml}
       <div class="sk sk-val"></div>
@@ -161,12 +184,15 @@ function toggleTheme() {
   doLoadFG();
 }
 
+// 💡 뱃지에 프리장/애프터장 정보 반영
 function updateSyncBadges() {
   document.querySelectorAll(".badge-sync").forEach(badge => {
     const mkt = badge.getAttribute("data-market");
     badge.className = "badge-sync"; 
     
-    if (!isMarketOpen(mkt)) {
+    const state = getMarketState(mkt);
+    
+    if (state === "CLOSED") {
       badge.classList.add('closed');
       badge.innerHTML = "⏸ 장마감";
       badge.onclick = null;
@@ -174,18 +200,22 @@ function updateSyncBadges() {
     }
     
     badge.classList.add('level-' + globalBoostLevel);
-    let txt, icon;
     
+    let prefix = "";
+    if (state === "PRE") prefix = "[프리장] ";
+    if (state === "POST") prefix = "[애프터장] ";
+
+    let txt, icon;
     if (globalBoostLevel === 0) {
-      txt = "10초 (▶ 스피드 UP)"; 
+      txt = prefix + "10초 (▶ 스피드 UP)"; 
       icon = "⚡";
       badge.onclick = window.activateGlobalBoost;
     } else if (globalBoostLevel === 1) {
-      txt = "6초 (▶ MAX 속도)"; 
+      txt = prefix + "6초 (▶ MAX 속도)"; 
       icon = "🚀";
       badge.onclick = window.activateGlobalBoost;
     } else {
-      txt = "3초 (MAX 최고속도)"; 
+      txt = prefix + "3초 (MAX 최고속도)"; 
       icon = "🔥";
       badge.onclick = null; 
     }
@@ -204,7 +234,8 @@ function forceSleepDots(listIds) {
   });
 }
 
-function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitPct) {
+// 💡 프리/애프터장 상태 뱃지 주입 및 VIX 색상 통일
+function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitPct, extState = "") {
   const el = $(id);
   if (!el) return;
 
@@ -213,7 +244,10 @@ function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitP
   const isVix = symObj && symObj.special === "vix";
   const cls = isVix ? (chg > 0 ? "dn" : chg < 0 ? "up" : "fl") : (chg > 0 ? "up" : chg < 0 ? "dn" : "fl");
   const arrow = chg > 0 ? "▲" : chg < 0 ? "▼" : "─";
-  const vc = isVix ? (price < 15 ? "vix-lo" : price < 25 ? "vix-md" : "vix-hi") : "";
+  
+  // VIX 종목 수치의 특별한 노란색 렌더링 제거 (일반 테마 색상으로 통일)
+  const vc = ""; 
+  
   const d = symObj && symObj.d !== undefined ? symObj.d : 2;
   const raw = (chg >= 0 ? "+" : "") + fmt(chg, d);
   const valStr = symObj ? symObj.fmt(price) : fmt(price, 1);
@@ -236,6 +270,21 @@ function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitP
 
   el.innerHTML = `<div class="lbl">${dotHtml(dotClass)}${cleanInner}</div>${mcHtml}<div class="val ${vc}">${valStr}</div><div class="chg"><span class="pct ${cls}">${arrow} ${fmt(Math.abs(pct), 2)}%</span><span class="raw ${cls}">${raw}</span></div>`;
   if (mcVal !== undefined) el.dataset.mc = mcVal;
+
+  // 프리/애프터장 뱃지 스타일 적용
+  const extBadge = el.querySelector(".ext-badge");
+  if (extBadge) {
+    if (extState === "PRE") {
+      extBadge.innerHTML = "PRE";
+      extBadge.style.cssText = "font-size:9px; color:#f59e0b; border:1px solid #f59e0b; border-radius:3px; padding:1px 3px; margin-left:4px; line-height:1; vertical-align:middle;";
+    } else if (extState === "POST") {
+      extBadge.innerHTML = "POST";
+      extBadge.style.cssText = "font-size:9px; color:#8b5cf6; border:1px solid #8b5cf6; border-radius:3px; padding:1px 3px; margin-left:4px; line-height:1; vertical-align:middle;";
+    } else {
+      extBadge.innerHTML = "";
+      extBadge.style.cssText = "";
+    }
+  }
 
   if (changed) {
     el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
@@ -261,6 +310,32 @@ function sortListDesc(listId) {
    3. API Fetch 로직 (Data Fetching)
    ========================================================================= */
 
+// 💡 시간대별 데이터(Pre/Post) 추출 로직
+function extractPriceData(q) {
+  let p = q.regularMarketPrice;
+  let pv = q.regularMarketPreviousClose || p;
+  let chg = q.regularMarketChange || 0;
+  let pct = q.regularMarketChangePercent || 0;
+  let ext = "";
+
+  const state = q.marketState;
+
+  if ((state === "PRE" || state === "PREPRE") && q.preMarketPrice) {
+    p = q.preMarketPrice;
+    chg = q.preMarketChange || 0;
+    pct = q.preMarketChangePercent || 0;
+    ext = "PRE";
+    pv = q.regularMarketPrice; 
+  } else if ((state === "POST" || state === "POSTPOST" || state === "CLOSED") && q.postMarketPrice) {
+    p = q.postMarketPrice;
+    chg = q.postMarketChange || 0;
+    pct = q.postMarketChangePercent || 0;
+    ext = "POST";
+    pv = q.regularMarketPrice;
+  }
+  return { p, pv, chg, pct, ext };
+}
+
 function doLoadIdx() {
   if(!IDX_SYMS) return;
   fetch("quotes.php?syms=" + encodeURIComponent(IDX_SYMS))
@@ -272,9 +347,8 @@ function doLoadIdx() {
         IDX.forEach(s => {
           const q = map[s.sym];
           if (q && q.regularMarketPrice) {
-            const p = q.regularMarketPrice;
-            const pv = q.regularMarketPreviousClose || p;
-            renderRow(s.id, p, pv, s, null, null, q.regularMarketChange, q.regularMarketChangePercent);
+            const pd = extractPriceData(q);
+            renderRow(s.id, pd.p, pd.pv, s, null, null, pd.chg, pd.pct, pd.ext);
           } else fetchFallbackDirect(s);
         });
       } else IDX.forEach(fetchFallbackDirect);
@@ -292,9 +366,8 @@ function doLoadCmd() {
         CMD.forEach(s => {
           const q = map[s.sym];
           if (q && q.regularMarketPrice) {
-            const p = q.regularMarketPrice;
-            const pv = q.regularMarketPreviousClose || p;
-            renderRow(s.id, p, pv, s, null, null, q.regularMarketChange, q.regularMarketChangePercent);
+            const pd = extractPriceData(q);
+            renderRow(s.id, pd.p, pd.pv, s, null, null, pd.chg, pd.pct, pd.ext);
           } else fetchFallbackDirect(s);
         });
       } else CMD.forEach(fetchFallbackDirect);
@@ -313,11 +386,10 @@ function doLoadBatchedTop10() {
           arr.forEach(s => {
             const q = map[s.sym];
             if (q && q.regularMarketPrice) {
-              const p = q.regularMarketPrice;
-              const pv = q.regularMarketPreviousClose || p;
+              const pd = extractPriceData(q);
               const mc = q.marketCap || 0;
               const cur = s.sym.indexOf(".KS") > -1 || s.sym.indexOf(".KQ") > -1 ? "KRW" : "USD";
-              renderRow(s.id, p, pv, s, fmtMC(mc, cur), mc, q.regularMarketChange, q.regularMarketChangePercent);
+              renderRow(s.id, pd.p, pd.pv, s, fmtMC(mc, cur), mc, pd.chg, pd.pct, pd.ext);
             } else fetchFallbackDirect(s);
           });
           sortListDesc(listId);
@@ -342,9 +414,10 @@ function doLoadFX() {
           const q = map[s.sym];
           if (q && q.regularMarketPrice) {
             const mult = s.mult || 1;
-            const p = q.regularMarketPrice * mult;
-            const pv = (q.regularMarketPreviousClose || q.regularMarketPrice) * mult;
-            renderRow(s.id, p, pv, s, null, null, (q.regularMarketChange || 0) * mult, q.regularMarketChangePercent || 0);
+            const pd = extractPriceData(q); 
+            const p = pd.p * mult;
+            const pv = pd.pv * mult;
+            renderRow(s.id, p, pv, s, null, null, pd.chg * mult, pd.pct, pd.ext);
           } else fetchFallbackDirect(s);
         });
       } else FX.forEach(fetchFallbackDirect);
@@ -484,7 +557,6 @@ function doChart(s, range, type) {
     .catch(() => wrap.innerHTML = `<div class="chart-er">데이터를 불러올 수 없습니다<br><button onclick="doChart(window.active${type.replace('-','')}Sym, '${range}', '${type}')" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-weight:600;">↻ 다시 시도</button></div>`);
 }
 
-// 💡 차트 X축 오버랩 완벽 방지 알고리즘 및 1D 도트 제거 적용
 function drawChart(s, range, j, wrap, type) {
   const res = j.chart && j.chart.result && j.chart.result[0];
   if (!res) return wrap.innerHTML = '<div class="chart-er">데이터 없음</div>';
@@ -514,7 +586,6 @@ function drawChart(s, range, j, wrap, type) {
 
   const pRadii = [], tickLabels = [], hitCols = [];
   
-  // 💡 라벨 오버랩 방지 로직 (균등 간격 마킹)
   let boundaries = [];
   for (let k = 0; k < labels.length; k++) {
     const d = labels[k];
@@ -541,7 +612,6 @@ function drawChart(s, range, j, wrap, type) {
     if(isBoundary) boundaries.push({k, txt});
   }
   
-  // 전체 라벨 중 6개 내외만 균등하게 표기하도록 스텝 계산
   let step = Math.max(1, Math.ceil(boundaries.length / 6));
   let markSet = {};
   for(let i=0; i<boundaries.length; i+=step) {
@@ -550,7 +620,6 @@ function drawChart(s, range, j, wrap, type) {
 
   for (let k = 0; k < labels.length; k++) {
      let txt = markSet[k] || "";
-     // 💡 1D 차트 점 표기 완전히 제거
      pRadii.push((txt && range !== "1D") ? 3.5 : 0);
      tickLabels.push(txt);
      hitCols.push(col);
@@ -598,7 +667,6 @@ function drawChart(s, range, j, wrap, type) {
         scales: {
           x: {
             grid: { display: true, drawOnChartArea: true, color: ctx => tickLabels[ctx.index] ? chartGridColor : "transparent", drawTicks: false },
-            // autoSkip false로 설정하여 우리가 지정한 markSet 텍스트만 균일하게 렌더링
             ticks: { autoSkip: false, maxRotation: 0, align: "center", font: { family: "Pretendard", size: 10 }, color: chartTextColor, callback: (val, i) => tickLabels[i] || null },
             border: { display: false }
           },
@@ -724,8 +792,9 @@ let HM_KR = [
   { name: "산업재", cap: 100, stocks: [{ s: "267260.KS", n: "HD현대일렉", cap: 15 }, { s: "241560.KS", n: "두산밥캣", cap: 15 }, { s: "034020.KS", n: "두산에너빌", cap: 15 }] }
 ];
 
-let HM_US_SYMS = HM_US.flatMap(s => s.stocks.map(t => t.s)).join(",");
-let HM_KR_SYMS = HM_KR.flatMap(s => s.stocks.map(t => t.s)).join(",");
+// 💡 호환성 문제(flatMap)를 방지하는 안전한 배열 병합 로직
+let HM_US_SYMS = HM_US.reduce((acc, s) => acc.concat(s.stocks.map(t => t.s)), []).join(",");
+let HM_KR_SYMS = HM_KR.reduce((acc, s) => acc.concat(s.stocks.map(t => t.s)), []).join(",");
 let HM_ALL_SYMS = HM_US_SYMS + "," + HM_KR_SYMS;
 
 function hmCol(pct, ok) {
@@ -859,7 +928,6 @@ function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
   intervals[taskId] = setInterval(() => { if (!document.hidden) exec(); }, interval);
 }
 
-// 상단/하단 배너 동시 업데이트 로직
 window.activateGlobalBoost = function(e) {
   if (e) e.stopPropagation();
 
@@ -876,7 +944,7 @@ window.activateGlobalBoost = function(e) {
       banner.querySelector(".g-banner-desc").innerHTML = '불편한 광고를 제거했습니다. 한번 더 시청하면 <b>최고 속도 갱신</b> 및 <b>종합 히트맵</b>이 무료로 개방됩니다!';
       
       const btn = banner.querySelector(".g-banner-btn");
-      btn.innerHTML = "▶ 최고 속도 + 히트맵 개방";
+      btn.innerHTML = "▶ 갱신 속도 MAX (최고치) 도달하기";
       btn.className = "g-banner-btn free-reward-btn";
       btn.onclick = window.activateGlobalBoost;
     });
@@ -994,6 +1062,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => {
       console.error("데이터 로드 실패:", err);
-      alert("종목 데이터를 불러오는데 실패했습니다.");
+      alert("종목 데이터를 불러오는데 실패했습니다. 기기 환경 또는 데이터 구조 오류일 수 있습니다.");
     });
 });
