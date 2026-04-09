@@ -200,6 +200,7 @@ body {
 .g-banner-btn.disabled-btn { background: #cbd5e1 !important; color: #64748b !important; box-shadow: none !important; cursor: default; }
 [data-theme="dark"] .g-banner-btn.disabled-btn { background: #334155 !important; color: #94a3b8 !important; }
 
+/* 하단 임시 AdMob 배너 */
 .admob-banner {
   background: #e2e8f0; color: #475569; text-align: center; padding: 24px; margin: 20px 0;
   border-radius: 6px; font-size: 13px; font-weight: bold; border: 1px dashed #cbd5e1;
@@ -237,6 +238,18 @@ body {
 [data-theme="dark"] .sub-tab:hover { background: transparent; color: #fff; }
 [data-theme="dark"] .sub-tab.active { background: transparent; color: #fff !important; border-bottom-color: #fff; }
 
+/* 💡 섹터 히트맵 탭 강력 강조 효과 */
+.sub-tab.tab-highlight {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe); border-radius: 4px 4px 0 0;
+  border-bottom-color: #bfdbfe; color: #1e40af; padding: 8px 12px;
+}
+[data-theme="dark"] .sub-tab.tab-highlight {
+  background: linear-gradient(135deg, #1e3a8a, #172554); border-bottom-color: #1e40af; color: #bfdbfe;
+}
+.sub-tab.tab-highlight.active {
+  background: #3b82f6; color: #fff !important; border-bottom-color: #2563eb;
+}
+
 
 /* ─ 섹션 콘텐츠 ─ */
 .sec { display: none; margin-bottom: 16px; animation: fadeIn 0.3s ease-out; }
@@ -267,7 +280,7 @@ body {
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
 
-/* ─ 공통 행 (초밀도 최적화, 긴 글씨 말줄임 완벽 적용) ─ */
+/* ─ 공통 행 (이름 짤림 완벽 방지 & i 아이콘 디자인) ─ */
 .lst { display: flex; flex-direction: column; }
 .row {
   display: flex; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--rule);
@@ -276,21 +289,28 @@ body {
 .row:hover { opacity: 0.72; }
 .row.on { border-left-color: var(--t1); padding-left: 9px; }
 
-/* 💡 리스트 내부 유연한 축소(blowout 방지) 설정 */
 .lbl {
-  flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; overflow: hidden;
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px;
 }
+/* 💡 white-space: normal 로 변경하여 2단 그리드에서도 짤리지 않고 줄바꿈 허용 */
 .lbl-nm {
   font-size: 13.5px; font-weight: 700; color: var(--t3); display: flex; align-items: center; gap: 4px;
-  flex: 0 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.18s;
+  flex: 1 1 auto; white-space: normal; word-break: keep-all; line-height: 1.25; transition: color 0.18s;
 }
-.lbl-desc {
-  font-size: 11px; color: var(--t4); font-weight: 500;
-  flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  padding-left: 2px; transition: color 0.18s;
+
+/* 💡 공간을 아끼는 작고 예쁜 정보 아이콘 */
+.info-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--rule); color: var(--t3); font-size: 11px;
+  font-family: var(--mono); font-weight: bold; margin-left: 2px; margin-top: 1px;
+  cursor: pointer; flex-shrink: 0; transition: background 0.2s, color 0.2s;
 }
+.info-icon:hover { background: var(--t4); color: #fff; }
+[data-theme="dark"] .info-icon { background: rgba(255,255,255,0.1); color: var(--t4); }
+[data-theme="dark"] .info-icon:hover { background: rgba(255,255,255,0.3); color: #fff; }
+
 .row.on .lbl-nm { color: var(--t1) !important; }
-.row.on .lbl-desc { color: var(--t3) !important; }
 
 .row.has-mc .lbl { flex: 1; }
 .mc { flex: 0 0 50px; font-size: 10px; color: var(--t4); text-align: right; padding-right: 6px; font-family: var(--sans); white-space: nowrap; }
@@ -324,8 +344,6 @@ body {
 @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.15; } 100% { opacity: 1; } }
 .flash { animation: flash 0.5s ease-out 1; }
 
-
-/* ─ 스켈레톤 및 차트 영역 ─ */
 .sk { background: var(--sk-bg); border-radius: 3px; animation: sh 1.3s ease-in-out infinite; transition: background 0.3s; }
 .sk-val { height: 16px; width: 80px; margin-left: auto; }
 .sk-chg { height: 26px; width: 75px; margin-left: 8px; }
@@ -385,10 +403,10 @@ body {
 .hm-overlay {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  border-radius: 6px; transition: opacity 0.3s;
-  background: rgba(245, 245, 247, 0.2); 
+  background: rgba(245, 245, 247, 0.1); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  border-radius: 6px; transition: opacity 0.4s;
 }
-[data-theme="dark"] .hm-overlay { background: rgba(10, 25, 47, 0.3); }
+[data-theme="dark"] .hm-overlay { background: rgba(10, 25, 47, 0.2); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 .hm-lock-icon { font-size: 28px; margin-bottom: 6px; }
 .hm-lock-text { font-size: 14px; font-weight: 800; color: var(--t1); margin-bottom: 14px; letter-spacing: -0.5px; text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8); }
 [data-theme="dark"] .hm-lock-text { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
@@ -426,7 +444,6 @@ body {
   .global-banner.banner-lvl-2 { align-items: center; } 
   .g-banner-btn { align-self: flex-end; margin-top: 2px; } 
 }
-
 
 /* ─ 💡 반응형 (태블릿/PC/폴드 와이드) - 2단 그리드 완벽 적용 ─ */
 @media (min-width: 720px) {
