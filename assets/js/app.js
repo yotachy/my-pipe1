@@ -482,6 +482,7 @@ function doChart(s, range, type) {
     .catch(() => wrap.innerHTML = `<div class="chart-er">데이터를 불러올 수 없습니다<br><button onclick="doChart(window.active${type.replace('-','')}Sym, '${range}', '${type}')" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-weight:600;">↻ 다시 시도</button></div>`);
 }
 
+// 💡 차트 X축 오버랩 완벽 방지 알고리즘 및 1D 도트 제거 적용
 function drawChart(s, range, j, wrap, type) {
   const res = j.chart && j.chart.result && j.chart.result[0];
   if (!res) return wrap.innerHTML = '<div class="chart-er">데이터 없음</div>';
@@ -510,41 +511,47 @@ function drawChart(s, range, j, wrap, type) {
   const vMin = Math.min(...allV), vMax = Math.max(...allV), vPad = (vMax - vMin) * 0.05;
 
   const pRadii = [], tickLabels = [], hitCols = [];
-  const minGap = Math.max(12, labels.length / 10); 
-  let lastMarkIdx = -999;
-
+  
+  // 💡 라벨 오버랩 방지 로직 (균등 간격 마킹)
+  let boundaries = [];
   for (let k = 0; k < labels.length; k++) {
     const d = labels[k];
     const hr = d.getHours(), mo = d.getMonth(), dy = d.getDate(), yr = d.getFullYear();
-    const nextD = k < labels.length - 1 ? labels[k + 1] : null;
+    const prevD = k > 0 ? labels[k - 1] : null;
     let isBoundary = false, txt = "";
 
     if (range === "1D") {
-      const prevD = k > 0 ? labels[k - 1] : null;
-      if (!prevD || prevD.getHours() !== hr) { isBoundary = true; txt = hr + "시"; }
+      if (!prevD || prevD.getHours() !== hr) { isBoundary = true; txt = hr + "시"; } // 💡 10시 형태로 출력
     } else if (range === "1W") {
-      const prevD = k > 0 ? labels[k - 1] : null;
       if (!prevD || prevD.getDate() !== dy) { isBoundary = true; txt = (mo + 1) + "/" + dy; }
     } else if (range === "1M") {
-      if (!nextD || nextD.getDay() < d.getDay() || nextD.getTime() - d.getTime() > 172800000) { isBoundary = true; txt = (mo + 1) + "/" + dy; }
-    } else if (range === "6M" || range === "1Y") {
-       const period = range === "6M" ? 1 : 3;
-       if (!nextD || Math.floor(mo / period) !== Math.floor(nextD.getMonth() / period)) { isBoundary = true; txt = (mo + 1) + "월"; }
-    } else {
-        if (!nextD || nextD.getFullYear() !== yr) { isBoundary = true; txt = yr + "년"; }
-    }
-
-    let mark = false;
-    if (isBoundary) {
-      if (k - lastMarkIdx >= minGap) {
-        mark = true;
-        lastMarkIdx = k;
+      if (!prevD || (d.getDay() === 1 && prevD.getDay() !== 1) || (d.getTime() - prevD.getTime() > 4*86400000)) { 
+        isBoundary = true; txt = (mo + 1) + "/" + dy; 
       }
+    } else if (range === "6M" || range === "1Y") {
+       const period = range === "6M" ? 1 : 2;
+       if (!prevD || Math.floor(mo / period) !== Math.floor(prevD.getMonth() / period)) { 
+           isBoundary = true; txt = (mo + 1) + "월"; 
+       }
+    } else {
+        if (!prevD || prevD.getFullYear() !== yr) { isBoundary = true; txt = yr + "년"; }
     }
+    if(isBoundary) boundaries.push({k, txt});
+  }
+  
+  // 전체 라벨 중 6개 내외만 균등하게 표기하도록 스텝 계산
+  let step = Math.max(1, Math.ceil(boundaries.length / 6));
+  let markSet = {};
+  for(let i=0; i<boundaries.length; i+=step) {
+      markSet[boundaries[i].k] = boundaries[i].txt;
+  }
 
-    pRadii.push((mark && range !== "1D") ? 3.5 : 0);
-    tickLabels.push(mark ? txt : "");
-    hitCols.push(col);
+  for (let k = 0; k < labels.length; k++) {
+     let txt = markSet[k] || "";
+     // 💡 1D 차트 점 표기 완전히 제거
+     pRadii.push((txt && range !== "1D") ? 3.5 : 0);
+     tickLabels.push(txt);
+     hitCols.push(col);
   }
 
   loadCJS(() => {
@@ -566,7 +573,7 @@ function drawChart(s, range, j, wrap, type) {
             g.addColorStop(0, col + "28"); g.addColorStop(1, col + "00"); return g;
           },
           pointRadius: pRadii, pointBackgroundColor: "var(--box-bg)", pointBorderColor: hitCols, pointBorderWidth: 2, 
-          pointHoverRadius: range === "1D" ? 0 : 6, 
+          pointHoverRadius: range === "1D" ? 0 : 6, // 💡 호버 시에도 도트 제거
           tension: 0.2
         }]
       },
@@ -589,6 +596,7 @@ function drawChart(s, range, j, wrap, type) {
         scales: {
           x: {
             grid: { display: true, drawOnChartArea: true, color: ctx => tickLabels[ctx.index] ? chartGridColor : "transparent", drawTicks: false },
+            // 💡 autoSkip false로 설정하여 우리가 지정한 markSet 텍스트만 균일하게 렌더링
             ticks: { autoSkip: false, maxRotation: 0, align: "center", font: { family: "Pretendard", size: 10 }, color: chartTextColor, callback: (val, i) => tickLabels[i] || null },
             border: { display: false }
           },
@@ -642,6 +650,7 @@ function segbar(score) {
   return h + "</div>";
 }
 
+// 💡 공탐지수 텍스트 포맷 개선: 어제 22 ➔ 오늘 29 (+7) 
 function renderFG(score, prev, hist) {
   let zn = getZ(score), diff = score - prev;
   let html = `<div class="gw">${gauge(score)}<div class="gends"><span class="gend">공포</span><span class="gend">탐욕</span></div></div>` +
@@ -690,7 +699,6 @@ window.doLoadFG = function() {
 function renderFGErr() { $("fg-body").innerHTML = '<div class="fg-er"><div class="fg-er-t">데이터를 불러올 수 없습니다</div><button class="fg-retry" onclick="doLoadFG()">다시 시도 ↻</button></div>'; }
 
 // === 💡 동적 히트맵 렌더링 로직 ===
-// US_HM과 KR_HM 데이터를 앱 내부에서 선언
 let HM_US = [
   { name: "Technology", cap: 16000, stocks: [{ s: "AAPL", cap: 3000 }, { s: "MSFT", cap: 3000 }, { s: "NVDA", cap: 2800 }, { s: "AVGO", cap: 600 }, { s: "ORCL", cap: 350 }, { s: "ADBE", cap: 250 }, { s: "CRM", cap: 280 }, { s: "AMD", cap: 260 }, { s: "QCOM", cap: 180 }, { s: "TXN", cap: 160 }, { s: "INTC", cap: 130 }, { s: "IBM", cap: 160 }, { s: "NOW", cap: 150 }, { s: "INTU", cap: 170 }, { s: "AMAT", cap: 160 }, { s: "MU", cap: 130 }, { s: "PANW", cap: 100 }] },
   { name: "Communication", cap: 7000, stocks: [{ s: "GOOGL", cap: 2000 }, { s: "META", cap: 1200 }, { s: "NFLX", cap: 250 }, { s: "TMUS", cap: 190 }, { s: "DIS", cap: 200 }, { s: "VZ", cap: 160 }, { s: "T", cap: 120 }, { s: "EA", cap: 40 }, { s: "CMCSA", cap: 170 }, { s: "WBD", cap: 30 }, { s: "SIRI", cap: 20 }, { s: "FOXA", cap: 20 }, { s: "CHTR", cap: 50 }, { s: "LYV", cap: 25 }, { s: "TTWO", cap: 25 }] },
@@ -747,7 +755,6 @@ window.addEventListener("resize", () => {
   hmResizeTimer = setTimeout(() => { if (Object.keys(lastHmMap).length > 0) renderAllHeatmaps(lastHmMap); }, 300);
 });
 
-// 두 개의 히트맵 렌더링을 래핑하는 함수
 function renderAllHeatmaps(qmap) {
   lastHmMap = qmap; 
   let usClosed = !isMarketOpen("us");
@@ -864,7 +871,7 @@ window.activateGlobalBoost = function(e) {
     document.querySelectorAll(".boost-banner").forEach(banner => {
       banner.className = "global-banner free-reward-banner boost-banner banner-lvl-1"; 
       banner.querySelector(".g-banner-title").innerHTML = '<span class="lvl-badge">Lv.2</span> 🚀 스피드업 + 하단 광고 제거!';
-      banner.querySelector(".g-banner-desc").innerHTML = '불편한 광고를 제거했습니다. 한번 더 시청하면 최고의 갱신 속도를 제공합니다.<br><span class="g-banner-notice">※ 단계별 보상(속도UP, 광고제거)은 앱 종료 전까지 계속 유지됩니다.</span>';
+      banner.querySelector(".g-banner-desc").innerHTML = '불편한 광고를 제거했습니다. 한번 더 시청하면 최고의 갱신 속도를 제공합니다.<br><span class="g-banner-notice">💡 혜택(속도UP·광고제거)은 앱 종료 전까지 계속 유지됩니다!</span>';
       
       const btn = banner.querySelector(".g-banner-btn");
       btn.innerHTML = "▶ 갱신 속도 MAX (최고치) 도달하기";
@@ -878,7 +885,7 @@ window.activateGlobalBoost = function(e) {
     document.querySelectorAll(".boost-banner").forEach(banner => {
       banner.className = "global-banner free-reward-banner boost-banner banner-lvl-2";
       banner.querySelector(".g-banner-title").innerHTML = '<span class="lvl-badge">Lv.MAX</span> 🔥 전체 시장 데이터 갱신 속도 MAX';
-      banner.querySelector(".g-banner-desc").innerHTML = '제공 가능한 최고치 속도(3초 주기)로 시장 데이터를 실시간 갱신하고 있습니다.<br><span class="g-banner-notice">※ 단계별 보상(속도UP, 광고제거)은 앱 종료 전까지 계속 유지됩니다.</span>';
+      banner.querySelector(".g-banner-desc").innerHTML = '제공 가능한 최고치 속도(3초 주기)로 시장 데이터를 실시간 갱신하고 있습니다.<br><span class="g-banner-notice">💡 혜택(속도UP·광고제거)은 앱 종료 전까지 계속 유지됩니다!</span>';
       
       const btn = banner.querySelector(".g-banner-btn");
       btn.innerHTML = "최고 속도 도달";
@@ -913,7 +920,7 @@ window.unlockHeatmap = function(e) {
   if (intervals["hm"]) clearInterval(intervals["hm"]);
   intervals["hm"] = setInterval(() => {
     if (document.hidden) return;
-    doLoadHM(); // 내부에서 시장 open 여부에 따라 표기 처리됨
+    doLoadHM(); 
   }, 30000);
 };
 
@@ -968,7 +975,7 @@ document.addEventListener("DOMContentLoaded", () => {
       runSchedule("kr-top", "kr-top-list", "cy-kr-top-time", "kr", () => {}, 10000);
       runSchedule("fx", "fx-list", "cy-fx-time", "global", doLoadFX, 10000);
 
-      doLoadHM();
+      if (isHmUnlocked) doLoadHM();
       doLoadFG();
       setInterval(doLoadFG, 12 * 60 * 60 * 1000);
     })
