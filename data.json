@@ -72,15 +72,15 @@
     {"sym": "035420.KS", "id": "kr-top-035420", "nm": "NAVER"}
   ],
   "FX": [
-    {"sym": "USDKRW=X", "id": "fx-usd", "nm": "USD/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/us.png"},
-    {"sym": "EURKRW=X", "id": "fx-eur", "nm": "EUR/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/eu.png"},
-    {"sym": "JPYKRW=X", "id": "fx-jpy", "nm": "JPY/KRW", "mult": 100, "flag": "https://flagcdn.com/w40/jp.png"},
-    {"sym": "GBPKRW=X", "id": "fx-gbp", "nm": "GBP/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/gb.png"},
-    {"sym": "CNYKRW=X", "id": "fx-cny", "nm": "CNY/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/cn.png"},
-    {"sym": "AUDKRW=X", "id": "fx-aud", "nm": "AUD/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/au.png"},
-    {"sym": "CADKRW=X", "id": "fx-cad", "nm": "CAD/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/ca.png"},
-    {"sym": "CHFKRW=X", "id": "fx-chf", "nm": "CHF/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/ch.png"},
-    {"sym": "HKDKRW=X", "id": "fx-hkd", "nm": "HKD/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/hk.png"},
-    {"sym": "SGDKRW=X", "id": "fx-sgd", "nm": "SGD/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/sg.png"}
+    {"sym": "USDKRW=X", "id": "fx-usd", "nm": "미국 달러 (USD)", "mult": 1, "flag": "https://flagcdn.com/w40/us.png"},
+    {"sym": "EURKRW=X", "id": "fx-eur", "nm": "유로 (EUR)", "mult": 1, "flag": "https://flagcdn.com/w40/eu.png"},
+    {"sym": "JPYKRW=X", "id": "fx-jpy", "nm": "일본 엔 (JPY 100)", "mult": 100, "flag": "https://flagcdn.com/w40/jp.png"},
+    {"sym": "GBPKRW=X", "id": "fx-gbp", "nm": "영국 파운드 (GBP)", "mult": 1, "flag": "https://flagcdn.com/w40/gb.png"},
+    {"sym": "CNYKRW=X", "id": "fx-cny", "nm": "중국 위안 (CNY)", "mult": 1, "flag": "https://flagcdn.com/w40/cn.png"},
+    {"sym": "AUDKRW=X", "id": "fx-aud", "nm": "호주 달러 (AUD)", "mult": 1, "flag": "https://flagcdn.com/w40/au.png"},
+    {"sym": "CADKRW=X", "id": "fx-cad", "nm": "캐나다 달러 (CAD)", "mult": 1, "flag": "https://flagcdn.com/w40/ca.png"},
+    {"sym": "CHFKRW=X", "id": "fx-chf", "nm": "스위스 프랑 (CHF)", "mult": 1, "flag": "https://flagcdn.com/w40/ch.png"},
+    {"sym": "HKDKRW=X", "id": "fx-hkd", "nm": "홍콩 달러 (HKD)", "mult": 1, "flag": "https://flagcdn.com/w40/hk.png"},
+    {"sym": "SGDKRW=X", "id": "fx-sgd", "nm": "싱가포르 (SGD)", "mult": 1, "flag": "https://flagcdn.com/w40/sg.png"}
   ]
 }
