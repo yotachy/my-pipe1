@@ -93,6 +93,7 @@ window.showCryptoMsg = function(e) {
   }, 2000);
 };
 
+// 💡 텍스트 설명란 대신 클릭 가능한 "i" 아이콘 렌더링
 function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, offset = 0) {
   const container = $(containerId);
   if(!container) return;
@@ -106,12 +107,13 @@ function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, of
     
     let flagHtml = item.flag ? `<img class="flag" src="${item.flag}" alt=""/>` : '';
     let mcHtml = hasMc ? `<div class="mc"></div>` : '';
-    let descHtml = item.desc ? `<span class="lbl-desc">${item.desc}</span>` : '';
+    
+    // 💡 모바일 환경을 고려하여 툴팁 대신 명확한 alert 알림 창 연결
+    let descHtml = item.desc ? `<span class="info-icon" onclick="alert('${item.desc}'); event.stopPropagation();">i</span>` : '';
     
     row.innerHTML = `
       <div class="lbl">
-        <div class="lbl-nm">${flagHtml}${item.nm}</div>
-        ${descHtml}
+        <div class="lbl-nm">${flagHtml}${item.nm}${descHtml}</div>
       </div>
       ${mcHtml}
       <div class="sk sk-val"></div>
@@ -482,7 +484,6 @@ function doChart(s, range, type) {
     .catch(() => wrap.innerHTML = `<div class="chart-er">데이터를 불러올 수 없습니다<br><button onclick="doChart(window.active${type.replace('-','')}Sym, '${range}', '${type}')" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-weight:600;">↻ 다시 시도</button></div>`);
 }
 
-// 💡 차트 X축 오버랩 완벽 방지 알고리즘 및 1D 도트 제거 적용
 function drawChart(s, range, j, wrap, type) {
   const res = j.chart && j.chart.result && j.chart.result[0];
   if (!res) return wrap.innerHTML = '<div class="chart-er">데이터 없음</div>';
@@ -512,7 +513,6 @@ function drawChart(s, range, j, wrap, type) {
 
   const pRadii = [], tickLabels = [], hitCols = [];
   
-  // 💡 라벨 오버랩 방지 로직 (균등 간격 마킹)
   let boundaries = [];
   for (let k = 0; k < labels.length; k++) {
     const d = labels[k];
@@ -539,7 +539,6 @@ function drawChart(s, range, j, wrap, type) {
     if(isBoundary) boundaries.push({k, txt});
   }
   
-  // 전체 라벨 중 6개 내외만 균등하게 표기하도록 스텝 계산
   let step = Math.max(1, Math.ceil(boundaries.length / 6));
   let markSet = {};
   for(let i=0; i<boundaries.length; i+=step) {
@@ -548,7 +547,6 @@ function drawChart(s, range, j, wrap, type) {
 
   for (let k = 0; k < labels.length; k++) {
      let txt = markSet[k] || "";
-     // 💡 1D 차트 점 표기 완전히 제거
      pRadii.push((txt && range !== "1D") ? 3.5 : 0);
      tickLabels.push(txt);
      hitCols.push(col);
@@ -753,7 +751,6 @@ window.addEventListener("resize", () => {
   hmResizeTimer = setTimeout(() => { if (Object.keys(lastHmMap).length > 0) renderAllHeatmaps(lastHmMap); }, 300);
 });
 
-// 두 개의 히트맵 렌더링을 래핑하는 함수
 function renderAllHeatmaps(qmap) {
   lastHmMap = qmap; 
   let usClosed = !isMarketOpen("us");
@@ -823,7 +820,6 @@ function drawHeatmap(qmap, closed, wrapId, dataArray, closedMsg) {
   wrap.appendChild(svg.node());
 }
 
-// 💡 백그라운드 데이터 호출 및 렌더링
 window.doLoadHM = function() {
   fetch("quotes.php?syms=" + encodeURIComponent(HM_ALL_SYMS)).then(r => r.ok ? r.json() : null).then(j => {
     if (!j) return showHMErr();
@@ -857,7 +853,7 @@ function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
   intervals[taskId] = setInterval(() => { if (!document.hidden) exec(); }, interval);
 }
 
-// 💡 상단/하단 배너 & 클릭 뱃지 동시 업데이트 (문구 강조)
+// 💡 상단/하단 배너 & 클릭 뱃지 동시 업데이트 (히트맵 개방 보상 추가)
 window.activateGlobalBoost = function(e) {
   if (e) e.stopPropagation();
 
@@ -865,31 +861,38 @@ window.activateGlobalBoost = function(e) {
     globalBoostLevel = 1;
     alert("데이터 갱신 주기가 6초로 단축되었습니다! 🚀");
     
-    // 블루 레벨(Lv.2) 달성 보상: 하단 AdMob 광고 제거
     const admob = document.getElementById('admob-banner');
     if (admob) admob.style.display = 'none';
 
     document.querySelectorAll(".boost-banner").forEach(banner => {
       banner.className = "global-banner free-reward-banner boost-banner banner-lvl-1"; 
       banner.querySelector(".g-banner-title").innerHTML = '<span class="lvl-badge">Lv.2</span> 🚀 스피드업 + 하단 광고 제거!';
-      banner.querySelector(".g-banner-desc").innerHTML = '불편한 광고를 제거했습니다. 한번 더 시청하면 최고의 갱신 속도를 제공합니다.<br><span class="g-banner-notice">💡 혜택(속도UP·광고제거)은 앱 종료 전까지 계속 유지됩니다!</span>';
+      banner.querySelector(".g-banner-desc").innerHTML = '불편한 광고를 제거했습니다. 한번 더 시청하면 <b>최고 속도 갱신</b> 및 <b>섹터 히트맵</b>이 무료로 개방됩니다!<br><span class="g-banner-notice">💡 혜택(속도UP·광고제거·히트맵)은 앱 종료 전까지 계속 유지됩니다.</span>';
       
       const btn = banner.querySelector(".g-banner-btn");
-      btn.innerHTML = "▶ 갱신 속도 MAX (최고치) 도달하기";
+      btn.innerHTML = "▶ 최고 속도 + 히트맵 개방";
       btn.className = "g-banner-btn free-reward-btn";
       btn.onclick = window.activateGlobalBoost;
     });
   } else if (globalBoostLevel === 1) {
     globalBoostLevel = 2;
-    alert("최고 속도 달성!\n갱신 속도가 3초로 단축되며 다이내믹 가격 효과가 적용됩니다 🔥");
+    alert("최고 속도 달성 및 히트맵 잠금 해제! 🔥\n갱신 속도가 3초로 단축되며 히트맵이 무료 개방됩니다.");
     
+    // 💡 2단계 도달 시 히트맵 자동 잠금 해제!
+    if (!window.isHmUnlocked) {
+      window.isHmUnlocked = true;
+      document.querySelectorAll('.hm-overlay').forEach(overlay => overlay.style.display = "none");
+      document.querySelectorAll('.hm-wrap').forEach(wrap => wrap.classList.remove('locked'));
+      doLoadHM();
+    }
+
     document.querySelectorAll(".boost-banner").forEach(banner => {
       banner.className = "global-banner free-reward-banner boost-banner banner-lvl-2";
-      banner.querySelector(".g-banner-title").innerHTML = '<span class="lvl-badge">Lv.MAX</span> 🔥 전체 시장 데이터 갱신 속도 MAX';
-      banner.querySelector(".g-banner-desc").innerHTML = '제공 가능한 최고치 속도(3초 주기)로 시장 데이터를 실시간 갱신하고 있습니다.<br><span class="g-banner-notice">💡 혜택(속도UP·광고제거)은 앱 종료 전까지 계속 유지됩니다!</span>';
+      banner.querySelector(".g-banner-title").innerHTML = '<span class="lvl-badge">Lv.MAX</span> 🔥 갱신 속도 MAX + 히트맵 개방';
+      banner.querySelector(".g-banner-desc").innerHTML = '제공 가능한 최고치 속도(3초)로 갱신되며, 히트맵이 성공적으로 개방되었습니다.<br><span class="g-banner-notice">💡 모든 혜택은 앱 종료 전까지 계속 유지됩니다!</span>';
       
       const btn = banner.querySelector(".g-banner-btn");
-      btn.innerHTML = "최고 속도 도달";
+      btn.innerHTML = "모든 혜택 적용됨";
       btn.className = "g-banner-btn free-reward-btn disabled-btn";
       btn.onclick = null; 
     });
@@ -903,7 +906,6 @@ window.activateGlobalBoost = function(e) {
   runSchedule("fx", "fx-list", "cy-fx-time", "global", doLoadFX, newInterval);
 };
 
-// 💡 히트맵 잠금 해제: 이미 뒤에서 렌더링된 요소의 블러 클래스만 제거
 window.isHmUnlocked = false;
 window.unlockHeatmap = function(e) {
   if (e) e.stopPropagation();
@@ -911,8 +913,17 @@ window.unlockHeatmap = function(e) {
   isHmUnlocked = true;
   document.querySelectorAll('.hm-overlay').forEach(overlay => overlay.style.display = "none");
   document.querySelectorAll('.hm-wrap').forEach(wrap => {
-    wrap.classList.remove('locked'); // 블러 제거로 즉시 선명해짐
+    wrap.classList.remove('locked'); 
   });
+  
+  document.querySelectorAll('.hm-ld').forEach(ld => ld.textContent = "데이터 새로고침 중...");
+  doLoadHM();
+  
+  if (intervals["hm"]) clearInterval(intervals["hm"]);
+  intervals["hm"] = setInterval(() => {
+    if (document.hidden) return;
+    doLoadHM(); 
+  }, 30000);
 };
 
 document.addEventListener("visibilitychange", () => {
@@ -951,7 +962,6 @@ document.addEventListener("DOMContentLoaded", () => {
       BATCH_TOP_SYMS = US_TOP10.map(s => s.sym).join(",") + "," + KR_TOP10.map(s => s.sym).join(",");
       FX_SYMS = FX.map(s => s.sym).join(",");
 
-      // 💡 동적 DOM 생성 시 offset을 이용해 전역 배열 인덱스 매핑
       renderInitialRows('idx-list', data.IDX_GL || [], 'clickIdx', false, 0);
       renderInitialRows('idx-us-list', data.IDX_US || [], 'clickIdx', false, (data.IDX_GL||[]).length);
       renderInitialRows('idx-kr-list', data.IDX_KR || [], 'clickIdx', false, (data.IDX_GL||[]).length + (data.IDX_US||[]).length);
@@ -967,7 +977,7 @@ document.addEventListener("DOMContentLoaded", () => {
       runSchedule("kr-top", "kr-top-list", "cy-kr-top-time", "kr", () => {}, 10000);
       runSchedule("fx", "fx-list", "cy-fx-time", "global", doLoadFX, 10000);
 
-      // 💡 잠금(블러) 상태여도 백그라운드에서 데이터를 즉시 불러와 세팅해둠
+      // 잠금(블러) 상태여도 백그라운드에서 데이터를 즉시 불러와 세팅해둠
       doLoadHM();
       if (intervals["hm"]) clearInterval(intervals["hm"]);
       intervals["hm"] = setInterval(() => {
