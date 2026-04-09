@@ -146,9 +146,9 @@ body {
   padding: 16px var(--pad) 40px;
 }
 
-/* ─ 부스트 배너 ─ */
+/* ─ 💡 부스트 배너 (강조된 공지 박스 적용) ─ */
 .global-banner {
-  display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 12px;
+  display: flex; flex-direction: column; gap: 8px; /* 내부 요소 세로 정렬 */
 }
 .global-banner.free-reward-banner {
   background: #f0fdf4; border: 1px solid #bbf7d0;
@@ -156,14 +156,18 @@ body {
   color: var(--t1); transition: all 0.4s; box-shadow: 0 4px 12px rgba(0,0,0,0.04);
 }
 .shell > .global-banner:last-of-type { margin-top: 24px !important; }
-
 [data-theme="dark"] .global-banner.free-reward-banner { background: #064e3b; border-color: #047857; color: #f8fafc; }
+
+.g-banner-content {
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; width: 100%;
+}
 .g-banner-txt { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .free-reward-banner .g-banner-t1 {
   font-size: 14.5px; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; color: #166534;
 }
 [data-theme="dark"] .free-reward-banner .g-banner-t1 { color: #34d399; }
 .free-reward-banner .g-banner-t2 { font-size: 11.5px; color: var(--t3); font-family: var(--sans); line-height: 1.35; word-break: keep-all; }
+
 .g-banner-btn.free-reward-btn {
   background: #10b981; color: #fff; border: none; border-radius: 6px; padding: 9px 14px;
   font-size: 12px; font-weight: 800; cursor: pointer; font-family: var(--sans);
@@ -172,17 +176,23 @@ body {
 }
 .g-banner-btn.free-reward-btn:hover { transform: translateY(-1px); background: #059669; }
 
+/* 레벨 뱃지 디자인 */
 .lvl-badge {
   display: inline-block; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: 900; margin-right: 2px;
   background: #d1fae5; color: #059669; vertical-align: text-bottom; font-family: var(--mono); letter-spacing: 0;
 }
 
+/* 영구 유지 안내 문구 (강조 박스) */
 .g-banner-notice {
-  display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 11px; font-weight: 800; color: inherit;
-  opacity: 0.85; background: rgba(0,0,0,0.04); padding: 4px 8px; border-radius: 4px; letter-spacing: -0.3px;
+  display: block; width: 100%; font-size: 11.5px; font-weight: 600; color: #1e40af;
+  background: #dbeafe; padding: 8px 12px; border-radius: 6px; letter-spacing: -0.3px;
+  text-align: center; margin-top: 4px;
 }
-[data-theme="dark"] .g-banner-notice { background: rgba(255,255,255,0.08); }
+[data-theme="dark"] .g-banner-notice {
+  background: rgba(59, 130, 246, 0.15); color: #93c5fd;
+}
 
+/* 1단계 (파랑) */
 .global-banner.free-reward-banner.banner-lvl-1 { background: #eff6ff; border-color: #bfdbfe; }
 [data-theme="dark"] .global-banner.free-reward-banner.banner-lvl-1 { background: #1e3a8a; border-color: #1e40af; }
 .global-banner.free-reward-banner.banner-lvl-1 .g-banner-t1 { color: #1e40af; }
@@ -191,12 +201,14 @@ body {
 .global-banner.free-reward-banner.banner-lvl-1 .g-banner-btn:hover { background: #2563eb; }
 .banner-lvl-1 .lvl-badge { background: #dbeafe; color: #1d4ed8; }
 
+/* 2단계 (보라) */
 .global-banner.free-reward-banner.banner-lvl-2 { background: #faf5ff; border-color: #e9d5ff; }
 [data-theme="dark"] .global-banner.free-reward-banner.banner-lvl-2 { background: #4c1d95; border-color: #5b21b6; }
 .global-banner.free-reward-banner.banner-lvl-2 .g-banner-t1 { color: #5b21b6; }
 [data-theme="dark"] .global-banner.free-reward-banner.banner-lvl-2 .g-banner-t1 { color: #c084fc; }
 .banner-lvl-2 .lvl-badge { background: #f3e8ff; color: #6d28d9; }
 
+/* 비활성화 버튼 (Lv.3 MAX 상태) */
 .g-banner-btn.disabled-btn { background: #cbd5e1 !important; color: #64748b !important; box-shadow: none !important; cursor: default; }
 [data-theme="dark"] .g-banner-btn.disabled-btn { background: #334155 !important; color: #94a3b8 !important; }
 
@@ -238,7 +250,7 @@ body {
 [data-theme="dark"] .sub-tab:hover { background: transparent; color: #fff; }
 [data-theme="dark"] .sub-tab.active { background: transparent; color: #fff !important; border-bottom-color: #fff; }
 
-/* 💡 섹터 히트맵 탭 강력 강조 효과 */
+/* 섹터 히트맵 탭 강력 강조 효과 */
 .sub-tab.tab-highlight {
   background: linear-gradient(135deg, #eff6ff, #dbeafe); border-radius: 4px 4px 0 0;
   border-bottom-color: #bfdbfe; color: #1e40af; padding: 8px 12px;
@@ -280,7 +292,7 @@ body {
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
 
-/* ─ 공통 행 (이름 짤림 완벽 방지 & i 아이콘 디자인) ─ */
+/* ─ 공통 행 (💡 종목명 절대 안 짤리게 보장 & 설명은 스와이프) ─ */
 .lst { display: flex; flex-direction: column; }
 .row {
   display: flex; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--rule);
@@ -289,28 +301,29 @@ body {
 .row:hover { opacity: 0.72; }
 .row.on { border-left-color: var(--t1); padding-left: 9px; }
 
+/* .lbl 내부는 Flex로 구성하되, 종목명은 유지하고 설명은 스크롤 가능하게 분배 */
 .lbl {
-  flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px;
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; overflow: hidden;
 }
-/* 💡 white-space: normal 로 변경하여 2단 그리드에서도 짤리지 않고 줄바꿈 허용 */
 .lbl-nm {
   font-size: 13.5px; font-weight: 700; color: var(--t3); display: flex; align-items: center; gap: 4px;
-  flex: 1 1 auto; white-space: normal; word-break: keep-all; line-height: 1.25; transition: color 0.18s;
+  flex: 0 0 auto; /* 💡 절대 짤리지 않게 공간 확보 */
+  white-space: nowrap; transition: color 0.18s;
 }
-
-/* 💡 공간을 아끼는 작고 예쁜 정보 아이콘 */
-.info-icon {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 16px; height: 16px; border-radius: 50%;
-  background: var(--rule); color: var(--t3); font-size: 11px;
-  font-family: var(--mono); font-weight: bold; margin-left: 2px; margin-top: 1px;
-  cursor: pointer; flex-shrink: 0; transition: background 0.2s, color 0.2s;
+.lbl-desc-scroll {
+  flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; 
+  -webkit-overflow-scrolling: touch; display: flex; align-items: center;
+  mask-image: linear-gradient(to right, #000 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, #000 85%, transparent 100%);
 }
-.info-icon:hover { background: var(--t4); color: #fff; }
-[data-theme="dark"] .info-icon { background: rgba(255,255,255,0.1); color: var(--t4); }
-[data-theme="dark"] .info-icon:hover { background: rgba(255,255,255,0.3); color: #fff; }
+.lbl-desc-scroll::-webkit-scrollbar { display: none; }
+.lbl-desc {
+  font-size: 11px; color: var(--t4); font-weight: 500; white-space: nowrap; padding-right: 12px;
+  transition: color 0.18s;
+}
 
 .row.on .lbl-nm { color: var(--t1) !important; }
+.row.on .lbl-desc { color: var(--t3) !important; }
 
 .row.has-mc .lbl { flex: 1; }
 .mc { flex: 0 0 50px; font-size: 10px; color: var(--t4); text-align: right; padding-right: 6px; font-family: var(--sans); white-space: nowrap; }
@@ -344,6 +357,8 @@ body {
 @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.15; } 100% { opacity: 1; } }
 .flash { animation: flash 0.5s ease-out 1; }
 
+
+/* ─ 스켈레톤 및 차트 영역 ─ */
 .sk { background: var(--sk-bg); border-radius: 3px; animation: sh 1.3s ease-in-out infinite; transition: background 0.3s; }
 .sk-val { height: 16px; width: 80px; margin-left: auto; }
 .sk-chg { height: 26px; width: 75px; margin-left: 8px; }
@@ -388,8 +403,6 @@ body {
 
 .hm-ld { font-size: 11.5px; color: var(--t4); text-align: center; padding: 40px 0; font-family: var(--sans); }
 .hm-er { font-size: 11.5px; color: var(--dn); text-align: center; padding: 28px 0; }
-
-/* 💡 히트맵 블러 트랜지션 처리 */
 .hm-wrap { width: 100%; overflow: hidden; margin-top: 4px; transition: filter 0.2s, opacity 0.2s; }
 .hm-wrap.locked { filter: blur(8px) grayscale(30%); opacity: 0.5; pointer-events: none; user-select: none; }
 
@@ -399,14 +412,14 @@ body {
 .hm-lt { font-size: 10.5px; color: var(--t4); font-family: var(--sans); font-weight: 600; }
 .hm-note { font-size: 10.5px; color: var(--t4); text-align: center; margin-top: 8px; font-family: var(--sans); }
 
-.hm-container { position: relative; border-radius: 8px; overflow: hidden; min-height: 200px; margin-top: 8px; }
+.hm-container { position: relative; border-radius: 6px; overflow: hidden; min-height: 200px; margin-top: 8px; }
 .hm-overlay {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: rgba(245, 245, 247, 0.1); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  border-radius: 6px; transition: opacity 0.4s;
+  background: rgba(245, 245, 247, 0.2); 
+  border-radius: 6px; transition: opacity 0.3s;
 }
-[data-theme="dark"] .hm-overlay { background: rgba(10, 25, 47, 0.2); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+[data-theme="dark"] .hm-overlay { background: rgba(10, 25, 47, 0.3); }
 .hm-lock-icon { font-size: 28px; margin-bottom: 6px; }
 .hm-lock-text { font-size: 14px; font-weight: 800; color: var(--t1); margin-bottom: 14px; letter-spacing: -0.5px; text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8); }
 [data-theme="dark"] .hm-lock-text { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
@@ -440,9 +453,9 @@ body {
   .hdr-wrap { border-bottom: 1px solid var(--rule); }
 }
 @media (max-width: 580px) {
-  .global-banner { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .global-banner.banner-lvl-2 { align-items: center; } 
-  .g-banner-btn { align-self: flex-end; margin-top: 2px; } 
+  .global-banner { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .g-banner-content { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .g-banner-btn { align-self: flex-end; } 
 }
 
 /* ─ 💡 반응형 (태블릿/PC/폴드 와이드) - 2단 그리드 완벽 적용 ─ */
