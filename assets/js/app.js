@@ -33,10 +33,15 @@ function animateValue(obj, start, end, duration, formatFn) {
   window.requestAnimationFrame(step);
 }
 
-// 💡 새로운 스마트 마켓 타임 감지 함수 (써머타임 자동 적용)
+function getKSTTime() {
+  const d = new Date();
+  const utc = d.getTime() + d.getTimezoneOffset() * 60000;
+  return new Date(utc + 3600000 * 9);
+}
+
+// 💡 시간대별 마켓 상태 판별 (프리장/애프터장 포함)
 function getMarketState(type) {
   const d = new Date();
-  // 미국 현지 시간(EST/EDT) 계산
   const nyTime = new Date(d.toLocaleString("en-US", {timeZone: "America/New_York"}));
   const day = nyTime.getDay();
   const h = nyTime.getHours();
@@ -44,7 +49,6 @@ function getMarketState(type) {
   const t = h * 100 + m;
 
   if (type === "kr") {
-    // 한국 시간 기준
     const utc = d.getTime() + d.getTimezoneOffset() * 60000;
     const kst = new Date(utc + 3600000 * 9);
     const kDay = kst.getDay();
@@ -56,20 +60,18 @@ function getMarketState(type) {
     return "CLOSED";
   } 
   else if (type === "us") {
-    if (day === 0 || day === 6) return "CLOSED"; // 주말 마감
+    if (day === 0 || day === 6) return "CLOSED";
     if (t >= 400 && t < 930) return "PRE"; // 프리마켓 (04:00 ~ 09:30)
     if (t >= 930 && t < 1600) return "REGULAR"; // 정규장 (09:30 ~ 16:00)
     if (t >= 1600 && t < 2000) return "POST"; // 애프터마켓 (16:00 ~ 20:00)
     return "CLOSED";
   } 
   else {
-    // 글로벌/환율 (주말 제외 24시간)
     if (day === 0 || day === 6) return "CLOSED";
     return "REGULAR"; 
   }
 }
 
-// JSON 연동용 동적 배열
 let IDX = [], CMD = [], US_TOP10 = [], KR_TOP10 = [], FX = [];
 let IDX_SYMS = "", CMD_SYMS = "", BATCH_TOP_SYMS = "", FX_SYMS = "";
 
@@ -104,7 +106,7 @@ window.showCryptoMsg = function(e) {
   }, 2000);
 };
 
-// 💡 렌더링 시 빈 뱃지(<span class="ext-badge">)를 추가하여 나중에 PRE/POST를 넣음
+// 💡 렌더링 시 <span class="ext-badge"> 추가 복구!
 function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, offset = 0) {
   const container = $(containerId);
   if(!container) return;
@@ -118,11 +120,12 @@ function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, of
     
     let flagHtml = item.flag ? `<img class="flag" src="${item.flag}" alt=""/>` : '';
     let mcHtml = hasMc ? `<div class="mc"></div>` : '';
-    let descHtml = item.desc ? `<span class="info-icon" onclick="alert('${item.desc}'); event.stopPropagation();">i</span>` : '';
+    let descHtml = item.desc ? `<div class="lbl-desc-scroll"><span class="lbl-desc">${item.desc}</span></div>` : '';
     
     row.innerHTML = `
       <div class="lbl">
-        <div class="lbl-nm">${flagHtml}${item.nm}<span class="ext-badge"></span>${descHtml}</div>
+        <div class="lbl-nm">${flagHtml}${item.nm}<span class="ext-badge"></span></div>
+        ${descHtml}
       </div>
       ${mcHtml}
       <div class="sk sk-val"></div>
@@ -170,7 +173,6 @@ function toggleTheme() {
   doLoadFG();
 }
 
-// 💡 뱃지에 프리장/애프터장 상태 반영
 function updateSyncBadges() {
   document.querySelectorAll(".badge-sync").forEach(badge => {
     const mkt = badge.getAttribute("data-market");
@@ -201,7 +203,7 @@ function updateSyncBadges() {
       icon = "🚀";
       badge.onclick = window.activateGlobalBoost;
     } else {
-      txt = prefix + "3초 (최고속도)"; 
+      txt = prefix + "3초 (MAX 최고속도)"; 
       icon = "🔥";
       badge.onclick = null; 
     }
@@ -220,7 +222,7 @@ function forceSleepDots(listIds) {
   });
 }
 
-// 💡 UI 업데이트 시 프리/애프터 뱃지도 함께 제어
+// 💡 extState 파라미터 복구 및 PRE/POST 뱃지 적용 로직
 function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitPct, extState = "") {
   const el = $(id);
   if (!el) return;
@@ -247,7 +249,6 @@ function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitP
     dotClass = "dot-live-" + globalBoostLevel;
   }
 
-  // 💡 기존 .lbl 내용을 보존하면서 점멸 도트만 교체
   const lblEl = el.querySelector(".lbl");
   const cleanInner = lblEl ? lblEl.innerHTML.replace(/<span class="dot.*?<\/span>/g, "") : "";
   const mcHtml = mcStr ? `<div class="mc">${mcStr}</div>` : "";
@@ -255,7 +256,7 @@ function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitP
   el.innerHTML = `<div class="lbl">${dotHtml(dotClass)}${cleanInner}</div>${mcHtml}<div class="val ${vc}">${valStr}</div><div class="chg"><span class="pct ${cls}">${arrow} ${fmt(Math.abs(pct), 2)}%</span><span class="raw ${cls}">${raw}</span></div>`;
   if (mcVal !== undefined) el.dataset.mc = mcVal;
 
-  // 💡 프리장/애프터장 뱃지 추가
+  // 💡 프리장/애프터장 상태 뱃지 제어 복구
   const extBadge = el.querySelector(".ext-badge");
   if (extBadge) {
     if (extState === "PRE") {
@@ -294,7 +295,7 @@ function sortListDesc(listId) {
    3. API Fetch 로직 (Data Fetching)
    ========================================================================= */
 
-// 💡 야후에서 받아온 데이터 중 현재 상태에 맞는(Pre/Post) 데이터를 뽑아내는 헬퍼
+// 💡 프리장/애프터장 데이터 파싱 로직 복구!
 function extractPriceData(q) {
   let p = q.regularMarketPrice;
   let pv = q.regularMarketPreviousClose || p;
@@ -398,7 +399,7 @@ function doLoadFX() {
           const q = map[s.sym];
           if (q && q.regularMarketPrice) {
             const mult = s.mult || 1;
-            const pd = extractPriceData(q); // FX는 보통 PRE/POST가 없지만 통일성 유지
+            const pd = extractPriceData(q); 
             const p = pd.p * mult;
             const pv = pd.pv * mult;
             renderRow(s.id, p, pv, s, null, null, pd.chg * mult, pd.pct, pd.ext);
@@ -878,7 +879,7 @@ function drawHeatmap(qmap, closed, wrapId, dataArray, closedMsg) {
   wrap.appendChild(svg.node());
 }
 
-window.doLoadHM = function() {
+function doLoadHM() {
   fetch("quotes.php?syms=" + encodeURIComponent(HM_ALL_SYMS)).then(r => r.ok ? r.json() : null).then(j => {
     if (!j) return showHMErr();
     let res = (j.quoteResponse && j.quoteResponse.result) || [], map = {}, nz = 0;
@@ -911,6 +912,7 @@ function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
   intervals[taskId] = setInterval(() => { if (!document.hidden) exec(); }, interval);
 }
 
+// 💡 상단/하단 배너 동시 업데이트
 window.activateGlobalBoost = function(e) {
   if (e) e.stopPropagation();
 
@@ -927,7 +929,7 @@ window.activateGlobalBoost = function(e) {
       banner.querySelector(".g-banner-desc").innerHTML = '불편한 광고를 제거했습니다. 한번 더 시청하면 <b>최고 속도 갱신</b> 및 <b>종합 히트맵</b>이 무료로 개방됩니다!';
       
       const btn = banner.querySelector(".g-banner-btn");
-      btn.innerHTML = "▶ 최고 속도 + 히트맵 개방";
+      btn.innerHTML = "▶ 갱신 속도 MAX (최고치) 도달하기";
       btn.className = "g-banner-btn free-reward-btn";
       btn.onclick = window.activateGlobalBoost;
     });
