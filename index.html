@@ -53,7 +53,7 @@
       <div class="global-banner free-reward-banner boost-banner">
         <div class="g-banner-txt">
           <div class="g-banner-t1 g-banner-title"><span class="lvl-badge">Lv.1</span> 🎁 데이터 갱신 속도 UP!</div>
-          <div class="g-banner-t2 g-banner-desc">짧은 광고 시청으로 전체 시장 데이터 갱신 속도를 높여보세요.<br><span class="g-banner-notice">※ 단계별 보상(속도UP, 광고제거)은 앱 종료 전까지 계속 유지됩니다.</span></div>
+          <div class="g-banner-t2 g-banner-desc">짧은 광고 시청으로 전체 시장 데이터 갱신 속도를 높여보세요.<br><span class="g-banner-notice">💡 혜택(속도UP·광고제거)은 앱 종료 전까지 계속 유지됩니다!</span></div>
         </div>
         <button class="g-banner-btn free-reward-btn" onclick="activateGlobalBoost(event)">▶ 하단 광고 제거 + 속도 UP</button>
       </div>
@@ -74,7 +74,6 @@
           <div class="sec active" id="gl-idx">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">주요 지표·지수</span>
                 <span class="sec-time" id="cy-idx-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -102,14 +101,12 @@
                 <div class="chart-perf" id="idx-chart-perf"></div>
                 <div class="canvas-wrap"><canvas id="idx-canvas"></canvas></div>
               </div>
-              <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
             </div>
           </div>
 
           <div class="sec" id="gl-cmd">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">글로벌 원자재</span>
                 <span class="sec-time" id="cy-cmd-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -137,14 +134,12 @@
                 <div class="chart-perf" id="cmd-chart-perf"></div>
                 <div class="canvas-wrap"><canvas id="cmd-canvas"></canvas></div>
               </div>
-              <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
             </div>
           </div>
 
           <div class="sec" id="gl-fx">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">환율 (원, 24시간)</span>
                 <span class="sec-time" id="cy-fx-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -172,7 +167,6 @@
                 <div class="chart-perf" id="fx-chart-perf"></div>
                 <div class="canvas-wrap"><canvas id="fx-canvas"></canvas></div>
               </div>
-              <div class="fn">클릭하면 차트 보기 · 전일 종가 대비 (24시간 글로벌 시장 기준)</div>
             </div>
           </div>
         </div>
@@ -189,13 +183,12 @@
             <button class="sub-tab active" onclick="switchSubTab('us', 'us-idx')">주요 지표·지수</button>
             <button class="sub-tab" onclick="switchSubTab('us', 'us-top')">시총 Top 10</button>
             <button class="sub-tab" onclick="switchSubTab('us', 'us-hm')">섹터 히트맵</button>
-            <button class="sub-tab" onclick="switchSubTab('us', 'us-fg')">공포&탐욕 지수</button>
+            <button class="sub-tab" onclick="switchSubTab('us', 'us-fg')">공포&탐욕</button>
           </div>
 
           <div class="sec active" id="us-idx">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">주요 지표·지수</span>
                 <span class="sec-time" id="cy-us-idx-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -204,14 +197,12 @@
             </div>
             <div class="sec-body">
               <div class="lst" id="idx-us-list"></div>
-              <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
             </div>
           </div>
 
           <div class="sec" id="us-top">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">시가총액 상위 10개</span>
                 <span class="sec-time" id="cy-us-top-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -239,14 +230,12 @@
                 <div class="chart-perf" id="us-top-chart-perf"></div>
                 <div class="canvas-wrap"><canvas id="us-top-canvas"></canvas></div>
               </div>
-              <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
             </div>
           </div>
 
           <div class="sec" id="us-hm">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">미국 | 섹터 별 히트맵</span>
                 <span class="sec-time" id="cy-hm-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -260,7 +249,7 @@
                   <div class="hm-lock-text">미국 섹터별 히트맵</div>
                   <button class="hm-unlock-btn" onclick="unlockHeatmap(event)"><span>AD</span> 광고 시청하고 잠금 해제</button>
                 </div>
-                <div id="us-hm-wrap" class="hm-wrap"><div class="hm-ld" id="us-hm-st" style="padding: 96px 0">데이터 불러오는 중...</div></div>
+                <div id="us-hm-wrap" class="hm-wrap locked"><div class="hm-ld" id="us-hm-st" style="padding: 96px 0">데이터 준비 중...</div></div>
               </div>
               <div class="hm-legend">
                 <span class="hm-lt">-5%</span><div class="hm-bar"></div><span class="hm-lt">+5%</span>
@@ -272,7 +261,6 @@
           <div class="sec" id="us-fg">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">공포 &amp; 탐욕 지수</span>
                 <span class="sec-time" id="cy-fg-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -306,7 +294,6 @@
           <div class="sec active" id="kr-idx">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">주요 지표·지수</span>
                 <span class="sec-time" id="cy-kr-idx-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -315,14 +302,12 @@
             </div>
             <div class="sec-body">
               <div class="lst" id="idx-kr-list"></div>
-              <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
             </div>
           </div>
 
           <div class="sec" id="kr-top">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">시가총액 상위 10개</span>
                 <span class="sec-time" id="cy-kr-top-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -350,14 +335,12 @@
                 <div class="chart-perf" id="kr-top-chart-perf"></div>
                 <div class="canvas-wrap"><canvas id="kr-top-canvas"></canvas></div>
               </div>
-              <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
             </div>
           </div>
 
           <div class="sec" id="kr-hm">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">한국 | 섹터 별 히트맵</span>
                 <span class="sec-time" id="cy-kr-hm-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -371,7 +354,7 @@
                   <div class="hm-lock-text">한국 섹터별 히트맵</div>
                   <button class="hm-unlock-btn" onclick="unlockHeatmap(event)"><span>AD</span> 광고 시청하고 잠금 해제</button>
                 </div>
-                <div id="kr-hm-wrap" class="hm-wrap"><div class="hm-ld" id="kr-hm-st" style="padding: 96px 0">데이터 불러오는 중...</div></div>
+                <div id="kr-hm-wrap" class="hm-wrap locked"><div class="hm-ld" id="kr-hm-st" style="padding: 96px 0">데이터 준비 중...</div></div>
               </div>
               <div class="hm-legend">
                 <span class="hm-lt">-5%</span><div class="hm-bar"></div><span class="hm-lt">+5%</span>
@@ -386,7 +369,7 @@
       <div class="global-banner free-reward-banner boost-banner" style="margin-top: 40px;">
         <div class="g-banner-txt">
           <div class="g-banner-t1 g-banner-title"><span class="lvl-badge">Lv.1</span> 🎁 데이터 갱신 속도 UP!</div>
-          <div class="g-banner-t2 g-banner-desc">짧은 광고 시청으로 전체 시장 데이터 갱신 속도를 높여보세요.<br><span class="g-banner-notice">※ 단계별 보상(속도UP, 광고제거)은 앱 종료 전까지 계속 유지됩니다.</span></div>
+          <div class="g-banner-t2 g-banner-desc">짧은 광고 시청으로 전체 시장 데이터 갱신 속도를 높여보세요.<br><span class="g-banner-notice">💡 혜택(속도UP·광고제거)은 앱 종료 전까지 계속 유지됩니다!</span></div>
         </div>
         <button class="g-banner-btn free-reward-btn" onclick="activateGlobalBoost(event)">▶ 하단 광고 제거 + 속도 UP</button>
       </div>
