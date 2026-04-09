@@ -1,19 +1,51 @@
 {
   "IDX_GL": [
-    {"sym": "DX-Y.NYB", "id": "idx-dxy", "nm": "DXY", "special": "dxy", "no1D": true},
-    {"sym": "GC=F", "id": "idx-gold", "nm": "Gold", "special": "cmd", "d": 1},
-    {"sym": "SI=F", "id": "idx-silver", "nm": "Silver", "special": "cmd", "d": 3},
-    {"sym": "^VIX", "id": "idx-vix", "nm": "VIX", "special": "vix", "no1D": true}
+    {"sym": "DX-Y.NYB", "id": "idx-dxy", "nm": "DXY", "desc": "주요 6개국 통화 대비 달러 가치", "special": "dxy", "no1D": true},
+    {"sym": "^VIX", "id": "idx-vix", "nm": "VIX", "desc": "S&P 500 옵션 변동성 (공포지수)", "special": "vix", "no1D": true},
+    {"sym": "BTC-USD", "id": "idx-btc", "nm": "Bitcoin", "desc": "글로벌 암호화폐 대장주", "d": 0},
+    {"sym": "ETH-USD", "id": "idx-eth", "nm": "Ethereum", "desc": "알트코인 대장주", "d": 2},
+    {"sym": "^STOXX50E", "id": "idx-stoxx50", "nm": "Euro Stoxx 50", "desc": "유럽 핵심 우량주 50"},
+    {"sym": "^N225", "id": "idx-n225", "nm": "Nikkei 225", "desc": "일본 증시 대표 지수"},
+    {"sym": "000001.SS", "id": "idx-sse", "nm": "SSE Composite", "desc": "중국 상해 종합 지수"},
+    {"sym": "^BSESN", "id": "idx-sensex", "nm": "BSE SENSEX", "desc": "인도 뭄바이 증시 대표 지수"},
+    {"sym": "EEM", "id": "idx-eem", "nm": "MSCI Emerging Markets", "desc": "신흥국 주식 시장 (ETF)"},
+    {"sym": "BNDW", "id": "idx-bndw", "nm": "Total World Bond", "desc": "글로벌 전체 채권 시장 (ETF)"}
+  ],
+  "CMD": [
+    {"sym": "CL=F", "id": "cmd-wti", "nm": "WTI Crude Oil", "desc": "서부 텍사스산 원유 (글로벌 유가)", "special": "cmd", "d": 2},
+    {"sym": "BZ=F", "id": "cmd-brent", "nm": "Brent Crude Oil", "desc": "브렌트유 (유럽 및 글로벌 기준 유가)", "special": "cmd", "d": 2},
+    {"sym": "NG=F", "id": "cmd-ng", "nm": "Natural Gas", "desc": "천연가스", "special": "cmd", "d": 3},
+    {"sym": "GC=F", "id": "cmd-gold", "nm": "Gold", "desc": "글로벌 대표 안전 자산 (금)", "special": "cmd", "d": 1},
+    {"sym": "SI=F", "id": "cmd-silver", "nm": "Silver", "desc": "산업재 및 귀금속 수요 (은)", "special": "cmd", "d": 3},
+    {"sym": "HG=F", "id": "cmd-copper", "nm": "Copper", "desc": "닥터 코퍼 (글로벌 경기 선행 지표)", "special": "cmd", "d": 4},
+    {"sym": "PA=F", "id": "cmd-platinum", "nm": "Platinum", "desc": "자동차 촉매제 및 산업용 (백금)", "special": "cmd", "d": 1},
+    {"sym": "ZC=F", "id": "cmd-corn", "nm": "Corn", "desc": "옥수수 (글로벌 대표 농산물)", "special": "cmd", "d": 2},
+    {"sym": "ZS=F", "id": "cmd-soybean", "nm": "Soybeans", "desc": "대두 (콩)", "special": "cmd", "d": 2},
+    {"sym": "ZW=F", "id": "cmd-wheat", "nm": "Wheat", "desc": "밀 (글로벌 주요 식량 자원)", "special": "cmd", "d": 2}
   ],
   "IDX_US": [
-    {"sym": "^GSPC", "id": "idx-sp500", "nm": "S&P 500"},
-    {"sym": "^IXIC", "id": "idx-nasdaq", "nm": "NASDAQ"},
-    {"sym": "^DJI", "id": "idx-dow", "nm": "DOW"},
-    {"sym": "^RUT", "id": "idx-russell", "nm": "Russell 2000"}
+    {"sym": "^GSPC", "id": "idx-sp500", "nm": "S&P 500", "desc": "미국 대형주 500개"},
+    {"sym": "^IXIC", "id": "idx-nasdaq", "nm": "NASDAQ", "desc": "미국 기술주 중심 벤치마크"},
+    {"sym": "^DJI", "id": "idx-dow", "nm": "DOW", "desc": "미국 초우량 기업 30개"},
+    {"sym": "^RUT", "id": "idx-russell", "nm": "Russell 2000", "desc": "미국 중소형주 2000개 (내수 지표)"},
+    {"sym": "^SOX", "id": "idx-sox", "nm": "PHLX Semi", "desc": "필라델피아 반도체 지수"},
+    {"sym": "^NDX", "id": "idx-ndx", "nm": "NASDAQ 100", "desc": "나스닥 비금융 우량 100대 기업"},
+    {"sym": "^TNX", "id": "idx-tnx", "nm": "US 10-Yr Yield", "desc": "미국 10년물 국채 금리 (글로벌 벤치마크)", "d": 3},
+    {"sym": "^TYX", "id": "idx-tyx", "nm": "US 30-Yr Yield", "desc": "미국 30년물 국채 금리 (장기 인플레 지표)", "d": 3},
+    {"sym": "^DJT", "id": "idx-djt", "nm": "Dow Transports", "desc": "다우 운송지수 (경기 선행 지표)"},
+    {"sym": "HYG", "id": "idx-hyg", "nm": "HYG High Yield Bond", "desc": "하이일드 회사채 (신용위험 선호 지표)"}
   ],
   "IDX_KR": [
-    {"sym": "^KS11", "id": "idx-kospi", "nm": "KOSPI"},
-    {"sym": "^KQ11", "id": "idx-kosdaq", "nm": "KOSDAQ"}
+    {"sym": "^KS11", "id": "idx-kospi", "nm": "KOSPI", "desc": "대한민국 종합주가지수"},
+    {"sym": "^KQ11", "id": "idx-kosdaq", "nm": "KOSDAQ", "desc": "대한민국 벤처·중소기업 지수"},
+    {"sym": "^KS200", "id": "idx-ks200", "nm": "KOSPI 200", "desc": "코스피 핵심 우량주 200개"},
+    {"sym": "229200.KS", "id": "idx-kq150", "nm": "KODEX 코스닥150", "desc": "코스닥 우량 150개 기업 ETF"},
+    {"sym": "122630.KS", "id": "idx-lev", "nm": "KODEX 레버리지", "desc": "코스피 200 일일 수익률 2배 추종"},
+    {"sym": "252670.KS", "id": "idx-inv2x", "nm": "KODEX 200선물인버스2X", "desc": "코스피 하락 시 2배 수익 (곱버스)"},
+    {"sym": "091160.KS", "id": "idx-semi", "nm": "KODEX 반도체", "desc": "대한민국 핵심 반도체 밸류체인"},
+    {"sym": "305540.KS", "id": "idx-batt", "nm": "TIGER 2차전지테마", "desc": "전기차 및 배터리 핵심 기업"},
+    {"sym": "133690.KS", "id": "idx-tigerndx", "nm": "TIGER 미국나스닥100", "desc": "국내 상장 나스닥 100 추종 ETF"},
+    {"sym": "114260.KS", "id": "idx-bond3y", "nm": "KODEX 국고채3년", "desc": "대한민국 3년 만기 국채 흐름"}
   ],
   "US_TOP10": [
     {"sym": "AAPL", "id": "us-top-aapl", "nm": "Apple"},
@@ -44,6 +76,11 @@
     {"sym": "EURKRW=X", "id": "fx-eur", "nm": "EUR/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/eu.png"},
     {"sym": "JPYKRW=X", "id": "fx-jpy", "nm": "JPY/KRW", "mult": 100, "flag": "https://flagcdn.com/w40/jp.png"},
     {"sym": "GBPKRW=X", "id": "fx-gbp", "nm": "GBP/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/gb.png"},
-    {"sym": "CNYKRW=X", "id": "fx-cny", "nm": "CNY/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/cn.png"}
+    {"sym": "CNYKRW=X", "id": "fx-cny", "nm": "CNY/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/cn.png"},
+    {"sym": "AUDKRW=X", "id": "fx-aud", "nm": "AUD/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/au.png"},
+    {"sym": "CADKRW=X", "id": "fx-cad", "nm": "CAD/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/ca.png"},
+    {"sym": "CHFKRW=X", "id": "fx-chf", "nm": "CHF/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/ch.png"},
+    {"sym": "HKDKRW=X", "id": "fx-hkd", "nm": "HKD/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/hk.png"},
+    {"sym": "SGDKRW=X", "id": "fx-sgd", "nm": "SGD/KRW", "mult": 1, "flag": "https://flagcdn.com/w40/sg.png"}
   ]
 }

@@ -20,7 +20,7 @@ if (isset($_POST['pwd'])) {
     }
 }
 
-// 로그인 안 된 상태면 로그인 폼 출력 후 종료
+// 로그인 안 된 상태면 로그인 폼 출력
 if (!isset($_SESSION['admin_auth'])) {
     echo '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>';
     echo '<body style="background:#f5f5f7; display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif;">';
@@ -39,59 +39,59 @@ if (isset($_GET['search'])) {
     $q = trim($_GET['search']);
     $q_lower = mb_strtolower($q, 'UTF-8');
 
-    // 💡 스마트 검색 사전: 자주 쓰는 한글/별칭 -> 대표 티커 강제 매핑
+    // 💡 스마트 검색 사전 연동 (글로벌 핵심 지표 업데이트)
     $dictionary = [
         '필라델피아' => ['sym' => '^SOX', 'nm' => 'PHLX Semiconductor Index', 'exch' => 'INDEX'],
-        '반도체지수' => ['sym' => '^SOX', 'nm' => 'PHLX Semiconductor Index', 'exch' => 'INDEX'],
         'sox' => ['sym' => '^SOX', 'nm' => 'PHLX Semiconductor Index', 'exch' => 'INDEX'],
         '금' => ['sym' => 'GC=F', 'nm' => 'Gold', 'exch' => 'COMEX'],
-        'gold' => ['sym' => 'GC=F', 'nm' => 'Gold', 'exch' => 'COMEX'],
         '은' => ['sym' => 'SI=F', 'nm' => 'Silver', 'exch' => 'COMEX'],
-        'silver' => ['sym' => 'SI=F', 'nm' => 'Silver', 'exch' => 'COMEX'],
         '구리' => ['sym' => 'HG=F', 'nm' => 'Copper', 'exch' => 'COMEX'],
-        '동' => ['sym' => 'HG=F', 'nm' => 'Copper', 'exch' => 'COMEX'],
         '유가' => ['sym' => 'CL=F', 'nm' => 'WTI Crude Oil', 'exch' => 'NYMEX'],
         'wti' => ['sym' => 'CL=F', 'nm' => 'WTI Crude Oil', 'exch' => 'NYMEX'],
+        '브렌트' => ['sym' => 'BZ=F', 'nm' => 'Brent Crude Oil', 'exch' => 'NYMEX'],
         '천연가스' => ['sym' => 'NG=F', 'nm' => 'Natural Gas', 'exch' => 'NYMEX'],
+        '옥수수' => ['sym' => 'ZC=F', 'nm' => 'Corn', 'exch' => 'CBOT'],
+        '대두' => ['sym' => 'ZS=F', 'nm' => 'Soybeans', 'exch' => 'CBOT'],
+        '밀' => ['sym' => 'ZW=F', 'nm' => 'Wheat', 'exch' => 'CBOT'],
         'vix' => ['sym' => '^VIX', 'nm' => 'Volatility Index', 'exch' => 'CBOE'],
-        '공포지수' => ['sym' => '^VIX', 'nm' => 'Volatility Index', 'exch' => 'CBOE'],
         '달러' => ['sym' => 'DX-Y.NYB', 'nm' => 'US Dollar Index', 'exch' => 'ICE'],
-        'dxy' => ['sym' => 'DX-Y.NYB', 'nm' => 'US Dollar Index', 'exch' => 'ICE'],
         '비트코인' => ['sym' => 'BTC-USD', 'nm' => 'Bitcoin', 'exch' => 'CRYPTO'],
-        '이더리움' => ['sym' => 'ETH-USD', 'nm' => 'Ethereum', 'exch' => 'CRYPTO'],
-        '테슬라' => ['sym' => 'TSLA', 'nm' => 'Tesla', 'exch' => 'NASDAQ'],
-        '애플' => ['sym' => 'AAPL', 'nm' => 'Apple', 'exch' => 'NASDAQ'],
-        '엔비디아' => ['sym' => 'NVDA', 'nm' => 'NVIDIA', 'exch' => 'NASDAQ'],
-        '마소' => ['sym' => 'MSFT', 'nm' => 'Microsoft', 'exch' => 'NASDAQ'],
-        '마이크로소프트' => ['sym' => 'MSFT', 'nm' => 'Microsoft', 'exch' => 'NASDAQ'],
-        '삼성전자' => ['sym' => '005930.KS', 'nm' => 'Samsung Electronics', 'exch' => 'KOSPI'],
-        '하이닉스' => ['sym' => '000660.KS', 'nm' => 'SK Hynix', 'exch' => 'KOSPI'],
-        '코스피' => ['sym' => '^KS11', 'nm' => 'KOSPI Composite Index', 'exch' => 'KOSPI'],
-        '코스닥' => ['sym' => '^KQ11', 'nm' => 'KOSDAQ Composite Index', 'exch' => 'KOSDAQ'],
-        '나스닥' => ['sym' => '^IXIC', 'nm' => 'NASDAQ Composite', 'exch' => 'NASDAQ'],
-        's&p' => ['sym' => '^GSPC', 'nm' => 'S&P 500', 'exch' => 'S&P'],
-        '다우' => ['sym' => '^DJI', 'nm' => 'Dow Jones Industrial Average', 'exch' => 'DJI']
+        '유로스톡스' => ['sym' => '^STOXX50E', 'nm' => 'Euro Stoxx 50', 'exch' => 'INDEX'],
+        '닛케이' => ['sym' => '^N225', 'nm' => 'Nikkei 225', 'exch' => 'INDEX'],
+        '상해' => ['sym' => '000001.SS', 'nm' => 'SSE Composite', 'exch' => 'SHANGHAI'],
+        '인도' => ['sym' => '^BSESN', 'nm' => 'BSE SENSEX', 'exch' => 'INDEX'],
+        '신흥국' => ['sym' => 'EEM', 'nm' => 'MSCI Emerging Markets', 'exch' => 'ETF'],
+        '글로벌채권' => ['sym' => 'BNDW', 'nm' => 'Total World Bond', 'exch' => 'ETF'],
+        '하이일드' => ['sym' => 'HYG', 'nm' => 'HYG High Yield Bond', 'exch' => 'ETF'],
+        '운송' => ['sym' => '^DJT', 'nm' => 'Dow Transports', 'exch' => 'INDEX'],
+        '코스피200' => ['sym' => '^KS200', 'nm' => 'KOSPI 200', 'exch' => 'KOSPI'],
+        '레버리지' => ['sym' => '122630.KS', 'nm' => 'KODEX 레버리지', 'exch' => 'KOSPI'],
+        '곱버스' => ['sym' => '252670.KS', 'nm' => 'KODEX 200선물인버스2X', 'exch' => 'KOSPI'],
+        '국고채' => ['sym' => '114260.KS', 'nm' => 'KODEX 국고채3년', 'exch' => 'KOSPI'],
+        '나스닥100' => ['sym' => '^NDX', 'nm' => 'NASDAQ 100', 'exch' => 'NASDAQ'],
+        '10년물' => ['sym' => '^TNX', 'nm' => 'Treasury Yield 10 Years', 'exch' => 'INDEX'],
+        '30년물' => ['sym' => '^TYX', 'nm' => 'Treasury Yield 30 Years', 'exch' => 'INDEX'],
+        '호주' => ['sym' => 'AUDKRW=X', 'nm' => 'AUD/KRW', 'exch' => 'FOREX'],
+        '캐나다' => ['sym' => 'CADKRW=X', 'nm' => 'CAD/KRW', 'exch' => 'FOREX'],
+        '스위스' => ['sym' => 'CHFKRW=X', 'nm' => 'CHF/KRW', 'exch' => 'FOREX'],
+        '홍콩' => ['sym' => 'HKDKRW=X', 'nm' => 'HKD/KRW', 'exch' => 'FOREX'],
+        '싱가포르' => ['sym' => 'SGDKRW=X', 'nm' => 'SGD/KRW', 'exch' => 'FOREX']
     ];
 
     $results = [];
     $seen = [];
 
-    // 1. 사전에 매칭되는 단어가 있는지 확인
     foreach ($dictionary as $key => $data) {
         if (mb_strpos($q_lower, $key) !== false || mb_strpos($key, $q_lower) !== false) {
             if (!isset($seen[$data['sym']])) {
                 $results[] = [
-                    'symbol' => $data['sym'],
-                    'shortname' => $data['nm'],
-                    'exchange' => $data['exch'],
-                    'is_smart' => true // UI 강조용 플래그
+                    'symbol' => $data['sym'], 'shortname' => $data['nm'], 'exchange' => $data['exch'], 'is_smart' => true
                 ];
                 $seen[$data['sym']] = true;
             }
         }
     }
 
-    // 2. 야후 API 원본 검색 연동
     $url = "https://query2.finance.yahoo.com/v1/finance/search?q=" . urlencode($q) . "&quotesCount=10&newsCount=0";
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -105,7 +105,6 @@ if (isset($_GET['search'])) {
         if (!empty($yahoo_data['quotes'])) {
             foreach ($yahoo_data['quotes'] as $quote) {
                 if (!isset($quote['symbol'])) continue;
-                // 사전에 이미 추가된 티커는 중복 제거
                 if (!isset($seen[$quote['symbol']])) {
                     $results[] = $quote;
                     $seen[$quote['symbol']] = true;
@@ -113,7 +112,6 @@ if (isset($_GET['search'])) {
             }
         }
     }
-
     echo json_encode(['quotes' => $results]);
     exit;
 }
@@ -121,12 +119,7 @@ if (isset($_GET['search'])) {
 // API: JSON 저장
 if (isset($_POST['save_data'])) {
     $json = $_POST['save_data'];
-    if (json_decode($json) !== null) {
-        file_put_contents($DATA_FILE, $json);
-        echo "OK";
-    } else {
-        echo "FAIL";
-    }
+    if (json_decode($json) !== null) { file_put_contents($DATA_FILE, $json); echo "OK"; } else { echo "FAIL"; }
     exit;
 }
 ?>
@@ -167,32 +160,34 @@ if (isset($_POST['save_data'])) {
         <div class="panel left">
             <h2>🔍 스마트 종목 추가</h2>
             <div style="display:flex; gap:8px; margin-bottom: 16px;">
-                <input type="text" id="sq" placeholder="검색어 (예: 필라델피아, 금, TSLA)" onkeypress="if(event.key==='Enter') searchTicker()">
+                <input type="text" id="sq" placeholder="검색어 (예: 구리, 10년물, 금)" onkeypress="if(event.key==='Enter') searchTicker()">
                 <button class="btn-blue" onclick="searchTicker()" style="white-space:nowrap;">검색</button>
             </div>
             <div>
                 <select id="add-target" class="cat-sel">
-                    <option value="US_TOP10">미국 Top 10 에 추가</option>
-                    <option value="KR_TOP10">한국 Top 10 에 추가</option>
-                    <option value="IDX_GL">글로벌 지수(DXY, 금 등) 에 추가</option>
-                    <option value="IDX_US">미국 지수(S&P등) 에 추가</option>
-                    <option value="IDX_KR">한국 지수(KOSPI등) 에 추가</option>
-                    <option value="FX">환율 에 추가</option>
+                    <option value="IDX_GL">🌍 글로벌 주요 지표·지수 (설명 지원)</option>
+                    <option value="CMD">🌍 글로벌 원자재 (설명 지원)</option>
+                    <option value="IDX_US">🇺🇸 미국 주요 지표·지수 (설명 지원)</option>
+                    <option value="IDX_KR">🇰🇷 한국 주요 지표·지수 (설명 지원)</option>
+                    <option value="US_TOP10">🇺🇸 미국 시총 Top 10 에 추가</option>
+                    <option value="KR_TOP10">🇰🇷 한국 시총 Top 10 에 추가</option>
+                    <option value="FX">💱 환율 에 추가</option>
                 </select>
             </div>
             <div id="search-res" style="max-height: 500px; overflow-y: auto;">
-                <p style="color:#94a3b8; font-size:13px; text-align:center;">티커나 종목명(한글/영문)을 검색하세요.<br>유명한 종목은 자동 매칭됩니다.</p>
+                <p style="color:#94a3b8; font-size:13px; text-align:center;">티커나 종목명(한글/영문)을 검색하세요.</p>
             </div>
         </div>
 
         <div class="panel right">
             <h2>📝 현재 표시중인 목록
                 <select id="view-target" style="width:200px; padding:4px;" onchange="renderList()">
-                    <option value="US_TOP10">🇺🇸 미국 Top 10</option>
-                    <option value="KR_TOP10">🇰🇷 한국 Top 10</option>
                     <option value="IDX_GL">🌍 글로벌 주요 지표</option>
+                    <option value="CMD">🌍 글로벌 원자재</option>
                     <option value="IDX_US">🇺🇸 미국 주요 지수</option>
                     <option value="IDX_KR">🇰🇷 한국 주요 지수</option>
+                    <option value="US_TOP10">🇺🇸 미국 시총 Top 10</option>
+                    <option value="KR_TOP10">🇰🇷 한국 시총 Top 10</option>
                     <option value="FX">💱 환율</option>
                 </select>
             </h2>
@@ -200,18 +195,15 @@ if (isset($_POST['save_data'])) {
         </div>
     </div>
 
-    <button class="btn-blue floating-save" onclick="saveData()">💾 변경사항 홈페이지에 적용하기</button>
+    <button class="btn-blue floating-save" onclick="saveData()">💾 변경사항 적용하기</button>
 
     <script>
         let configData = {};
 
-        // 데이터 로드
         fetch('data.json?t=' + Date.now()).then(r => r.json()).then(d => {
-            configData = d;
-            renderList();
+            configData = d; renderList();
         });
 
-        // 스마트 + 야후 검색
         function searchTicker() {
             const q = document.getElementById('sq').value;
             if(!q) return;
@@ -238,17 +230,26 @@ if (isset($_POST['save_data'])) {
             });
         }
 
-        // 종목 데이터에 추가
+        // 💡 종목 추가 시 설명(desc)도 입력받도록 기능 확장
         function doAdd(sym, defaultNm) {
             const target = document.getElementById('add-target').value;
-            const nm = prompt('홈페이지에 표시될 이름을 입력하세요.', defaultNm);
+            const nm = prompt('홈페이지에 굵게 표시될 이름을 입력하세요.', defaultNm);
             if(!nm) return;
+            
+            let desc = '';
+            if(target.startsWith('IDX_') || target === 'CMD') {
+                desc = prompt('종목명 옆에 작게 들어갈 추가 설명을 입력하세요 (선택사항)', '');
+            }
 
-            let newItem = { 
-                sym: sym, 
-                id: 'dyn-' + sym.toLowerCase().replace(/[^a-z0-9]/g,''), 
-                nm: nm 
-            };
+            let newItem = { sym: sym, id: 'dyn-' + sym.toLowerCase().replace(/[^a-z0-9]/g,''), nm: nm };
+            if(desc) newItem.desc = desc;
+            
+            // 국기가 필요한 환율의 경우 프롬프트 제공 (간단 처리)
+            if(target === 'FX') {
+                const flag = prompt('국기 아이콘 URL을 입력하세요 (선택). 예: https://flagcdn.com/w40/us.png', '');
+                if(flag) newItem.flag = flag;
+                newItem.mult = 1; // JPY 등 100이 필요한 경우 수동 처리 필요
+            }
             
             if(!configData[target]) configData[target] = [];
             configData[target].push(newItem);
@@ -257,7 +258,6 @@ if (isset($_POST['save_data'])) {
             renderList();
         }
 
-        // 리스트 렌더링
         function renderList() {
             const cat = document.getElementById('view-target').value;
             const c = document.getElementById('current-list');
@@ -270,7 +270,8 @@ if (isset($_POST['save_data'])) {
                 const div = document.createElement('div');
                 div.className = 'drag-item';
                 div.innerHTML = `
-                    <div><b>${item.nm}</b> <span style="color:#94a3b8; font-size:12px; margin-left:6px;">${item.sym}</span></div>
+                    <div><b>${item.nm}</b> <span style="color:#94a3b8; font-size:12px; margin-left:6px;">${item.sym}</span><br>
+                    <span style="font-size:11.5px; color:#64748b;">${item.desc ? '- ' + item.desc : ''}</span></div>
                     <div class="ctrls">
                         <button onclick="moveItem('${cat}', ${i}, -1)">▲</button>
                         <button onclick="moveItem('${cat}', ${i}, 1)">▼</button>
@@ -281,37 +282,23 @@ if (isset($_POST['save_data'])) {
             });
         }
 
-        // 순서 변경
         function moveItem(cat, i, dir) {
             const arr = configData[cat];
             if (i + dir < 0 || i + dir >= arr.length) return;
-            let temp = arr[i];
-            arr[i] = arr[i + dir];
-            arr[i + dir] = temp;
+            let temp = arr[i]; arr[i] = arr[i + dir]; arr[i + dir] = temp;
             renderList();
         }
 
-        // 삭제
         function delItem(cat, i) {
-            if(confirm('정말 삭제하시겠습니까?')) {
-                configData[cat].splice(i, 1);
-                renderList();
-            }
+            if(confirm('정말 삭제하시겠습니까?')) { configData[cat].splice(i, 1); renderList(); }
         }
 
-        // 서버에 저장
         function saveData() {
             const fd = new FormData();
             fd.append('save_data', JSON.stringify(configData, null, 2));
-            
-            fetch('admin.php', { method: 'POST', body: fd })
-            .then(r => r.text())
-            .then(res => {
-                if(res.trim() === 'OK') {
-                    alert('성공적으로 저장되었습니다! 홈페이지를 새로고침 해보세요.');
-                } else {
-                    alert('저장 실패: 폴더 쓰기 권한(퍼미션)을 확인하세요.');
-                }
+            fetch('admin.php', { method: 'POST', body: fd }).then(r => r.text()).then(res => {
+                if(res.trim() === 'OK') alert('성공적으로 저장되었습니다! 홈페이지를 새로고침 해보세요.');
+                else alert('저장 실패: 폴더 쓰기 권한(퍼미션)을 확인하세요.');
             });
         }
     </script>
