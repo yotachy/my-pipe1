@@ -521,7 +521,7 @@ function drawChart(s, range, j, wrap, type) {
     let isBoundary = false, txt = "";
 
     if (range === "1D") {
-      if (!prevD || prevD.getHours() !== hr) { isBoundary = true; txt = hr + "시"; } // 💡 10시 형태로 출력
+      if (!prevD || prevD.getHours() !== hr) { isBoundary = true; txt = hr + "시"; } 
     } else if (range === "1W") {
       if (!prevD || prevD.getDate() !== dy) { isBoundary = true; txt = (mo + 1) + "/" + dy; }
     } else if (range === "1M") {
@@ -573,7 +573,7 @@ function drawChart(s, range, j, wrap, type) {
             g.addColorStop(0, col + "28"); g.addColorStop(1, col + "00"); return g;
           },
           pointRadius: pRadii, pointBackgroundColor: "var(--box-bg)", pointBorderColor: hitCols, pointBorderWidth: 2, 
-          pointHoverRadius: range === "1D" ? 0 : 6, // 💡 호버 시에도 도트 제거
+          pointHoverRadius: range === "1D" ? 0 : 6, 
           tension: 0.2
         }]
       },
@@ -596,7 +596,6 @@ function drawChart(s, range, j, wrap, type) {
         scales: {
           x: {
             grid: { display: true, drawOnChartArea: true, color: ctx => tickLabels[ctx.index] ? chartGridColor : "transparent", drawTicks: false },
-            // 💡 autoSkip false로 설정하여 우리가 지정한 markSet 텍스트만 균일하게 렌더링
             ticks: { autoSkip: false, maxRotation: 0, align: "center", font: { family: "Pretendard", size: 10 }, color: chartTextColor, callback: (val, i) => tickLabels[i] || null },
             border: { display: false }
           },
@@ -650,7 +649,6 @@ function segbar(score) {
   return h + "</div>";
 }
 
-// 💡 공탐지수 텍스트 포맷 개선: 어제 22 ➔ 오늘 29 (+7) 
 function renderFG(score, prev, hist) {
   let zn = getZ(score), diff = score - prev;
   let html = `<div class="gw">${gauge(score)}<div class="gends"><span class="gend">공포</span><span class="gend">탐욕</span></div></div>` +
@@ -755,6 +753,7 @@ window.addEventListener("resize", () => {
   hmResizeTimer = setTimeout(() => { if (Object.keys(lastHmMap).length > 0) renderAllHeatmaps(lastHmMap); }, 300);
 });
 
+// 두 개의 히트맵 렌더링을 래핑하는 함수
 function renderAllHeatmaps(qmap) {
   lastHmMap = qmap; 
   let usClosed = !isMarketOpen("us");
@@ -824,6 +823,7 @@ function drawHeatmap(qmap, closed, wrapId, dataArray, closedMsg) {
   wrap.appendChild(svg.node());
 }
 
+// 💡 백그라운드 데이터 호출 및 렌더링
 window.doLoadHM = function() {
   fetch("quotes.php?syms=" + encodeURIComponent(HM_ALL_SYMS)).then(r => r.ok ? r.json() : null).then(j => {
     if (!j) return showHMErr();
@@ -857,7 +857,7 @@ function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
   intervals[taskId] = setInterval(() => { if (!document.hidden) exec(); }, interval);
 }
 
-// 상단/하단 배너 동시 업데이트 로직
+// 💡 상단/하단 배너 & 클릭 뱃지 동시 업데이트 (문구 강조)
 window.activateGlobalBoost = function(e) {
   if (e) e.stopPropagation();
 
@@ -865,6 +865,7 @@ window.activateGlobalBoost = function(e) {
     globalBoostLevel = 1;
     alert("데이터 갱신 주기가 6초로 단축되었습니다! 🚀");
     
+    // 블루 레벨(Lv.2) 달성 보상: 하단 AdMob 광고 제거
     const admob = document.getElementById('admob-banner');
     if (admob) admob.style.display = 'none';
 
@@ -902,6 +903,7 @@ window.activateGlobalBoost = function(e) {
   runSchedule("fx", "fx-list", "cy-fx-time", "global", doLoadFX, newInterval);
 };
 
+// 💡 히트맵 잠금 해제: 이미 뒤에서 렌더링된 요소의 블러 클래스만 제거
 window.isHmUnlocked = false;
 window.unlockHeatmap = function(e) {
   if (e) e.stopPropagation();
@@ -909,19 +911,8 @@ window.unlockHeatmap = function(e) {
   isHmUnlocked = true;
   document.querySelectorAll('.hm-overlay').forEach(overlay => overlay.style.display = "none");
   document.querySelectorAll('.hm-wrap').forEach(wrap => {
-    wrap.style.filter = "none";
-    wrap.style.opacity = "1";
-    wrap.style.pointerEvents = "auto";
+    wrap.classList.remove('locked'); // 블러 제거로 즉시 선명해짐
   });
-  
-  document.querySelectorAll('.hm-ld').forEach(ld => ld.textContent = "데이터 새로고침 중...");
-  doLoadHM();
-  
-  if (intervals["hm"]) clearInterval(intervals["hm"]);
-  intervals["hm"] = setInterval(() => {
-    if (document.hidden) return;
-    doLoadHM(); 
-  }, 30000);
 };
 
 document.addEventListener("visibilitychange", () => {
@@ -960,6 +951,7 @@ document.addEventListener("DOMContentLoaded", () => {
       BATCH_TOP_SYMS = US_TOP10.map(s => s.sym).join(",") + "," + KR_TOP10.map(s => s.sym).join(",");
       FX_SYMS = FX.map(s => s.sym).join(",");
 
+      // 💡 동적 DOM 생성 시 offset을 이용해 전역 배열 인덱스 매핑
       renderInitialRows('idx-list', data.IDX_GL || [], 'clickIdx', false, 0);
       renderInitialRows('idx-us-list', data.IDX_US || [], 'clickIdx', false, (data.IDX_GL||[]).length);
       renderInitialRows('idx-kr-list', data.IDX_KR || [], 'clickIdx', false, (data.IDX_GL||[]).length + (data.IDX_US||[]).length);
@@ -975,7 +967,14 @@ document.addEventListener("DOMContentLoaded", () => {
       runSchedule("kr-top", "kr-top-list", "cy-kr-top-time", "kr", () => {}, 10000);
       runSchedule("fx", "fx-list", "cy-fx-time", "global", doLoadFX, 10000);
 
-      if (isHmUnlocked) doLoadHM();
+      // 💡 잠금(블러) 상태여도 백그라운드에서 데이터를 즉시 불러와 세팅해둠
+      doLoadHM();
+      if (intervals["hm"]) clearInterval(intervals["hm"]);
+      intervals["hm"] = setInterval(() => {
+        if (document.hidden) return;
+        doLoadHM(); 
+      }, 30000);
+
       doLoadFG();
       setInterval(doLoadFG, 12 * 60 * 60 * 1000);
     })
