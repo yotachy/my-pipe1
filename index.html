@@ -37,10 +37,14 @@
             <svg id="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
             <svg id="sun-icon" style="display: none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
           </button>
-          <a class="app-btn" href="https://play.google.com/store/apps/details?id=com.moneyscoop.cryptopic" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            앱 소개
-          </a>
+          
+          <div class="app-btn-wrap">
+            <button class="app-btn" onclick="showCryptoMsg(event)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              크립토보드
+            </button>
+            <div class="crypto-msg" id="crypto-msg">앱 출시 준비 중</div>
+          </div>
         </div>
       </div>
     </div>
@@ -48,21 +52,22 @@
     <div class="shell">
       <div class="global-banner free-reward-banner boost-banner">
         <div class="g-banner-txt">
-          <div class="g-banner-t1 g-banner-title">🎁 무료 데이터 스피드 업!</div>
-          <div class="g-banner-t2 g-banner-desc">짧은 광고 시청으로 전체 시장 데이터 갱신 속도를 높여보세요.</div>
+          <div class="g-banner-t1 g-banner-title"><span class="lvl-badge">Lv.1</span> 🎁 데이터 갱신 속도 UP!</div>
+          <div class="g-banner-t2 g-banner-desc">짧은 광고 시청으로 전체 시장 데이터 갱신 속도를 높여보세요.<br><span class="g-banner-notice">※ 단계별 보상(속도UP, 광고제거)은 앱 종료 전까지 계속 유지됩니다.</span></div>
         </div>
-        <button class="g-banner-btn free-reward-btn" onclick="activateGlobalBoost(event)">▶ 광고 보고 속도 올리기</button>
+        <button class="g-banner-btn free-reward-btn" onclick="activateGlobalBoost(event)">▶ 하단 광고 제거 + 속도 UP</button>
       </div>
 
       <div id="area-gl" class="region-area">
         <h2 class="region-title" onclick="toggleRegion(this)">
-          <span>🌍 글로벌</span>
+          <span>🌐 글로벌 증시</span>
           <span class="chevron">▼</span>
         </h2>
         
         <div class="region-body">
           <div class="sub-tab-menu" id="tabs-gl">
             <button class="sub-tab active" onclick="switchSubTab('gl', 'gl-idx')">주요 지표·지수</button>
+            <button class="sub-tab" onclick="switchSubTab('gl', 'gl-cmd')">원자재</button>
             <button class="sub-tab" onclick="switchSubTab('gl', 'gl-fx')">환율 (24시간)</button>
           </div>
 
@@ -96,6 +101,41 @@
                 <div class="chart-note" id="idx-chart-note"></div>
                 <div class="chart-perf" id="idx-chart-perf"></div>
                 <div class="canvas-wrap"><canvas id="idx-canvas"></canvas></div>
+              </div>
+              <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
+            </div>
+          </div>
+
+          <div class="sec" id="gl-cmd">
+            <div class="sec-hd">
+              <div class="sec-hd-left">
+                <span class="sec-lbl">글로벌 원자재</span>
+                <span class="sec-time" id="cy-cmd-time"></span>
+              </div>
+              <div class="sec-hd-right">
+                <span class="badge-sync" data-market="global" id="badge-cmd">상태 확인 중</span>
+              </div>
+            </div>
+            <div class="sec-body">
+              <div class="lst" id="cmd-list"></div>
+
+              <div class="chart-area" id="cmd-chart-area">
+                <div class="chart-hd">
+                  <span class="chart-nm" id="cmd-chart-nm">—</span>
+                  <div class="chart-ranges">
+                    <button class="rbtn on" data-r="1D" onclick="setCmdRange('1D')">1D</button>
+                    <button class="rbtn" data-r="1W" onclick="setCmdRange('1W')">1W</button>
+                    <button class="rbtn" data-r="1M" onclick="setCmdRange('1M')">1M</button>
+                    <button class="rbtn" data-r="6M" onclick="setCmdRange('6M')">6M</button>
+                    <button class="rbtn" data-r="1Y" onclick="setCmdRange('1Y')">1Y</button>
+                    <button class="rbtn" data-r="3Y" onclick="setCmdRange('3Y')">3Y</button>
+                    <button class="rbtn" data-r="5Y" onclick="setCmdRange('5Y')">5Y</button>
+                    <button class="rbtn" data-r="10Y" onclick="setCmdRange('10Y')">10Y</button>
+                  </div>
+                </div>
+                <div class="chart-note" id="cmd-chart-note"></div>
+                <div class="chart-perf" id="cmd-chart-perf"></div>
+                <div class="canvas-wrap"><canvas id="cmd-canvas"></canvas></div>
               </div>
               <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
             </div>
@@ -140,7 +180,7 @@
 
       <div id="area-us" class="region-area">
         <h2 class="region-title" onclick="toggleRegion(this)">
-          <span>🇺🇸 미국</span>
+          <span>🇺🇸 미국 증시</span>
           <span class="chevron">▼</span>
         </h2>
         
@@ -206,7 +246,7 @@
           <div class="sec" id="us-hm">
             <div class="sec-hd">
               <div class="sec-hd-left">
-                <span class="sec-lbl">섹터 별 히트맵</span>
+                <span class="sec-lbl">미국 | 섹터 별 히트맵</span>
                 <span class="sec-time" id="cy-hm-time"></span>
               </div>
               <div class="sec-hd-right">
@@ -215,16 +255,17 @@
             </div>
             <div class="sec-body">
               <div class="hm-container">
-                <div id="hm-overlay" class="hm-overlay">
+                <div class="hm-overlay">
                   <div class="hm-lock-icon">🔒</div>
                   <div class="hm-lock-text">미국 섹터별 히트맵</div>
                   <button class="hm-unlock-btn" onclick="unlockHeatmap(event)"><span>AD</span> 광고 시청하고 잠금 해제</button>
                 </div>
-                <div id="hm-wrap"><div class="hm-ld" id="hm-st" style="padding: 96px 0">데이터 불러오는 중...</div></div>
+                <div id="us-hm-wrap" class="hm-wrap"><div class="hm-ld" id="us-hm-st" style="padding: 96px 0">데이터 불러오는 중...</div></div>
               </div>
               <div class="hm-legend">
                 <span class="hm-lt">-5%</span><div class="hm-bar"></div><span class="hm-lt">+5%</span>
               </div>
+              <div class="hm-note">※ 화면 크기에 따라 비중이 작은 종목은 텍스트가 생략될 수 있습니다.</div>
             </div>
           </div>
 
@@ -251,7 +292,7 @@
 
       <div id="area-kr" class="region-area">
         <h2 class="region-title" onclick="toggleRegion(this)">
-          <span>🇰🇷 한국</span>
+          <span>🇰🇷 한국 증시</span>
           <span class="chevron">▼</span>
         </h2>
         
@@ -259,6 +300,7 @@
           <div class="sub-tab-menu" id="tabs-kr">
             <button class="sub-tab active" onclick="switchSubTab('kr', 'kr-idx')">주요 지표·지수</button>
             <button class="sub-tab" onclick="switchSubTab('kr', 'kr-top')">시총 Top 10</button>
+            <button class="sub-tab" onclick="switchSubTab('kr', 'kr-hm')">섹터 히트맵</button>
           </div>
 
           <div class="sec active" id="kr-idx">
@@ -311,15 +353,47 @@
               <div class="fn">클릭하면 차트 보기 · 전일 종가 대비</div>
             </div>
           </div>
+
+          <div class="sec" id="kr-hm">
+            <div class="sec-hd">
+              <div class="sec-hd-left">
+                <span class="sec-lbl">한국 | 섹터 별 히트맵</span>
+                <span class="sec-time" id="cy-kr-hm-time"></span>
+              </div>
+              <div class="sec-hd-right">
+                <span class="badge-sync closed" data-market="kr" id="badge-kr-hm">🔒 잠금 상태</span>
+              </div>
+            </div>
+            <div class="sec-body">
+              <div class="hm-container">
+                <div class="hm-overlay">
+                  <div class="hm-lock-icon">🔒</div>
+                  <div class="hm-lock-text">한국 섹터별 히트맵</div>
+                  <button class="hm-unlock-btn" onclick="unlockHeatmap(event)"><span>AD</span> 광고 시청하고 잠금 해제</button>
+                </div>
+                <div id="kr-hm-wrap" class="hm-wrap"><div class="hm-ld" id="kr-hm-st" style="padding: 96px 0">데이터 불러오는 중...</div></div>
+              </div>
+              <div class="hm-legend">
+                <span class="hm-lt">-5%</span><div class="hm-bar"></div><span class="hm-lt">+5%</span>
+              </div>
+              <div class="hm-note">※ 화면 크기에 따라 비중이 작은 종목은 텍스트가 생략될 수 있습니다.</div>
+            </div>
+          </div>
+
         </div>
       </div>
 
       <div class="global-banner free-reward-banner boost-banner" style="margin-top: 40px;">
         <div class="g-banner-txt">
-          <div class="g-banner-t1 g-banner-title">🎁 무료 데이터 스피드 업!</div>
-          <div class="g-banner-t2 g-banner-desc">짧은 광고 시청으로 전체 시장 데이터 갱신 속도를 높여보세요.</div>
+          <div class="g-banner-t1 g-banner-title"><span class="lvl-badge">Lv.1</span> 🎁 데이터 갱신 속도 UP!</div>
+          <div class="g-banner-t2 g-banner-desc">짧은 광고 시청으로 전체 시장 데이터 갱신 속도를 높여보세요.<br><span class="g-banner-notice">※ 단계별 보상(속도UP, 광고제거)은 앱 종료 전까지 계속 유지됩니다.</span></div>
         </div>
-        <button class="g-banner-btn free-reward-btn" onclick="activateGlobalBoost(event)">▶ 광고 보고 속도 올리기</button>
+        <button class="g-banner-btn free-reward-btn" onclick="activateGlobalBoost(event)">▶ 하단 광고 제거 + 속도 UP</button>
+      </div>
+
+      <div id="admob-banner" class="admob-banner">
+        <span style="font-size: 20px;">💰</span><br>하단 광고 배너 영역 (AdMob)<br>
+        <span style="font-size: 10px; font-weight:normal;">(갱신 속도 Lv.2 달성 시 사라집니다)</span>
       </div>
 
       <div class="footer-wrap">
