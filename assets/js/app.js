@@ -33,28 +33,39 @@ function animateValue(obj, start, end, duration, formatFn) {
   window.requestAnimationFrame(step);
 }
 
-function getKSTTime() {
+// 💡 새로운 스마트 마켓 타임 감지 함수 (써머타임 자동 적용)
+function getMarketState(type) {
   const d = new Date();
-  const utc = d.getTime() + d.getTimezoneOffset() * 60000;
-  return new Date(utc + 3600000 * 9);
-}
+  // 미국 현지 시간(EST/EDT) 계산
+  const nyTime = new Date(d.toLocaleString("en-US", {timeZone: "America/New_York"}));
+  const day = nyTime.getDay();
+  const h = nyTime.getHours();
+  const m = nyTime.getMinutes();
+  const t = h * 100 + m;
 
-function isMarketOpen(type) {
-  const kst = getKSTTime();
-  const day = kst.getDay();
-  const t = kst.getHours() * 100 + kst.getMinutes();
-
-  if (type === "kr") return day >= 1 && day <= 5 && t >= 900 && t <= 1530;
+  if (type === "kr") {
+    // 한국 시간 기준
+    const utc = d.getTime() + d.getTimezoneOffset() * 60000;
+    const kst = new Date(utc + 3600000 * 9);
+    const kDay = kst.getDay();
+    const kT = kst.getHours() * 100 + kst.getMinutes();
+    
+    if (kDay >= 1 && kDay <= 5) {
+      if (kT >= 900 && kT <= 1530) return "REGULAR";
+    }
+    return "CLOSED";
+  } 
   else if (type === "us") {
-    if (day === 0) return false;
-    if (day === 1 && t < 2230) return false;
-    if (day === 6 && t > 600) return false;
-    return t >= 2230 || t <= 600;
-  } else {
-    if (day === 6 && t > 600) return false;
-    if (day === 0) return false;
-    if (day === 1 && t < 700) return false;
-    return true;
+    if (day === 0 || day === 6) return "CLOSED"; // 주말 마감
+    if (t >= 400 && t < 930) return "PRE"; // 프리마켓 (04:00 ~ 09:30)
+    if (t >= 930 && t < 1600) return "REGULAR"; // 정규장 (09:30 ~ 16:00)
+    if (t >= 1600 && t < 2000) return "POST"; // 애프터마켓 (16:00 ~ 20:00)
+    return "CLOSED";
+  } 
+  else {
+    // 글로벌/환율 (주말 제외 24시간)
+    if (day === 0 || day === 6) return "CLOSED";
+    return "REGULAR"; 
   }
 }
 
@@ -93,7 +104,7 @@ window.showCryptoMsg = function(e) {
   }, 2000);
 };
 
-// 💡 종목명(절대 안 짤림) + 설명란(우측 스크롤) 구조 렌더링
+// 💡 렌더링 시 빈 뱃지(<span class="ext-badge">)를 추가하여 나중에 PRE/POST를 넣음
 function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, offset = 0) {
   const container = $(containerId);
   if(!container) return;
@@ -107,13 +118,11 @@ function renderInitialRows(containerId, arr, clickHandlerName, hasMc = false, of
     
     let flagHtml = item.flag ? `<img class="flag" src="${item.flag}" alt=""/>` : '';
     let mcHtml = hasMc ? `<div class="mc"></div>` : '';
-    
-    let descHtml = item.desc ? `<div class="lbl-desc-scroll"><span class="lbl-desc">${item.desc}</span></div>` : '';
+    let descHtml = item.desc ? `<span class="info-icon" onclick="alert('${item.desc}'); event.stopPropagation();">i</span>` : '';
     
     row.innerHTML = `
       <div class="lbl">
-        <div class="lbl-nm">${flagHtml}${item.nm}</div>
-        ${descHtml}
+        <div class="lbl-nm">${flagHtml}${item.nm}<span class="ext-badge"></span>${descHtml}</div>
       </div>
       ${mcHtml}
       <div class="sk sk-val"></div>
@@ -161,12 +170,15 @@ function toggleTheme() {
   doLoadFG();
 }
 
+// 💡 뱃지에 프리장/애프터장 상태 반영
 function updateSyncBadges() {
   document.querySelectorAll(".badge-sync").forEach(badge => {
     const mkt = badge.getAttribute("data-market");
     badge.className = "badge-sync"; 
     
-    if (!isMarketOpen(mkt)) {
+    const state = getMarketState(mkt);
+    
+    if (state === "CLOSED") {
       badge.classList.add('closed');
       badge.innerHTML = "⏸ 장마감";
       badge.onclick = null;
@@ -174,18 +186,22 @@ function updateSyncBadges() {
     }
     
     badge.classList.add('level-' + globalBoostLevel);
-    let txt, icon;
     
+    let prefix = "";
+    if (state === "PRE") prefix = "[프리장] ";
+    if (state === "POST") prefix = "[애프터장] ";
+
+    let txt, icon;
     if (globalBoostLevel === 0) {
-      txt = "10초 (▶ 스피드 UP)"; 
+      txt = prefix + "10초 (▶ 스피드 UP)"; 
       icon = "⚡";
       badge.onclick = window.activateGlobalBoost;
     } else if (globalBoostLevel === 1) {
-      txt = "6초 (▶ MAX 속도)"; 
+      txt = prefix + "6초 (▶ MAX 속도)"; 
       icon = "🚀";
       badge.onclick = window.activateGlobalBoost;
     } else {
-      txt = "3초 (MAX 최고속도)"; 
+      txt = prefix + "3초 (최고속도)"; 
       icon = "🔥";
       badge.onclick = null; 
     }
@@ -204,7 +220,8 @@ function forceSleepDots(listIds) {
   });
 }
 
-function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitPct) {
+// 💡 UI 업데이트 시 프리/애프터 뱃지도 함께 제어
+function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitPct, extState = "") {
   const el = $(id);
   if (!el) return;
 
@@ -230,12 +247,28 @@ function renderRow(id, price, prev, symObj, mcStr, mcVal, explicitChg, explicitP
     dotClass = "dot-live-" + globalBoostLevel;
   }
 
+  // 💡 기존 .lbl 내용을 보존하면서 점멸 도트만 교체
   const lblEl = el.querySelector(".lbl");
   const cleanInner = lblEl ? lblEl.innerHTML.replace(/<span class="dot.*?<\/span>/g, "") : "";
   const mcHtml = mcStr ? `<div class="mc">${mcStr}</div>` : "";
 
   el.innerHTML = `<div class="lbl">${dotHtml(dotClass)}${cleanInner}</div>${mcHtml}<div class="val ${vc}">${valStr}</div><div class="chg"><span class="pct ${cls}">${arrow} ${fmt(Math.abs(pct), 2)}%</span><span class="raw ${cls}">${raw}</span></div>`;
   if (mcVal !== undefined) el.dataset.mc = mcVal;
+
+  // 💡 프리장/애프터장 뱃지 추가
+  const extBadge = el.querySelector(".ext-badge");
+  if (extBadge) {
+    if (extState === "PRE") {
+      extBadge.innerHTML = "PRE";
+      extBadge.style.cssText = "font-size:9px; color:#f59e0b; border:1px solid #f59e0b; border-radius:3px; padding:1px 3px; margin-left:4px; line-height:1; vertical-align:middle;";
+    } else if (extState === "POST") {
+      extBadge.innerHTML = "POST";
+      extBadge.style.cssText = "font-size:9px; color:#8b5cf6; border:1px solid #8b5cf6; border-radius:3px; padding:1px 3px; margin-left:4px; line-height:1; vertical-align:middle;";
+    } else {
+      extBadge.innerHTML = "";
+      extBadge.style.cssText = "";
+    }
+  }
 
   if (changed) {
     el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
@@ -261,6 +294,32 @@ function sortListDesc(listId) {
    3. API Fetch 로직 (Data Fetching)
    ========================================================================= */
 
+// 💡 야후에서 받아온 데이터 중 현재 상태에 맞는(Pre/Post) 데이터를 뽑아내는 헬퍼
+function extractPriceData(q) {
+  let p = q.regularMarketPrice;
+  let pv = q.regularMarketPreviousClose || p;
+  let chg = q.regularMarketChange || 0;
+  let pct = q.regularMarketChangePercent || 0;
+  let ext = "";
+
+  const state = q.marketState;
+
+  if ((state === "PRE" || state === "PREPRE") && q.preMarketPrice) {
+    p = q.preMarketPrice;
+    chg = q.preMarketChange || 0;
+    pct = q.preMarketChangePercent || 0;
+    ext = "PRE";
+    pv = q.regularMarketPrice; 
+  } else if ((state === "POST" || state === "POSTPOST" || state === "CLOSED") && q.postMarketPrice) {
+    p = q.postMarketPrice;
+    chg = q.postMarketChange || 0;
+    pct = q.postMarketChangePercent || 0;
+    ext = "POST";
+    pv = q.regularMarketPrice;
+  }
+  return { p, pv, chg, pct, ext };
+}
+
 function doLoadIdx() {
   if(!IDX_SYMS) return;
   fetch("quotes.php?syms=" + encodeURIComponent(IDX_SYMS))
@@ -272,9 +331,8 @@ function doLoadIdx() {
         IDX.forEach(s => {
           const q = map[s.sym];
           if (q && q.regularMarketPrice) {
-            const p = q.regularMarketPrice;
-            const pv = q.regularMarketPreviousClose || p;
-            renderRow(s.id, p, pv, s, null, null, q.regularMarketChange, q.regularMarketChangePercent);
+            const pd = extractPriceData(q);
+            renderRow(s.id, pd.p, pd.pv, s, null, null, pd.chg, pd.pct, pd.ext);
           } else fetchFallbackDirect(s);
         });
       } else IDX.forEach(fetchFallbackDirect);
@@ -292,9 +350,8 @@ function doLoadCmd() {
         CMD.forEach(s => {
           const q = map[s.sym];
           if (q && q.regularMarketPrice) {
-            const p = q.regularMarketPrice;
-            const pv = q.regularMarketPreviousClose || p;
-            renderRow(s.id, p, pv, s, null, null, q.regularMarketChange, q.regularMarketChangePercent);
+            const pd = extractPriceData(q);
+            renderRow(s.id, pd.p, pd.pv, s, null, null, pd.chg, pd.pct, pd.ext);
           } else fetchFallbackDirect(s);
         });
       } else CMD.forEach(fetchFallbackDirect);
@@ -313,11 +370,10 @@ function doLoadBatchedTop10() {
           arr.forEach(s => {
             const q = map[s.sym];
             if (q && q.regularMarketPrice) {
-              const p = q.regularMarketPrice;
-              const pv = q.regularMarketPreviousClose || p;
+              const pd = extractPriceData(q);
               const mc = q.marketCap || 0;
               const cur = s.sym.indexOf(".KS") > -1 || s.sym.indexOf(".KQ") > -1 ? "KRW" : "USD";
-              renderRow(s.id, p, pv, s, fmtMC(mc, cur), mc, q.regularMarketChange, q.regularMarketChangePercent);
+              renderRow(s.id, pd.p, pd.pv, s, fmtMC(mc, cur), mc, pd.chg, pd.pct, pd.ext);
             } else fetchFallbackDirect(s);
           });
           sortListDesc(listId);
@@ -342,9 +398,10 @@ function doLoadFX() {
           const q = map[s.sym];
           if (q && q.regularMarketPrice) {
             const mult = s.mult || 1;
-            const p = q.regularMarketPrice * mult;
-            const pv = (q.regularMarketPreviousClose || q.regularMarketPrice) * mult;
-            renderRow(s.id, p, pv, s, null, null, (q.regularMarketChange || 0) * mult, q.regularMarketChangePercent || 0);
+            const pd = extractPriceData(q); // FX는 보통 PRE/POST가 없지만 통일성 유지
+            const p = pd.p * mult;
+            const pv = pd.pv * mult;
+            renderRow(s.id, p, pv, s, null, null, pd.chg * mult, pd.pct, pd.ext);
           } else fetchFallbackDirect(s);
         });
       } else FX.forEach(fetchFallbackDirect);
@@ -484,7 +541,6 @@ function doChart(s, range, type) {
     .catch(() => wrap.innerHTML = `<div class="chart-er">데이터를 불러올 수 없습니다<br><button onclick="doChart(window.active${type.replace('-','')}Sym, '${range}', '${type}')" style="margin-top:10px;font-size:12px;color:#1a6fd4;background:none;border:none;cursor:pointer;font-weight:600;">↻ 다시 시도</button></div>`);
 }
 
-// 💡 차트 X축 가독성 100% 최적화 & 1D 점 제거 로직
 function drawChart(s, range, j, wrap, type) {
   const res = j.chart && j.chart.result && j.chart.result[0];
   if (!res) return wrap.innerHTML = '<div class="chart-er">데이터 없음</div>';
@@ -514,36 +570,41 @@ function drawChart(s, range, j, wrap, type) {
 
   const pRadii = [], tickLabels = [], hitCols = [];
   
-  // 💡 라벨 오버랩 완전 방지: 어떤 기간이든 5~6개 지점에만 텍스트를 고르게 강제 할당
-  const numTicks = 6;
-  const tickIndices = [];
-  if (labels.length > numTicks) {
-      for(let i=0; i<numTicks; i++) {
-          tickIndices.push(Math.floor(i * (labels.length - 1) / (numTicks - 1)));
+  let boundaries = [];
+  for (let k = 0; k < labels.length; k++) {
+    const d = labels[k];
+    const hr = d.getHours(), mo = d.getMonth(), dy = d.getDate(), yr = d.getFullYear();
+    const prevD = k > 0 ? labels[k - 1] : null;
+    let isBoundary = false, txt = "";
+
+    if (range === "1D") {
+      if (!prevD || prevD.getHours() !== hr) { isBoundary = true; txt = hr + "시"; } 
+    } else if (range === "1W") {
+      if (!prevD || prevD.getDate() !== dy) { isBoundary = true; txt = (mo + 1) + "/" + dy; }
+    } else if (range === "1M") {
+      if (!prevD || (d.getDay() === 1 && prevD.getDay() !== 1) || (d.getTime() - prevD.getTime() > 4*86400000)) { 
+        isBoundary = true; txt = (mo + 1) + "/" + dy; 
       }
-  } else {
-      for(let i=0; i<labels.length; i++) tickIndices.push(i);
+    } else if (range === "6M" || range === "1Y") {
+       const period = range === "6M" ? 1 : 2;
+       if (!prevD || Math.floor(mo / period) !== Math.floor(prevD.getMonth() / period)) { 
+           isBoundary = true; txt = (mo + 1) + "월"; 
+       }
+    } else {
+        if (!prevD || prevD.getFullYear() !== yr) { isBoundary = true; txt = yr + "년"; }
+    }
+    if(isBoundary) boundaries.push({k, txt});
+  }
+  
+  let step = Math.max(1, Math.ceil(boundaries.length / 6));
+  let markSet = {};
+  for(let i=0; i<boundaries.length; i+=step) {
+      markSet[boundaries[i].k] = boundaries[i].txt;
   }
 
   for (let k = 0; k < labels.length; k++) {
-     let mark = tickIndices.includes(k);
-     let txt = "";
-
-     if (mark) {
-         const d = labels[k];
-         const hr = d.getHours(), mo = d.getMonth(), dy = d.getDate(), yr = d.getFullYear();
-         if (range === "1D") {
-             txt = hr + "시";
-         } else if (range === "1W" || range === "1M") {
-             txt = (mo + 1) + "/" + dy;
-         } else if (range === "6M" || range === "1Y") {
-             txt = (mo + 1) + "월";
-         } else {
-             txt = yr + "년";
-         }
-     }
-
-     pRadii.push((mark && range !== "1D") ? 3.5 : 0);
+     let txt = markSet[k] || "";
+     pRadii.push((txt && range !== "1D") ? 3.5 : 0);
      tickLabels.push(txt);
      hitCols.push(col);
   }
@@ -850,7 +911,6 @@ function runSchedule(taskId, idLists, timeIds, type, fn, interval) {
   intervals[taskId] = setInterval(() => { if (!document.hidden) exec(); }, interval);
 }
 
-// 상단/하단 배너 동시 업데이트 로직
 window.activateGlobalBoost = function(e) {
   if (e) e.stopPropagation();
 
@@ -867,7 +927,7 @@ window.activateGlobalBoost = function(e) {
       banner.querySelector(".g-banner-desc").innerHTML = '불편한 광고를 제거했습니다. 한번 더 시청하면 <b>최고 속도 갱신</b> 및 <b>종합 히트맵</b>이 무료로 개방됩니다!';
       
       const btn = banner.querySelector(".g-banner-btn");
-      btn.innerHTML = "▶ 갱신 속도 MAX (최고치) 도달하기";
+      btn.innerHTML = "▶ 최고 속도 + 히트맵 개방";
       btn.className = "g-banner-btn free-reward-btn";
       btn.onclick = window.activateGlobalBoost;
     });

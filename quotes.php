@@ -1,9 +1,6 @@
 <?php
 /**
  * quotes.php — Yahoo Finance / CNN 프록시
- * - cURL 미지원 환경에서도 동작하도록 file_get_contents fallback 추가
- * - 경고/공지 출력이 JSON을 깨뜨리지 않도록 표시 비활성화
- * - Fear & Greed 캐시를 1시간으로 조정
  */
 
 declare(strict_types=1);
@@ -34,232 +31,149 @@ function jsonOut(array $payload): void
 
 function isJsonString(?string $body): bool
 {
-    if (!is_string($body) || trim($body) === '') {
-        return false;
-    }
-    json_decode($body, true);
+    if (!$body) return false;
+    $body = trim($body);
+    if ($body === '') return false;
+    $first = $body[0];
+    if ($first !== '{' && $first !== '[') return false;
+    json_decode($body);
     return json_last_error() === JSON_ERROR_NONE;
 }
 
-function parseStatusCode(array $headers): int
+function httpGet(string $url, array $headers = [], int $timeout = 10, bool $isCnn = false): ?string
 {
-    if (!$headers) {
-        return 0;
-    }
-    if (preg_match('/\s(\d{3})\s/', (string) $headers[0], $m)) {
-        return (int) $m[1];
-    }
-    return 0;
-}
-
-function parseSetCookieHeader(array $headers): string
-{
-    $cookies = [];
-    foreach ($headers as $headerLine) {
-        if (stripos($headerLine, 'Set-Cookie:') === 0) {
-            $cookie = trim(substr($headerLine, strlen('Set-Cookie:')));
-            $pair = explode(';', $cookie, 2)[0] ?? '';
-            if ($pair !== '') {
-                $cookies[] = $pair;
-            }
+    if (function_exists('curl_version')) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        curl_setopt($ch, CURLOPT_ENCODING, '');
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        
+        $defaultHeaders = [
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language: en-US,en;q=0.9',
+        ];
+        if ($isCnn) {
+            $defaultHeaders[] = 'Referer: https://edition.cnn.com/';
         }
-    }
-    return implode('; ', array_unique($cookies));
-}
+        $finalHeaders = array_merge($defaultHeaders, $headers);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $finalHeaders);
 
-function httpGet(string $url, array $headers = [], int $timeout = 10, bool $includeHeaders = false): array
-{
-    $defaultHeaders = [
-        'Accept: application/json, text/plain, */*',
-        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-    ];
-
-    foreach ($defaultHeaders as $defaultHeader) {
-        $name = strtolower(trim(strtok($defaultHeader, ':')));
-        $exists = false;
-        foreach ($headers as $header) {
-            if (strtolower(trim(strtok($header, ':'))) === $name) {
-                $exists = true;
-                break;
-            }
-        }
-        if (!$exists) {
-            $headers[] = $defaultHeader;
-        }
-    }
-
-    if (function_exists('curl_init')) {
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => $timeout,
-            CURLOPT_CONNECTTIMEOUT => $timeout,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_HEADER => $includeHeaders,
-            CURLOPT_ENCODING => '',
-        ]);
-        $raw = curl_exec($ch);
-        $errno = curl_errno($ch);
-        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $headerSize = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $body = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($raw === false || $errno !== 0) {
-            return [
-                'ok' => false,
-                'status' => $status,
-                'headers' => [],
-                'body' => null,
-            ];
+        if ($httpCode >= 200 && $httpCode < 300 && $body !== false) {
+            return $body;
         }
-
-        $headerLines = [];
-        $body = $raw;
-        if ($includeHeaders) {
-            $headerBlob = substr($raw, 0, $headerSize);
-            $body = substr($raw, $headerSize);
-            $headerParts = preg_split("/\r\n\r\n|\n\n/", trim((string) $headerBlob));
-            $lastHeaderBlock = trim((string) end($headerParts));
-            $headerLines = preg_split("/\r\n|\n/", $lastHeaderBlock) ?: [];
-            if ($status === 0) {
-                $status = parseStatusCode($headerLines);
-            }
-        }
-
-        return [
-            'ok' => $status >= 200 && $status < 400 && is_string($body),
-            'status' => $status,
-            'headers' => $headerLines,
-            'body' => $body,
-        ];
+        return null;
     }
 
-    if (!filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN) && ini_get('allow_url_fopen') !== '1') {
-        return [
-            'ok' => false,
-            'status' => 0,
-            'headers' => [],
-            'body' => null,
-        ];
-    }
-
-    $context = stream_context_create([
+    $opts = [
         'http' => [
-            'method' => 'GET',
-            'header' => implode("\r\n", $headers),
+            'method'  => 'GET',
             'timeout' => $timeout,
-            'ignore_errors' => true,
-        ],
-        'ssl' => [
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-        ],
-    ]);
-
-    $body = @file_get_contents($url, false, $context);
-    $responseHeaders = $http_response_header ?? [];
-    $status = parseStatusCode($responseHeaders);
-
-    return [
-        'ok' => $body !== false && $status >= 200 && $status < 400,
-        'status' => $status,
-        'headers' => $includeHeaders ? $responseHeaders : [],
-        'body' => $body === false ? null : $body,
+            'header'  => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\r\n" .
+                         "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\n" .
+                         "Accept-Language: en-US,en;q=0.9\r\n",
+        ]
     ];
+    if ($isCnn) {
+        $opts['http']['header'] .= "Referer: https://edition.cnn.com/\r\n";
+    }
+    if (!empty($headers)) {
+        $opts['http']['header'] .= implode("\r\n", $headers) . "\r\n";
+    }
+
+    $context = stream_context_create($opts);
+    $body = @file_get_contents($url, false, $context);
+
+    if ($body !== false) {
+        return $body;
+    }
+    return null;
 }
 
-function getYahooAuth(string $cacheDir): ?array
+// --- 1) CNN Fear & Greed ---
+if (isset($_GET['fg'])) {
+    $cacheFile = $cacheDir . '/fg_index.json';
+    $ttl = 3600;
+
+    if (is_file($cacheFile) && (time() - filemtime($cacheFile)) < $ttl) {
+        readfile($cacheFile);
+        exit;
+    }
+
+    $url = 'https://production.dataviz.cnn.io/index/fearandgreed/graphdata';
+    $response = httpGet($url, [], 10, true);
+
+    if (isJsonString($response)) {
+        @file_put_contents($cacheFile, $response);
+        echo $response;
+    } else {
+        jsonOut(['error' => 'Failed to fetch Fear & Greed data']);
+    }
+    exit;
+}
+
+// --- 2) Yahoo Quotes ---
+function getYahooAuth(string $cacheDir): array
 {
     $authFile = $cacheDir . '/yahoo_auth.json';
-    if (is_file($authFile) && (time() - filemtime($authFile)) < 3600) {
-        $cached = json_decode((string) @file_get_contents($authFile), true);
-        if (!empty($cached['cookie']) && isset($cached['crumb'])) {
-            return $cached;
+    if (is_file($authFile) && (time() - filemtime($authFile)) < 3600 * 6) {
+        $data = json_decode(file_get_contents($authFile), true);
+        if (!empty($data['cookie']) && !empty($data['crumb'])) {
+            return $data;
         }
     }
 
-    $cookieResponse = httpGet('https://fc.yahoo.com', [], 8, true);
-    $cookie = parseSetCookieHeader($cookieResponse['headers'] ?? []);
-    if ($cookie === '') {
-        return null;
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://fc.yahoo.com');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HEADER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $cookie = '';
+    if ($response !== false) {
+        if (preg_match('/^Set-Cookie:\s*([^;]+)/mi', $response, $m)) {
+            $cookie = $m[1];
+        }
     }
 
-    $crumbResponse = httpGet(
-        'https://query1.finance.yahoo.com/v1/test/getcrumb',
-        ['Cookie: ' . $cookie],
-        8,
-        false
-    );
-    $crumb = is_string($crumbResponse['body']) ? trim($crumbResponse['body']) : '';
+    if (!$cookie) {
+        return [];
+    }
 
+    $ch2 = curl_init();
+    curl_setopt($ch2, CURLOPT_URL, 'https://query1.finance.yahoo.com/v1/test/getcrumb');
+    curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch2, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch2, CURLOPT_USERAGENT, 'Mozilla/5.0');
+    curl_setopt($ch2, CURLOPT_HTTPHEADER, ['Cookie: ' . $cookie]);
+    $crumb = curl_exec($ch2);
+    curl_close($ch2);
+
+    $crumb = trim((string)$crumb);
     if ($crumb === '' || strlen($crumb) > 64 || stripos($crumb, '<!doctype') !== false) {
-        return null;
+        return [];
     }
 
-    $auth = [
-        'cookie' => $cookie,
-        'crumb' => $crumb,
-    ];
+    $auth = ['cookie' => $cookie, 'crumb' => $crumb];
     @file_put_contents($authFile, json_encode($auth, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 
     return $auth;
 }
 
-// --- 1) CNN Fear & Greed ---
-if (isset($_GET['fg'])) {
-    $cacheFile = $cacheDir . '/fg_cache.json';
-    $fgTtl = 3600;
-
-    if (is_file($cacheFile) && (time() - filemtime($cacheFile)) < $fgTtl) {
-        readfile($cacheFile);
-        exit;
-    }
-
-    $response = httpGet(
-        'https://production.dataviz.cnn.io/index/fearandgreed/graphdata',
-        [
-            'Origin: https://edition.cnn.com',
-            'Referer: https://edition.cnn.com/',
-        ],
-        12,
-        false
-    );
-
-    $body = $response['body'] ?? null;
-    if (
-        is_string($body) &&
-        isJsonString($body) &&
-        strpos($body, '"fear_and_greed"') !== false
-    ) {
-        @file_put_contents($cacheFile, $body);
-        echo $body;
-        exit;
-    }
-
-    if (is_file($cacheFile)) {
-        readfile($cacheFile);
-        exit;
-    }
-
-    jsonOut([
-        'error' => true,
-        'message' => 'fear_and_greed upstream failed',
-    ]);
-}
-
-// --- 2) Yahoo Quotes ---
 $rawSyms = isset($_GET['syms']) ? strtoupper((string) $_GET['syms']) : '';
-$syms = preg_replace('/[^A-Z0-9,.\-\^=]/', '', $rawSyms);
+$syms = preg_replace('/[^A-Z0-9,.\\-\\^=]/', '', $rawSyms);
 
 if (!$syms) {
-    jsonOut([
-        'quoteResponse' => [
-            'result' => [],
-        ],
-    ]);
+    jsonOut(['quoteResponse' => ['result' => []]]);
 }
 
 $cacheFile = $cacheDir . '/q_' . md5($syms) . '.json';
@@ -271,7 +185,9 @@ if (is_file($cacheFile) && (time() - filemtime($cacheFile)) < $quoteTtl) {
 }
 
 $auth = getYahooAuth($cacheDir);
-$fields = 'regularMarketPrice,regularMarketChangePercent,regularMarketChange,regularMarketPreviousClose,shortName,symbol,marketCap';
+
+// 💡 여기서 프리/애프터장 필드(preMarketPrice 등)와 marketState 필드를 추가 요청합니다!
+$fields = 'regularMarketPrice,regularMarketChangePercent,regularMarketChange,regularMarketPreviousClose,shortName,symbol,marketCap,preMarketPrice,preMarketChange,preMarketChangePercent,postMarketPrice,postMarketChange,postMarketChangePercent,marketState';
 $url = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' . urlencode($syms) . '&fields=' . urlencode($fields);
 
 $headers = [];
@@ -283,28 +199,10 @@ if (!empty($auth['crumb'])) {
 }
 
 $response = httpGet($url, $headers, 12, false);
-$body = $response['body'] ?? null;
 
-if (
-    is_string($body) &&
-    isJsonString($body) &&
-    strpos($body, '"quoteResponse"') !== false &&
-    strpos($body, '"result"') !== false
-) {
-    @file_put_contents($cacheFile, $body);
-    echo $body;
-    exit;
+if (isJsonString($response)) {
+    @file_put_contents($cacheFile, $response);
+    echo $response;
+} else {
+    jsonOut(['quoteResponse' => ['result' => []]]);
 }
-
-if (is_file($cacheFile)) {
-    readfile($cacheFile);
-    exit;
-}
-
-jsonOut([
-    'error' => true,
-    'quoteResponse' => [
-        'result' => [],
-    ],
-    'message' => 'quotes upstream failed',
-]);
