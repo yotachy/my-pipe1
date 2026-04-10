@@ -4,7 +4,8 @@
       "sym": "DX-Y.NYB",
       "id": "idx-dxy",
       "nm": "DXY",
-      "desc": "주요 6개국 통화 대비 달러 가치 (모든 자산의 기준)",
+      "desc": "주요 6개국 통화 대비 달러 가치",
+      "reason": "모든 자산의 기준",
       "special": "dxy",
       "no1D": true
     },
@@ -12,7 +13,8 @@
       "sym": "^VIX",
       "id": "idx-vix",
       "nm": "VIX",
-      "desc": "S&P 500 옵션 내재 변동성 (공포지수)",
+      "desc": "S&P 500 옵션 내재 변동성",
+      "reason": "시장 공포·탐욕 핵심",
       "special": "vix",
       "no1D": true
     },
@@ -20,14 +22,16 @@
       "sym": "^TNX",
       "id": "idx-tnx",
       "nm": "US 10-Yr Yield",
-      "desc": "미국 10년물 국채금리 (글로벌 금리 벤치마크)",
+      "desc": "미국 10년물 국채금리",
+      "reason": "글로벌 금리 벤치마크",
       "d": 3
     },
     {
       "sym": "^TYX",
       "id": "idx-tyx",
       "nm": "US 30-Yr Yield",
-      "desc": "미국 30년물 국채금리 (장기 인플레이션 지표)",
+      "desc": "미국 30년물 국채금리",
+      "reason": "장기 인플레이션 지표",
       "d": 3
     },
     {
@@ -35,27 +39,31 @@
       "id": "idx-btc",
       "nm": "Bitcoin",
       "desc": "글로벌 암호화폐 대장주",
+      "reason": "암호화폐 시장 기준",
       "d": 0
     },
     {
       "sym": "ETH-USD",
       "id": "idx-eth",
       "nm": "Ethereum",
-      "desc": "알트코인 대장주 (디파이·NFT 생태계 지표)",
+      "desc": "디파이·NFT 생태계 기반",
+      "reason": "알트코인 대장",
       "d": 2
     },
     {
       "sym": "^N225",
       "id": "idx-n225",
       "nm": "Nikkei 225",
-      "desc": "일본 대표 주가지수 (아시아 증시 기준)",
+      "desc": "일본 대표 주가지수",
+      "reason": "아시아 증시 기준",
       "d": 0
     },
     {
       "sym": "^STOXX50E",
       "id": "idx-stoxx50",
       "nm": "Euro Stoxx 50",
-      "desc": "유럽 대형주 50개 (유럽 증시 기준)",
+      "desc": "유럽 대형주 50개",
+      "reason": "유럽 증시 기준",
       "d": 2
     },
     {
@@ -63,6 +71,7 @@
       "id": "idx-sse",
       "nm": "SSE Composite",
       "desc": "중국 상해 종합주가지수",
+      "reason": "중국 경기 지표",
       "d": 2,
       "no1D": true
     },
@@ -70,7 +79,8 @@
       "sym": "^HSI",
       "id": "idx-hsi",
       "nm": "Hang Seng",
-      "desc": "홍콩 항셍지수 (아시아 금융 허브 지표)",
+      "desc": "홍콩 항셍지수",
+      "reason": "아시아 금융 허브",
       "d": 0
     }
   ],
@@ -79,7 +89,8 @@
       "sym": "GC=F",
       "id": "cmd-gold",
       "nm": "Gold",
-      "desc": "글로벌 대표 안전자산 (금)",
+      "desc": "글로벌 대표 안전자산",
+      "reason": "안전자산 최상위",
       "special": "cmd",
       "d": 1
     },
@@ -87,7 +98,8 @@
       "sym": "CL=F",
       "id": "cmd-wti",
       "nm": "WTI Crude Oil",
-      "desc": "서부텍사스산 원유 (글로벌 유가 기준)",
+      "desc": "서부텍사스산 원유",
+      "reason": "글로벌 에너지 기준",
       "special": "cmd",
       "d": 2
     },
@@ -95,7 +107,8 @@
       "sym": "BZ=F",
       "id": "cmd-brent",
       "nm": "Brent Crude Oil",
-      "desc": "브렌트유 (유럽·글로벌 기준 유가)",
+      "desc": "브렌트유 (유럽·아시아 기준)",
+      "reason": "유럽·아시아 기준유가",
       "special": "cmd",
       "d": 2
     },
@@ -103,7 +116,8 @@
       "sym": "HG=F",
       "id": "cmd-copper",
       "nm": "Copper",
-      "desc": "닥터 코퍼 (글로벌 경기 선행 지표)",
+      "desc": "구리 선물 (닥터 코퍼)",
+      "reason": "경기 선행지표 대표",
       "special": "cmd",
       "d": 4
     },
@@ -111,7 +125,8 @@
       "sym": "NG=F",
       "id": "cmd-ng",
       "nm": "Natural Gas",
-      "desc": "천연가스 (에너지 시장 핵심 지표)",
+      "desc": "천연가스",
+      "reason": "에너지 시장 핵심",
       "special": "cmd",
       "d": 3
     },
@@ -119,7 +134,8 @@
       "sym": "SI=F",
       "id": "cmd-silver",
       "nm": "Silver",
-      "desc": "산업재·귀금속 이중 수요 (은)",
+      "desc": "은 (귀금속·산업재 이중 수요)",
+      "reason": "금·산업재 이중성",
       "special": "cmd",
       "d": 3
     },
@@ -127,7 +143,8 @@
       "sym": "PL=F",
       "id": "cmd-platinum",
       "nm": "Platinum",
-      "desc": "자동차 촉매제·수소경제 핵심 (백금)",
+      "desc": "백금 (자동차 촉매·수소경제)",
+      "reason": "수소경제 핵심 소재",
       "special": "cmd",
       "d": 1
     },
@@ -135,7 +152,8 @@
       "sym": "ZC=F",
       "id": "cmd-corn",
       "nm": "Corn",
-      "desc": "옥수수 (글로벌 대표 식량·바이오에너지)",
+      "desc": "옥수수 (식량·바이오에너지)",
+      "reason": "식량·에너지 이중수요",
       "special": "cmd",
       "d": 2
     },
@@ -143,7 +161,8 @@
       "sym": "ZS=F",
       "id": "cmd-soybean",
       "nm": "Soybeans",
-      "desc": "대두 (글로벌 단백질·사료 수요 지표)",
+      "desc": "대두 (글로벌 단백질·사료)",
+      "reason": "글로벌 단백질 지표",
       "special": "cmd",
       "d": 2
     },
@@ -151,7 +170,8 @@
       "sym": "ZW=F",
       "id": "cmd-wheat",
       "nm": "Wheat",
-      "desc": "밀 (글로벌 주요 식량 안보 지표)",
+      "desc": "밀 (글로벌 식량 안보)",
+      "reason": "식량 안보 지표",
       "special": "cmd",
       "d": 2
     }
@@ -161,63 +181,73 @@
       "sym": "^GSPC",
       "id": "idx-sp500",
       "nm": "S&P 500",
-      "desc": "미국 대형주 500개 (글로벌 기준 지수)"
+      "desc": "미국 대형주 500개",
+      "reason": "글로벌 기준 지수"
     },
     {
       "sym": "^IXIC",
       "id": "idx-nasdaq",
       "nm": "NASDAQ",
-      "desc": "미국 기술주 중심 벤치마크"
+      "desc": "미국 기술주 중심 지수",
+      "reason": "기술 혁신 지표"
     },
     {
       "sym": "^DJI",
       "id": "idx-dow",
       "nm": "DOW",
-      "desc": "미국 초우량 기업 30개 (블루칩 지표)"
+      "desc": "미국 초우량 기업 30개",
+      "reason": "블루칩 대표 지수"
     },
     {
       "sym": "^NDX",
       "id": "idx-ndx",
       "nm": "NASDAQ 100",
-      "desc": "나스닥 비금융 우량 100대 기업"
+      "desc": "나스닥 비금융 우량 100개",
+      "reason": "빅테크 집중 지수"
     },
     {
       "sym": "^RUT",
       "id": "idx-russell",
       "nm": "Russell 2000",
-      "desc": "미국 중소형주 2000개 (내수 경기 선행)"
+      "desc": "미국 중소형주 2000개",
+      "reason": "내수·소형주 체력"
     },
     {
       "sym": "^SOX",
       "id": "idx-sox",
       "nm": "PHLX Semi",
-      "desc": "필라델피아 반도체 지수 (AI·테크 선행)"
+      "desc": "필라델피아 반도체 지수",
+      "reason": "AI·반도체 선행 지표"
     },
     {
       "sym": "^DJT",
       "id": "idx-djt",
       "nm": "Dow Transports",
-      "desc": "운송주 지수 (다우이론 경기 선행 지표)"
+      "desc": "미국 운송주 지수",
+      "reason": "다우이론 경기 선행"
     },
     {
       "sym": "TLT",
       "id": "idx-tlt",
       "nm": "TLT (20Y Bond)",
-      "desc": "미국 20년물 장기채 ETF (금리 역방향 지표)",
+      "desc": "미국 20년물 장기채 ETF",
+      "reason": "금리 역방향 지표",
       "d": 2
     },
     {
       "sym": "HYG",
       "id": "idx-hyg",
       "nm": "HYG (Hi-Yield)",
-      "desc": "하이일드 회사채 ETF (신용시장·위험선호 지표)",
+      "desc": "하이일드 회사채 ETF",
+      "reason": "신용시장·위험선호",
       "d": 2
     },
     {
       "sym": "RSP",
       "id": "idx-rsp",
       "nm": "RSP (EqlWgt)",
-      "desc": "S&P 500 동일가중 ETF (시장 폭·쏠림 측정 지표)",
+      "desc": "S&P 500 동일가중 ETF",
+      "reason": "시장 쏠림 측정 지표",
       "d": 2
     }
   ],
@@ -226,61 +256,71 @@
       "sym": "^KS11",
       "id": "idx-kospi",
       "nm": "KOSPI",
-      "desc": "대한민국 종합주가지수"
+      "desc": "대한민국 종합주가지수",
+      "reason": "한국 시장 대표 지수"
     },
     {
       "sym": "^KQ11",
       "id": "idx-kosdaq",
       "nm": "KOSDAQ",
-      "desc": "대한민국 벤처·중소기업 지수"
+      "desc": "대한민국 벤처·중소기업 지수",
+      "reason": "벤처·성장주 지표"
     },
     {
       "sym": "^KS200",
       "id": "idx-ks200",
       "nm": "KOSPI 200",
-      "desc": "코스피 핵심 우량주 200개"
+      "desc": "코스피 핵심 우량주 200개",
+      "reason": "기관·선물 기준 지수"
     },
     {
       "sym": "122630.KS",
       "id": "idx-lev",
       "nm": "KODEX 레버리지",
-      "desc": "코스피200 일일 2배 추종 (시장 심리 지표)"
+      "desc": "코스피200 일일 2배 추종",
+      "reason": "시장 심리 극단 지표"
     },
     {
       "sym": "252670.KS",
       "id": "idx-inv2x",
       "nm": "KODEX 곱버스",
-      "desc": "코스피 하락 시 2배 수익 (숏 센티멘트)"
+      "desc": "코스피 하락 시 2배 수익",
+      "reason": "숏 센티멘트 지표"
     },
     {
       "sym": "091160.KS",
       "id": "idx-semi",
       "nm": "KODEX 반도체",
-      "desc": "대한민국 핵심 반도체 밸류체인"
+      "desc": "대한민국 반도체 밸류체인",
+      "reason": "반도체 섹터 대표"
     },
     {
       "sym": "305540.KS",
       "id": "idx-batt",
       "nm": "TIGER 2차전지",
-      "desc": "전기차·배터리 핵심 기업"
+      "desc": "전기차·배터리 핵심 기업",
+      "reason": "배터리·EV 섹터"
     },
     {
       "sym": "114260.KS",
       "id": "idx-bond3y",
       "nm": "KODEX 국고채3년",
-      "desc": "대한민국 3년 만기 국채 흐름"
+      "desc": "대한민국 3년 만기 국채",
+      "reason": "단기 금리 지표"
     },
     {
       "sym": "133690.KS",
       "id": "idx-tigerndx",
       "nm": "TIGER 나스닥100",
-      "desc": "국내 상장 나스닥100 추종 ETF"
+      "desc": "국내 상장 나스닥100 추종 ETF",
+      "reason": "글로벌 연동 지표"
     },
     {
       "sym": "229200.KS",
       "id": "idx-kq150",
       "nm": "KODEX 코스닥150",
-      "desc": "코스닥 우량 150개 기업 ETF"
+      "desc": "코스닥 우량 150개 기업 ETF",
+      "reason": "코스닥 우량 ETF"
     }
   ],
   "US_TOP10": [
@@ -311,37 +351,92 @@
     {
       "sym": "USDKRW=X",
       "id": "fx-usd",
-      "nm": "USD/KRW",
+      "nm": "달러 (USD)",
+      "desc": "미국 달러 — 글로벌 기축통화",
+      "reason": "기축통화",
       "mult": 1,
       "flag": "https://flagcdn.com/w40/us.png"
     },
     {
       "sym": "EURKRW=X",
       "id": "fx-eur",
-      "nm": "EUR/KRW",
+      "nm": "유로 (EUR)",
+      "desc": "유럽연합 단일통화",
+      "reason": "제2 기축통화",
       "mult": 1,
       "flag": "https://flagcdn.com/w40/eu.png"
     },
     {
       "sym": "JPYKRW=X",
       "id": "fx-jpy",
-      "nm": "JPY/KRW",
+      "nm": "엔화 (JPY)",
+      "desc": "일본 엔 — 안전자산 통화",
+      "reason": "안전자산 피난처",
       "mult": 100,
       "flag": "https://flagcdn.com/w40/jp.png"
     },
     {
       "sym": "GBPKRW=X",
       "id": "fx-gbp",
-      "nm": "GBP/KRW",
+      "nm": "파운드 (GBP)",
+      "desc": "영국 파운드 — 역사적 기준통화",
+      "reason": "선진국 통화",
       "mult": 1,
       "flag": "https://flagcdn.com/w40/gb.png"
     },
     {
       "sym": "CNYKRW=X",
       "id": "fx-cny",
-      "nm": "CNY/KRW",
+      "nm": "위안 (CNY)",
+      "desc": "중국 위안 — 신흥국 기준통화",
+      "reason": "중국 경기 지표",
       "mult": 1,
       "flag": "https://flagcdn.com/w40/cn.png"
+    },
+    {
+      "sym": "AUDKRW=X",
+      "id": "fx-aud",
+      "nm": "호주달러 (AUD)",
+      "desc": "호주 달러 — 원자재 연동 통화",
+      "reason": "원자재 연동",
+      "mult": 1,
+      "flag": "https://flagcdn.com/w40/au.png"
+    },
+    {
+      "sym": "CADKRW=X",
+      "id": "fx-cad",
+      "nm": "캐나다달러 (CAD)",
+      "desc": "캐나다 달러 — 원유 연동 통화",
+      "reason": "원유 연동",
+      "mult": 1,
+      "flag": "https://flagcdn.com/w40/ca.png"
+    },
+    {
+      "sym": "CHFKRW=X",
+      "id": "fx-chf",
+      "nm": "스위스프랑 (CHF)",
+      "desc": "스위스 프랑 — 글로벌 안전통화",
+      "reason": "글로벌 안전통화",
+      "mult": 1,
+      "flag": "https://flagcdn.com/w40/ch.png"
+    },
+    {
+      "sym": "HKDKRW=X",
+      "id": "fx-hkd",
+      "nm": "홍콩달러 (HKD)",
+      "desc": "홍콩 달러 — 달러 페그 통화",
+      "reason": "달러 페그 통화",
+      "mult": 1,
+      "flag": "https://flagcdn.com/w40/hk.png"
+    },
+    {
+      "sym": "SGDKRW=X",
+      "id": "fx-sgd",
+      "nm": "싱가포르달러 (SGD)",
+      "desc": "싱가포르 달러 — 아시아 금융허브",
+      "reason": "아시아 금융 허브",
+      "mult": 1,
+      "flag": "https://flagcdn.com/w40/sg.png"
     }
   ]
 }
